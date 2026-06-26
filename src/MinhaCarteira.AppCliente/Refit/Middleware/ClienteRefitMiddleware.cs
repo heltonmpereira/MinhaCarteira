@@ -125,6 +125,12 @@ public static class ClienteRefitMiddleware
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Auditoria"));
 
+        services
+            .AddRefitClient<ILogRefit>()
+            .AddHttpMessageHandler<AuthorizationMessageHandler>()
+            .ConfigureHttpClient(c => c.BaseAddress =
+                new Uri($"{baseUrlApi}/Log"));
+
         return services;
     }
 }

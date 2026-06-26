@@ -16,7 +16,17 @@ public class LoggingActionFilter : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var controllerName = context.RouteData.Values["controller"];
+        var controllerName = context.RouteData.Values["controller"]?.ToString();
+
+        // Ignorar controllers de Log e Auditoria para evitar loops infinitos
+        if (controllerName == null || 
+            controllerName.Equals("Log", System.StringComparison.OrdinalIgnoreCase) || 
+            controllerName.Equals("Auditoria", System.StringComparison.OrdinalIgnoreCase))
+        {
+            await next();
+            return;
+        }
+
         var actionName = context.RouteData.Values["action"];
 
         _logger.LogInformation("Executando endpoint - Controller: {Controller}, Action: {Action}, Parâmetros: {@Parameters}",

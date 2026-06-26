@@ -1,13 +1,14 @@
 using System;
+using System.Threading.Tasks;
+using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppServer.Helper;
+using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Definicao.Interface.Servico;
-using Dhani.Utilitarios.Filtro;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppServer.Controllers;
 
@@ -45,22 +46,22 @@ public class AuditoriaController(IAuditoriaServico servico, IHttpContextAccessor
             criterio.AdicionarGrupo(grupoRegistrosDeletados);
         }
 
-        // Filter by OrganizacaoId
-        var organizacaoIdClaim = HttpContextAccessor.HttpContext?.User.FindFirst("OrganizacaoId")?.Value;
-        if (!string.IsNullOrEmpty(organizacaoIdClaim))
-        {
-            var grupoOrganizacao = new GrupoFiltro("Organizacao", new[]
-            {
-                new FiltroOpcao
-                {
-                    NomePropriedade = "OrganizacaoId",
-                    Valor = organizacaoIdClaim,
-                    Operador = TipoOperadorBusca.Igual,
-                    RelacaoOutrosFiltros = TipoOperadorLogico.And
-                }
-            });
-            criterio.AdicionarGrupo(grupoOrganizacao);
-        }
+        // Filter by OrganizacaoId (commented out so admins see all)
+        //var organizacaoIdClaim = HttpContextAccessor.HttpContext?.User.FindFirst("OrganizacaoId")?.Value;
+        //if (!string.IsNullOrEmpty(organizacaoIdClaim))
+        //{
+        //    var grupoOrganizacao = new GrupoFiltro("Organizacao", new[]
+        //    {
+        //        new FiltroOpcao
+        //        {
+        //            NomePropriedade = "OrganizacaoId",
+        //            Valor = organizacaoIdClaim,
+        //            Operador = TipoOperadorBusca.Igual,
+        //            RelacaoOutrosFiltros = TipoOperadorLogico.And
+        //        }
+        //    });
+        //    criterio.AdicionarGrupo(grupoOrganizacao);
+        //}
 
         return await Servico.RespostaPaginadaServicoAsync<Auditoria>(
             criterio: criterio);

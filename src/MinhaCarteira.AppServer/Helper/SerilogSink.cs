@@ -37,6 +37,21 @@ public class SerilogSink : ILogEventSink, IDisposable
     {
         try
         {
+            // Ignorar logs do próprio sistema de logging para evitar loops infinitos
+            var sourceContext = logEvent.Properties.TryGetValue("SourceContext", out var sourceCtx) 
+                ? sourceCtx.ToString().Trim('"') 
+                : string.Empty;
+
+            if (sourceContext.Contains("Log", System.StringComparison.OrdinalIgnoreCase) || 
+                sourceContext.Contains("Auditoria", System.StringComparison.OrdinalIgnoreCase) || 
+                sourceContext.Contains("Serilog", System.StringComparison.OrdinalIgnoreCase) ||
+                sourceContext.Contains("Microsoft.AspNetCore.DataProtection", System.StringComparison.OrdinalIgnoreCase) ||
+                sourceContext.Contains("Microsoft.EntityFrameworkCore", System.StringComparison.OrdinalIgnoreCase) ||
+                sourceContext.Contains("MinhaCarteira.AppServer.Helper", System.StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
             // Criar a entidade de log (mas não salvar ainda)
             var log = CreateLogEntity(logEvent);
             if (log != null)

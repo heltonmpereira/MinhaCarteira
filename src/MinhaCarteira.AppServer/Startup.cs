@@ -32,7 +32,6 @@ public class Startup(IConfiguration configuration)
             {
                 opt.AllowEmptyInputInBodyModelBinding = true;
                 opt.Filters.Add<AuditoriaActionFilter>();
-                opt.Filters.Add<LoggingActionFilter>();
             })
             .AddNewtonsoftJson(options =>
             {
