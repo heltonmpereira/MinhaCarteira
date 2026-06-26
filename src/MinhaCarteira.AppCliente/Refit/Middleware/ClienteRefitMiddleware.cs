@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -118,6 +118,12 @@ public static class ClienteRefitMiddleware
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Arquivo"));
+
+        services
+            .AddRefitClient<IAuditoriaRefit>()
+            .AddHttpMessageHandler<AuthorizationMessageHandler>()
+            .ConfigureHttpClient(c => c.BaseAddress =
+                new Uri($"{baseUrlApi}/Auditoria"));
 
         return services;
     }

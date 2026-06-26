@@ -1,4 +1,4 @@
-﻿<aside class="main-sidebar sidebar-dark-light elevation-1">
+<aside class="main-sidebar sidebar-dark-light elevation-1">
     <a class="brand-link text-decoration-none ps-1 pt-3"
        asp-area="" asp-controller="Home" asp-action="Index" id="brandLink">
         <img class="brand-image ms-0" src="~/img/logoSistema.png" alt="Icone do sistema">
@@ -110,6 +110,12 @@
                 <li class="nav-item">
                     <a is-active-route class="nav-link" destacar-subaction="true" asp-area="admin" asp-controller="Categoria" asp-action="Index">
                         <i class='nav-icon fa fa-layer-group'></i> <p>Categoria</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="admin" asp-controller="Auditoria" asp-action="Index">
+                        <i class='nav-icon fa fa-history'></i> <p>Auditoria</p>
                     </a>
                 </li>
             </ul>
