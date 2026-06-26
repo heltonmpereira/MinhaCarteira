@@ -110,13 +110,13 @@ public class Startup(IConfiguration configuration)
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        //using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-        //{
-        //    scope.ServiceProvider
-        //        .GetService<MinhaCarteiraContext>()?
-        //        .Database
-        //        .Migrate();
-        //}
+        using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+        {
+            scope.ServiceProvider
+                .GetService<MinhaCarteiraContext>()?
+                .Database
+                .Migrate();
+        }
 
         // Definindo a cultura padrão: pt-BR
         var supportedCultures = new[] { new CultureInfo("pt-BR") };

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MinhaCarteira.Modelo.Migrations
 {
     [DbContext(typeof(MinhaCarteiraContext))]
-    [Migration("20260626184255_SerilogMigration")]
+    [Migration("20260626191827_SerilogMigration")]
     partial class SerilogMigration
     {
         /// <inheritdoc />
@@ -836,7 +836,7 @@ namespace MinhaCarteira.Modelo.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("DataHora")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Deletado")
                         .HasColumnType("boolean");
@@ -846,8 +846,7 @@ namespace MinhaCarteira.Modelo.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("Mensagem")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("MetodoHttp")
                         .HasMaxLength(10)

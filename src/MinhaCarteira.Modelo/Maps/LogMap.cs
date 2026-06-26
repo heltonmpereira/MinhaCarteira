@@ -11,9 +11,9 @@ public class LogMap : BaseMap<Log, Guid>
     public override void Configure(EntityTypeBuilder<Log> builder)
     {
         base.Configure(builder);
-        builder.Property(p => p.DataHora).HasColumnType("timestamp without time zone");
+        builder.Property(p => p.DataHora).HasColumnType("timestamp with time zone");
         builder.Property(p => p.Categoria).HasMaxLength(500);
-        builder.Property(p => p.Mensagem).HasMaxLength(2000);
+        builder.Property(p => p.Mensagem).HasColumnType("text");
         builder.Property(p => p.DadosSerializados).HasColumnType("text");
         builder.Property(p => p.StackTrace).HasColumnType("text");
         builder.Property(p => p.IpUsuario).HasMaxLength(50);

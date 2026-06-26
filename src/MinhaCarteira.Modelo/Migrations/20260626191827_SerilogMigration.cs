@@ -17,10 +17,10 @@ namespace MinhaCarteira.Modelo.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Deletado = table.Column<bool>(type: "boolean", nullable: false),
-                    DataHora = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DataHora = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TipoLog = table.Column<int>(type: "integer", nullable: false),
                     Categoria = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Mensagem = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    Mensagem = table.Column<string>(type: "text", nullable: true),
                     DadosSerializados = table.Column<string>(type: "text", nullable: true),
                     StackTrace = table.Column<string>(type: "text", nullable: true),
                     IpUsuario = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
