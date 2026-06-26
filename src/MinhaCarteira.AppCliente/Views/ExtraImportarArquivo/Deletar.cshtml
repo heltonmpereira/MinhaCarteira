@@ -1,0 +1,25 @@
+﻿
+@model MinhaCarteira.AppCliente.ViewModel.ImportarArquivoViewModel
+
+@{
+    ViewData["Title"] = "ImportarArquivo";
+    ViewData["Icone"] = "<i class='fa fa-home fa-lg text-primary'></i>";
+
+    @section Scripts {
+        @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<h1>Deletar</h1>
+<h4>Tem certeza que deseja remover este registro?</h4>
+
+@Html.DisplayFor(model => model)
+
+<hr />
+<form asp-action="Deletar" method="post">
+    <input type="submit" value="Deletar" class="btn btn-danger" />
+    <a class="btn btn-default" asp-action="Index">Cancelar</a>
+</form>
+

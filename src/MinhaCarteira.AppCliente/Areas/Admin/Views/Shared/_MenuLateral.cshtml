@@ -1,0 +1,118 @@
+﻿<aside class="main-sidebar sidebar-dark-light elevation-1">
+    <a class="brand-link text-decoration-none ps-1 pt-3"
+       asp-area="" asp-controller="Home" asp-action="Index" id="brandLink">
+        <img class="brand-image ms-0" src="~/img/logoSistema.png" alt="Icone do sistema">
+        <span class="brand-text" id="brandText">dhani projetos</span>
+    </a>
+
+    <div class="sidebar">
+        <div class="user-panel my-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" id="menuLogin" data-widget="treeview" role="menu" data-accordion="false">
+                @if (User.Identity is not { IsAuthenticated: true })
+                {
+                    <li class="nav-item">
+                        <a is-active-route destacar-subaction="true" asp-area="" asp-controller="Login" asp-action="Index" class="nav-link">
+                            <i class="nav-icon fas fa-user"></i>
+                            <p>Login</p>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    var estahAcessandoComo = !string.IsNullOrWhiteSpace(@User.Claims.FirstOrDefault(w => w.Type == "AcessadoVia")?.Value);
+
+                    <li class="nav-item">
+                        <a is-active-route destacar-subaction="true" class="nav-link" asp-controller="Login" asp-action="Index">
+                            <i class="nav-icon fas fa-user"></i>
+                            <p class="d-inline-flex">
+                                <span class="text-truncate" id="nomeUsuario">
+                                    @User.Claims.FirstOrDefault(w => w.Type == "FullName")?.Value
+
+                                    @if (estahAcessandoComo)
+                                    {
+                                        <small class="fs-xs">
+                                            <br />
+                                            Via
+                                            @User.Claims.FirstOrDefault(w => w.Type == "AcessadoVia")?.Value
+                                        </small>
+                                    }
+                                </span>
+
+                                <i class="float-right right fas fa-angle-left"
+                                   id="arrowLateral"></i>
+                            </p>
+                        </a>
+
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="home" asp-action="index">
+                                    <i class="nav-icon fa fa-home-user"></i> <p>Página inicial</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area=""
+                                   asp-controller="Login"
+                                   asp-action="MeuPerfil"
+                                   asp-route-id="@User.Claims.FirstOrDefault(w => w.Type == "UsuarioId").Value">
+                                    <i class="nav-icon fa fa-address-card"></i> <p>Meu Perfil</p>
+                                </a>
+                            </li>
+
+                            @if (!estahAcessandoComo)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Login" asp-action="Sair">
+                                        <i class="nav-icon fa fa-door-open"></i> <p>Sair</p>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Login" asp-action="SairAcessoComo">
+                                        <i class="nav-icon fa fa-door-open"></i> <p>Sair do acesso como</p>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" id="menuLateral" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" asp-area="admin" asp-controller="Home" asp-action="Index">
+                        <i class="nav-icon fa fa-home-alt"></i> <p>Home</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="admin" asp-controller="Usuario" asp-action="Index">
+                        <i class='nav-icon fa fa-user'></i> <p>Usuários</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="admin" asp-controller="Papel" asp-action="Index">
+                        <i class='nav-icon fa fa-newspaper'></i> <p>Papéis</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="admin" asp-controller="InstituicaoFinanceira" asp-action="Index">
+                        <i class='nav-icon fa fa-building-columns'></i> <p>Instituição Financeira</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="admin" asp-controller="Categoria" asp-action="Index">
+                        <i class='nav-icon fa fa-layer-group'></i> <p>Categoria</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</aside>

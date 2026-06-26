@@ -1,0 +1,191 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MinhaCarteira.AppCliente.Models
+@using MinhaCarteira.AppCliente.ViewModel
+@model Tuple<string, IList<DashboardMonitorViewModel>, string>
+
+@if (!string.IsNullOrWhiteSpace(Model.Item3))
+{
+    <div class="alert alert-danger">
+        <span>@Model.Item3.ToString()</span>
+    </div>
+}
+
+@if (Model is { Item2: not null } && Model.Item2.Any())
+{
+    var dataInicial = DateTime.ParseExact(Model.Item1 + "01", "yyyyMMdd", null);
+    var isMobile = ((BrowserViewModel)ViewBag.BrowserInfo).IsMobile;
+    var data = dataInicial.AddMonths(isMobile ? -2 : -6);
+    var totalItens = isMobile ? 5 : 13;
+
+    <div class="text-center p-2 my-3 bg-transparent bg-gradient shadow-sm">
+        <h5 class="display-6 text-center">Monitores</h5>
+    </div>
+
+    <div class="row">
+        <ul id="paginationMes" class="pagination pagination-month justify-content-center">
+            <li class="page-item d-none">
+                <a class="page-link" href="#">«</a>
+            </li>
+
+            @for (var i = 0; i < totalItens; i++)
+            {
+                <li class="page-item">
+                    <a class="page-link @(data.AddMonths(i).ToString("yyyyMM") == Model.Item1 ? "bg-white" : "")"
+                       data-month="@data.AddMonths(i).ToString("yyyyMM")" href="#">
+                        <p class="page-month">@data.AddMonths(i).ToString("MMM")</p>
+                        <p class="page-year">@data.AddMonths(i).Year</p>
+                    </a>
+                </li>
+            }
+
+            <li class="page-item d-none">
+                <a class="page-link" href="#">»</a>
+            </li>
+        </ul>
+
+        <div id="loadingMonitor" class="d-none text-center">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="text-center d-inline">Carregando a lista de monitores, por favor aguarde...</span>
+        </div>
+    </div>
+
+    <div class="row col-sm-11 mx-auto p-0 justify-content-center">
+        @foreach (var item in Model.Item2)
+        {
+            var valorParcelas = item.Agendamento?.Parcelas?.Sum(s => s.Valor);
+            var primeiraParcela = item.Agendamento.Parcelas.FirstOrDefault(f => f.Data.ToString("yyyyMM") == Model.Item1);
+            var totalMovimentos = item.Movimentos?.Sum(s => s.ValorReal);
+            var valorAbs = Math.Abs(totalMovimentos ?? 0);
+            var pct = Math.Floor((valorAbs / Math.Max(valorParcelas ?? 0, 1)) * 100);
+            var corProgressBar = pct >= 70
+                ? pct >= 110
+                    ? item.Agendamento.Tipo == TipoMovimento.Debito
+                        ? "bg-danger"
+                        : "bg-primary"
+                    : "bg-yellow"
+                : string.Empty;
+            pct = Math.Min(100, pct);
+
+            <div class="col-md-3 col-sm-6">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#modalDashboard@(item.Id)">
+                    <div class="info-box @item.CorFundo">
+                        <div class="info-box-icon">
+                            @if (string.IsNullOrEmpty(item.Agendamento?.Categoria?.Icone?.Conteudo))
+                            {
+                                <i class="far fa-bookmark"></i>
+                            }
+                            else
+                            {
+                                <img src="data:@item.Agendamento.Categoria.Icone.MimeType;base64,@item.Agendamento.Categoria.Icone.Conteudo"
+                                     alt="Icone para a categoria "
+                                     height="48" width="48"
+                                     asp-append-version="true" />
+                            }
+                        </div>
+                        <div class="info-box-content">
+                            <span class="info-box-text" title="@item.Titulo">
+                                @item.Titulo
+                            </span>
+
+                            <small class="info-box-number">
+                                <span class="float-start" title="Realizado">
+                                    @if (valorAbs > 0)
+                                    {
+                                        @valorAbs.ToString("#.00")
+                                    }
+                                </span>
+                                <span class="float-end" title="Planejado">
+                                    @if (valorParcelas != null && valorParcelas > 0)
+                                    {
+                                        @valorParcelas?.ToString("#.00")
+                                    }
+                                </span>
+                            </small>
+                            <div class="progress h5px" title="@pct% realizado">
+                                <div class="progress-bar @corProgressBar w@(pct)pct"></div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+
+            <!-- Modal -->
+            <div class="modal" id="modalDashboard@(item.Id)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Detalhes de "@item.Titulo"</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <table class="table table-borderless col-12">
+                                    <caption class="caption-top">Parcelas</caption>
+                                    <tbody>
+                                        @foreach (var parcela in item.Agendamento.Parcelas.OrderByDescending(o => o.Data))
+                                        {
+                                            <tr class="align-middle">
+                                                <td class="align-middle" width="65">@parcela.Data.ToString("dd/MM")</td>
+                                                <td class="align-middle">
+                                                    <a asp-controller="Agendamento" asp-action="AlterarParcela" asp-route-id="@parcela.Id">
+                                                        <span>
+                                                            @item.Agendamento.Descricao
+                                                        </span>
+                                                    </a>
+                                                </td>
+                                                <td width="100" class="text-nowrap text-end">
+                                                    @{
+                                                        var tupla = Tuple.Create(
+                                                        item.Agendamento.Tipo,
+                                                        parcela.ValorPago ?? 0);
+
+                                                        var tuplaPlanejada = Tuple.Create(
+                                                        item.Agendamento.Tipo,
+                                                        parcela.Valor);
+
+                                                    }
+                                                    @Html.DisplayFor(m => tupla, "ValorMonetario")
+                                                    <br />
+                                                    <small>
+                                                        @Html.DisplayFor(m => tuplaPlanejada, "ValorMonetario")
+                                                    </small>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                                <hr />
+                                <table class="table table-borderless">
+                                    <caption class="caption-top">Movimentos</caption>
+                                    <tbody>
+                                        @foreach (var movimento in item.Movimentos.OrderByDescending(o => o.DataMovimento))
+                                        {
+                                            <tr>
+                                                <td width="65">@movimento.DataMovimento.ToString("dd/MM")</td>
+                                                <td>@movimento.Descricao</td>
+                                                <td class="text-nowrap text-end" width="100">
+                                                    @{
+                                                        var tupla = Tuple.Create(
+                                                        movimento.TipoMovimento,
+                                                        movimento.Valor);
+                                                        @Html.DisplayFor(m => tupla, "ValorMonetario")
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            @* <button type="button" class="btn btn-primary">Save changes</button> *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

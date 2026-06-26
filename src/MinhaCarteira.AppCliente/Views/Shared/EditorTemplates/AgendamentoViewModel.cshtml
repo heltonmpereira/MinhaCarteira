@@ -1,0 +1,166 @@
+﻿@using MinhaCarteira.AppCliente.Helper
+@using MinhaCarteira.AppCliente.Models
+@model MinhaCarteira.AppCliente.ViewModel.AgendamentoViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" class="form-control" asp-for="Id" />
+
+<div class="row mb-3 bg-body-secondary p-2 mx-auto">
+    <div class="col-sm-12">
+        <div class="form-check form-switch ms-3">
+            <input class="form-check-input" asp-for="DespesaOpcional">
+            <label class="form-check-label" asp-for="DespesaOpcional"></label>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-6 col-md-3 col-xl-2 d-flex flex-column">
+        <label asp-for="Tipo" for="tipoMovimentoDebito" class="form-label"></label>
+        <div class="btn-group" role="group" aria-label="Tipo de movimento (Débito ou Crédito)">
+            <input class="btn-check disabled" autocomplete="off"
+                   id="tipoMovimentoDebito"
+                   asp-for="Tipo" type="radio" value="Debito"
+                   checked="@(TipoMovimento.Debito == Model.Tipo)" />
+            <label class="btn btn-outline-danger" for="tipoMovimentoDebito">
+                @TipoMovimento.Debito.GetDescription()
+            </label>
+
+            <input class="btn-check" autocomplete="off"
+                   id="tipoMovimentoCredito"
+                   asp-for="Tipo" type="radio" value="Credito"
+                   checked="@(TipoMovimento.Credito == Model.Tipo)" />
+            <label class="btn btn-outline-info" for="tipoMovimentoCredito">
+                @TipoMovimento.Credito.GetDescription()
+            </label>
+        </div>
+        <span asp-validation-for="Tipo" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-6 col-md-5 col-xl-4 d-flex flex-column">
+        <label asp-for="TipoParcelas" for="tipoParcelaUnica" class="form-label"></label>
+        <div class="btn-group" role="group" aria-label="Tipo das parcelas deste agendamento">
+            @foreach (var c in Enum.GetValues(typeof(TipoParcelas)).Cast<TipoParcelas>())
+            {
+                <input class="btn-check" autocomplete="off"
+                       id="tipoParcela@(c)"
+                       asp-for="TipoParcelas" type="radio" value="@c"
+                       checked="@(c == Model.TipoParcelas)">
+
+                <label class="btn @(ViewBag.ClasseBotao)primary" for="tipoParcela@(c)">@c</label>
+            }
+        </div>
+        <span asp-validation-for="TipoParcelas" class="text-danger"></span>
+    </div>
+
+    <div id="tipoRecorrencia" class="d-none col-sm-6 col-md-4 col-xl-4 flex-column">
+        <label asp-for="TipoRecorrencia" for="tipoRecorrenciaMensal" class="form-label"></label>
+        <div class="btn-group" role="group" aria-label="Tipo das parcelas deste agendamento">
+            @foreach (var c in Enum.GetValues(typeof(TipoRecorrencia)).Cast<TipoRecorrencia>())
+            {
+                <input class="btn-check" autocomplete="off"
+                       id="tipoRecorrencia@(c)"
+                       asp-for="TipoRecorrencia" type="radio" value="@c"
+                       checked="@(c == Model.TipoRecorrencia)">
+                <label class="btn @(ViewBag.ClasseBotao)primary" for="tipoRecorrencia@(c)">@c</label>
+            }
+        </div>
+        <span asp-validation-for="TipoRecorrencia" class="text-danger"></span>
+    </div>
+
+    <div id="intervalo" class="d-none col-sm-3 col-md-6 col-xl-1">
+        <label asp-for="Intervalo" class="form-label"></label>
+        <input asp-for="Intervalo" class="form-control" />
+        <span asp-validation-for="Intervalo" class="text-danger"></span>
+    </div>
+
+    <div id="numeroParcelas" class="d-none col-sm-3 col-md-6 col-xl-1">
+        <label asp-for="QuantidadeParcelas" class="form-label"></label>
+        <input asp-for="QuantidadeParcelas" class="form-control" />
+        <span asp-validation-for="QuantidadeParcelas" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <label asp-for="DataInicial" class="form-label"></label>
+        <input asp-for="DataInicial" class="form-control" />
+        <span asp-validation-for="DataInicial" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Valor" class="form-label"></label>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">R$</span>
+            </div>
+            <input asp-for="Valor" class="form-control money" autofocus />
+        </div>
+        <span asp-validation-for="Valor" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Descricao" class="form-label"></label>
+        <input asp-for="Descricao" class="form-control" />
+        <span asp-validation-for="Descricao" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <label asp-for="ContaBancariaId" for="txtContaBancaria" class="form-label"></label>
+        <input type="hidden" asp-for="ContaBancariaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtContaBancaria" asp-for="NomeContaBancaria" class="form-control" />
+        </div>
+        <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-6">
+        <label asp-for="PessoaId" for="txtPessoa" class="form-label"></label>
+        <input type="hidden" asp-for="PessoaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtPessoa" asp-for="NomePessoa" class="form-control" />
+        </div>
+        <span asp-validation-for="PessoaId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <label asp-for="CategoriaId" for="txtCategoria" class="form-label"></label>
+        <input type="hidden" asp-for="CategoriaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtCategoria" asp-for="CaminhoCategoria" class="form-control" />
+        </div>
+        <span asp-validation-for="CategoriaId" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-6">
+        <label asp-for="CentroClassificacaoId" for="txtCentroClassificacao" class="form-label"></label>
+        <input type="hidden" asp-for="CentroClassificacaoId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtCentroClassificacao" asp-for="NomeCentroClassificacao" class="form-control" />
+        </div>
+        <span asp-validation-for="CentroClassificacaoId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-3">
+        <label asp-for="Observacao" class="form-label"></label>
+        <textarea asp-for="Observacao" class="form-control"></textarea>
+        <span asp-validation-for="Observacao" class="text-danger"></span>
+    </div>
+</div>
+
+<hr />
+<div class="mb-3">
+    <input asp-accessando-como type="submit" value="Salvar" class="btn btn-primary" />
+
+    <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+</div>

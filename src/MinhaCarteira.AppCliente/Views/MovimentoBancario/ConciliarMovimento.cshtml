@@ -1,0 +1,140 @@
+﻿@using MinhaCarteira.AppCliente.ViewModel;
+@model ConciliarAgendamentoViewModel
+
+@{
+    var corFont = ViewBag.Theme == "dark" ? "text-warning" : "text-danger";
+    var descricao = $"{Model.Movimento.Descricao} de {Model.Movimento.DataMovimento:dd/MM/yyyy}";
+}
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial").ConfigureAwait(false);
+    }
+    <script src="~/js/autoComplete/configurarAutoComplete.js" asp-append-version="true"></script>
+    <script src="~/js/autoComplete/cadastroAutoComplete.js" asp-append-version="true"></script>
+    <script src="~/js/views/conciliarParcela.js"></script>
+}
+
+<form id="formConciliarMovimento" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto" method="post">
+    <h3>Conciliação de <span class="@corFont">@descricao</span></h3>
+    <hr />
+    <input asp-for="Movimento.Id" type="hidden" />
+
+    <div class="row mb-3">
+        <legend>Opções de busca</legend>
+
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <label asp-for="ContaBancariaId" for="txtContaBancaria" class="form-label"></label>
+                <input type="hidden" asp-for="ContaBancariaId" class="form-control" />
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa fa-search"></i>
+                    </span>
+                    <input type="search" id="txtContaBancaria" asp-for="NomeContaBancaria" class="form-control" />
+                </div>
+                <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+            </div>
+
+            <div class="col-sm-3">
+                <label asp-for="CategoriaId" for="txtCategoria" class="form-label"></label>
+                <input type="hidden" asp-for="CategoriaId" class="form-control" />
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa fa-search"></i>
+                    </span>
+                    <input type="search" id="txtCategoria" asp-for="CaminhoCategoria" class="form-control" />
+                </div>
+                <span asp-validation-for="CategoriaId" class="text-danger"></span>
+            </div>
+
+            <div class="col-sm-6">
+                <label asp-for="Descricao" class="form-label"></label>
+                <input asp-for="Descricao" class="form-control" />
+                <span asp-validation-for="Descricao" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <label class="form-label">Período</label>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <input type="text" asp-for="DataInicial" class="form-control date" maxlength="10" />
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" asp-for="DataFinal" class="form-control date" maxlength="10" />
+                    </div>
+                </div>
+                <span class="ext-danger"></span>
+            </div>
+
+            <div class="col-sm-6">
+                <label class="form-label">Valor</label>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <input asp-for="ValorInicial" class="form-control money" />
+                    </div>
+
+                    <div class="col-sm-6">
+                        <input asp-for="ValorFinal" class="form-control money" />
+                    </div>
+                </div>
+                <span class="ext-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3 text-end pe-4">
+        <button type="button" class="btn btn-success" id="buscarParcelas">
+            <i class="fa fa-search"></i> Buscar
+        </button>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-sm-5">
+            <select id="origem" class="form-select h-100 font-monospace" multiple>
+            </select>
+        </div>
+
+        <div class="col-sm-2 p-0 d-flex flex-column align-items-center">
+            <button type="button" class="w-100 btn btn-warning" id="addTodos">
+                Adicionar Todos<br /><i class="fa fa-arrow-alt-circle-right"></i>
+            </button>
+
+            <button type="button" class="w-100 mt-3 btn btn-primary" id="add">
+                Adicionar<br /><i class="fa fa-arrow-alt-circle-right"></i>
+            </button>
+
+            <button type="button" class="w-100 mt-3 btn btn-primary" id="remove">
+                Remover<br /><i class="fa fa-arrow-alt-circle-left"></i>
+            </button>
+
+            <button type="button" class="w-100 mt-3 btn btn-warning" id="removerTodos">
+                Remover Todos<br /><i class="fa fa-arrow-alt-circle-left"></i>
+            </button>
+        </div>
+
+        <div class="col-sm-5">
+            <select id="destino" class="form-select h-100 font-monospace" multiple>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-7 fw-bold">
+            Valor: <span id="valorPago">@Model.Movimento.Valor.ToString("c2")</span>
+        </div>
+
+        <div class="col-sm-5 fw-bold">
+            Total: <span id="total">R$ 0</span>
+        </div>
+    </div>
+
+    <hr />
+    <div class="mb-3">
+        <input asp-accessando-como id="salvar" type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" disabled />
+
+        <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+    </div>
+
+</form>

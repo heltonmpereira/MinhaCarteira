@@ -1,0 +1,20 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.ContaBancariaViewModel
+
+@{
+    ViewData["Title"] = "Conta Bancária";
+    ViewData["Icone"] = "<i class='fa fa-money-check-dollar fa-lg d-inline'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<div class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Detalhes</h1>
+
+    @Html.DisplayFor(model => model)
+
+    <hr />
+    <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+</div>

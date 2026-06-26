@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "Página Inicial";
+}
+
+<div class="text-center p-2 bg-info bg-gradient shadow-sm">
+    <h1 class="display-5">Minha Carteira</h1>
+</div>
+
+@if (User.Identity is { IsAuthenticated: true })
+{
+    <div class="container-fluid col-sm-11">
+        <div id="divContasBancarias" class="row justify-content-center">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="text-center d-inline">Carregando as contas bancárias, por favor aguarde...</span>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div id="divDashboard" class="row justify-content-center">
+            <div id="loadingMonitor">
+                <div class="spinner-border text-primary" role="status"></div>
+                <span class="text-center d-inline">Carregando a lista de monitores, por favor aguarde...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div id="divResumo" class="row justify-content-center">
+            <div id="loadingResumo">
+                <div class="spinner-border text-primary" role="status"></div>
+                <span class="text-center d-inline">Carregando o resumo do mês, por favor aguarde...</span>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+    <script nws-csp-add-nonce="true">
+        $('#divResumo').load("@Url.Action("PartialResumo")");
+        $('#divDashboard').load("@Url.Action("PartialMonitores")");
+        $('#divContasBancarias').load("@Url.Action("PartialContasBancarias")");
+
+        function carregarMonitores(mesAno) {
+            //$("#paginationMes").hide();
+            $('.page-item').addClass('disabled');
+            $("#loadingResumo").removeClass('d-none');
+            $("#loadingMonitor").removeClass('d-none');
+
+            $('#divDashboard').load('@Url.Action("PartialMonitores")/' + mesAno, function () {
+                $("#loadingMonitor").addClass('d-none');
+                $('.page-item').removeClass('disabled');
+                //$("#paginationMes").show();
+            });
+
+            $('#divResumo').load('@Url.Action("PartialResumo")/' + mesAno, function () {
+                $("#loadingResumo").addClass('d-none');
+            });
+        }
+
+        $(document).on('click', '.page-link', function () {
+            carregarMonitores(this.dataset.month);
+            // your function here
+        });
+    </script>
+    }
+}
+
+
+<div class="text-center p-2 mb-3 bg-transparent bg-gradient shadow-sm">
+    <h5 class="display-6 text-center">Módulos</h5>
+</div>
+
+<div class="row col-sm-8 mx-auto mb-3">
+    <a class="btn @(ViewBag.ClasseBotao)info btn-lg col-sm-5 mx-auto"
+       asp-action="Index" asp-controller="Agendamento" asp-area="">
+        <i class='fa fa-calendar-day d-inline'></i>
+        <p class="d-inline ps-2">Agendamento</p>
+    </a>
+
+    <a class="btn @(ViewBag.ClasseBotao)success btn-lg col-sm-5 mx-auto"
+       asp-action="Index" asp-controller="MovimentoBancario" asp-area="">
+        <i class='fa fa-money-bill-transfer d-inline'></i>
+        <p class="d-inline ps-2">Movimentos</p>
+    </a>
+</div>
+
+<div class="row col-sm-8 mx-auto mb-3">
+    <a class="btn @(ViewBag.ClasseBotao)primary btn-sm col-sm-3 mx-auto"
+       asp-action="Index" asp-controller="ContaBancaria" asp-area="">
+        <i class='fa fa-money-check-dollar d-inline'></i>
+        <p class="d-inline ps-2">Contas</p>
+    </a>
+
+    <a class="btn @(ViewBag.ClasseBotao)primary btn-sm col-sm-3 mx-auto"
+       asp-action="Index" asp-controller="CentroClassificacao" asp-area="">
+        <i class='fa fa-arrows-to-circle d-inline'></i>
+        <p class="d-inline ps-2">Classificação</p>
+    </a>
+
+    <a class="btn @(ViewBag.ClasseBotao)primary btn-sm col-sm-3 mx-auto"
+       asp-action="Index" asp-controller="Pessoa" asp-area="">
+        <i class='fa fa-users d-inline'></i>
+        <p class="d-inline ps-2">Pessoas</p>
+    </a>
+</div>
+
+<div class="row col-sm-8 mx-auto mb-3">
+    <a class="btn @(ViewBag.ClasseBotao)primary col-sm-5 mx-auto"
+       asp-action="Index" asp-controller="Categoria" asp-area="admin">
+        <i class='fa fa-layer-group d-inline'></i>
+        <p class="d-inline ps-2">Categoria</p>
+    </a>
+
+    <a class="btn @(ViewBag.ClasseBotao)primary col-sm-5 mx-auto"
+       asp-action="Index" asp-controller="InstituicaoFinanceira" asp-area="admin">
+        <i class='fa fa-building-columns d-inline'></i>
+        <p class="d-inline ps-2">Instituição Financeira</p>
+    </a>
+</div>

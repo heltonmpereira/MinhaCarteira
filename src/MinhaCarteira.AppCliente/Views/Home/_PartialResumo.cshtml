@@ -1,0 +1,93 @@
+﻿@using MinhaCarteira.AppCliente.ViewModel
+@model Tuple<DashboardResumoViewModel, string>
+
+@if (Model.Item1 != null && (Model.Item1.ValorSaldoAtual > 0 || Model.Item1.ReceitasPrevistas > 0 || Model.Item1.DespesasPrevistas > 0))
+{
+    <div class="text-center p-2 my-3 bg-transparent bg-gradient shadow-sm">
+        <h5 class="display-6 text-center">Resumo</h5>
+    </div>
+
+    <div class="row col-sm-11 p-0">
+        <div class="col-sm-4">
+            <div class="info-box bg-success">
+                <span class="info-box-icon">
+                    <i class="fas fa-lg fa-file-alt opacity-50"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Saldo das contas bancárias
+                    </span>
+                    <span class="info-box-number">@Model.Item1.ValorSaldoAtual.ToString("c")</span>
+                    <div class="progress">
+                        <div class="progress-bar w100pct"></div>
+                    </div>
+                    <span class="progress-description">
+                        <a asp-action="Index" asp-controller="ContaBancaria" class="btn btn-link btn-success py-1 px-3">
+                            Saiba mais
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="info-box bg-info">
+                <span class="info-box-icon">
+                    <i class="fas fa-lg fa-money-bill-1 opacity-50"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Receitas em @DateTime.ParseExact(Model.Item2 + "01", "yyyyMMdd", null).ToString("MMMyy")
+                    </span>
+                    <span class="info-box-number">
+                        <span>Previstas</span>
+                        <span class="float-end">@Model.Item1.ReceitasPrevistas.ToString("c")</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar w100pct"></div>
+                    </div>
+                    <span class="progress-description">
+                        <span class="info-box-number">
+                            <span>Realizadas</span>
+                            <span class="float-end">@Model.Item1.ReceitasRealizadas.ToString("c")</span>
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="info-box bg-danger">
+                <span class="info-box-icon">
+                    <i class="fas fa-lg fa-money-bill-1 opacity-50"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Despesas em @DateTime.ParseExact(Model.Item2 + "01", "yyyyMMdd", null).ToString("MMMyy")
+                    </span>
+                    <span class="info-box-number">
+                        <span>Previstas</span>
+                        <span class="float-end">@Model.Item1.DespesasPrevistas.ToString("c")</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar w100pct"></div>
+                    </div>
+                    <span class="progress-description">
+                        <span class="info-box-number">
+                            <span>Realizadas</span>
+                            <span class="float-end">@Model.Item1.DespesasRealizadas.ToString("c")</span>
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingMonitor" class="d-none text-center">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="text-center d-inline">Carregando a lista de monitores, por favor aguarde...</span>
+        </div>
+    </div>
+}

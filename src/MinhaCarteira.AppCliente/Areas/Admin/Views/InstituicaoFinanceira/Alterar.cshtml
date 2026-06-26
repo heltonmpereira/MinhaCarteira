@@ -1,0 +1,19 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.InstituicaoFinanceiraViewModel
+
+@{
+    ViewData["Title"] = "Instituição Financeira";
+    ViewData["Icone"] = "<i class='fa fa-building-columns fa-lg d-inline'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+            <script src="~/js/views/loadIcon.js" asp-append-version="true"></script>
+        }
+    }
+}
+
+<form asp-action="Alterar" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto" enctype="multipart/form-data">
+    <h1>Alterar</h1>
+    <hr />
+
+    @Html.EditorForModel()
+</form>

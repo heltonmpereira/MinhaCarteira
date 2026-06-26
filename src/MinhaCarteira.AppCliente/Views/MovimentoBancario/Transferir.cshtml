@@ -1,0 +1,148 @@
+﻿@using MinhaCarteira.AppCliente.Helper
+@model MinhaCarteira.AppCliente.ViewModel.MovimentoBancarioTransferenciaViewModel
+
+@{
+    ViewData["Title"] = "Movimento Bancário";
+    ViewData["Icone"] = "<i class='fa fa-money-bill-transfer fa-lg d-inline'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+            <script src="~/js/autoComplete/configurarAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/autoComplete/cadastroAutoComplete.js" asp-append-version="true"></script>
+        }
+    }
+}
+
+<form asp-action="Transferir" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Transferir</h1>
+    <hr />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" class="form-control" asp-for="Id" />
+    <input type="hidden" class="form-control" asp-for="ProprietarioId" />
+    <input type="hidden" class="form-control" asp-for="ContaBancariaId" />
+
+    <div class="row mb-3">
+        <div class="col-sm-auto">
+            <label asp-for="TipoMovimento" class="form-label"></label>
+            <br class="d-none d-sm-block" />
+            <div class="btn-group" role="group" aria-label="Tipo de movimento (Débito ou Crédito)">
+                <input class="btn-check" autocomplete="off"
+                       id="tipoMovimentoDebito"
+                       asp-for="TipoMovimento"
+                       type="radio"
+                       value="Debito"
+                       checked="@(TipoMovimento.Debito == Model.TipoMovimento)" />
+                <label class="btn btn-outline-danger" for="tipoMovimentoDebito">
+                    @TipoMovimento.Debito.GetDescription()
+                </label>
+
+                <input class="btn-check" autocomplete="off"
+                       id="tipoMovimentoCredito"
+                       asp-for="TipoMovimento"
+                       type="radio"
+                       value="Credito"
+                       checked="@(TipoMovimento.Credito == Model.TipoMovimento)" />
+                <label class="btn btn-outline-info" for="tipoMovimentoCredito">
+                    @TipoMovimento.Credito.GetDescription()
+                </label>
+            </div>
+            <span asp-validation-for="TipoMovimento" class="text-danger"></span>
+        </div>
+
+        <div class="col-sm-auto">
+            <label asp-for="Competencia" class="form-label"></label>
+            <input asp-for="Competencia" class="form-control" />
+            <span asp-validation-for="Competencia" class="text-danger"></span>
+        </div>
+
+        <div class="col-sm-5">
+            <label asp-for="ContaBancaria.Nome" class="form-label">Conta de origem</label>
+            <input asp-for="ContaBancaria.Nome" class="form-control" />
+            <span asp-validation-for="ContaBancaria.Nome" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label asp-for="DataMovimento" class="form-label"></label>
+            <input asp-for="DataMovimento" class="form-control" />
+            <span asp-validation-for="DataMovimento" class="text-danger"></span>
+        </div>
+
+        <div class="col-sm-3">
+            <label asp-for="Valor" class="form-label"></label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">R$</span>
+                <input asp-for="Valor" class="form-control money" autofocus />
+            </div>
+            <span asp-validation-for="Valor" class="text-danger"></span>
+        </div>
+
+        <div class="col-sm-6">
+            <label asp-for="Descricao" class="form-label"></label>
+            <input asp-for="Descricao" class="form-control" />
+            <span asp-validation-for="Descricao" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="ContaBancariaDestinoId" for="txtContaBancaria" class="form-label"></label>
+            <input type="hidden" asp-for="ContaBancariaDestinoId" class="form-control" />
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                <input type="search" id="txtContaBancariaDestino" asp-for="NomeContaBancariaDestino" class="form-control" />
+            </div>
+            <span asp-validation-for="ContaBancariaDestinoId" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="PessoaId" for="txtPessoa" class="form-label"></label>
+            <input type="hidden" asp-for="PessoaId" class="form-control" />
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                <input type="search" id="txtPessoa" asp-for="NomePessoa" class="form-control" />
+            </div>
+            <span asp-validation-for="PessoaId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="CategoriaId" for="txtCategoria" class="form-label"></label>
+            <input type="hidden" asp-for="CategoriaId" class="form-control" />
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                <input type="search" id="txtCategoria" asp-for="CaminhoCategoria" class="form-control" />
+            </div>
+            <span asp-validation-for="CategoriaId" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="CentroClassificacaoId" for="txtCentroClassificacao" class="form-label"></label>
+            <input type="hidden" asp-for="CentroClassificacaoId" class="form-control" />
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                <input type="search" id="txtCentroClassificacao" asp-for="NomeCentroClassificacao" class="form-control" />
+            </div>
+            <span asp-validation-for="CentroClassificacaoId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-12 mb-3">
+            <label asp-for="Observacao" class="form-label"></label>
+            <textarea asp-for="Observacao" class="form-control"></textarea>
+            <span asp-validation-for="Observacao" class="text-danger"></span>
+        </div>
+    </div>
+
+    <hr />
+    <div class="mb-3">
+        <input asp-accessando-como type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" />
+
+        <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+    </div>
+
+</form>

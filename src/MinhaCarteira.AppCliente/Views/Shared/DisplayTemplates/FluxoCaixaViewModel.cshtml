@@ -1,0 +1,85 @@
+﻿@using MinhaCarteira.AppCliente.ViewModel.Relatorio.FluxoCaixa
+@model FluxoCaixaViewModel
+
+<div id="divTabelaPrincipal" class="table-responsive col-sm-11 px-sm-3 px-md-0 mt-4 mx-auto vh-80 p-0 fixTableHead">
+    <table class="table table-sm table-borderless table-hover table-striped-columns" data-fixed-columns="true" data-fixed-number="1">
+        <thead class="table-primary">
+            <tr>
+                <th class="p-1 sticky-col first-col">Categoria</th>
+                @foreach (var item in Model.Somatorios)
+                {
+                    <th class="text-end p-1">@item.Titulo</th>
+                }
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Categorias)
+            {
+                <tr class="table-info">
+                    <td class="sticky-col first-col">@item.Nome</td>
+                    <td colspan="13"></td>
+                </tr>
+
+                @foreach (var ctgFilho in item.CategoriasFilhas)
+                {
+                    <tr>
+                        <td class="sticky-col first-col align-middle">
+                            <span class="text-nowrap">&nbsp;&nbsp;&nbsp;&nbsp;@ctgFilho.Nome</span>
+                        </td>
+
+                        @foreach (var somatorioFilho in ctgFilho.Somatorios)
+                        {
+                                var corValorPlanejadoFilho = ViewBag.Theme == "dark"
+                                    ? somatorioFilho.ValorPrevisto > 0 ? "text-info" : "text-warning"
+                                    : somatorioFilho.ValorPrevisto > 0 ? "text-primary" : "text-danger";
+                                var corValorRealizadoFilho = ViewBag.Theme == "dark"
+                                    ? somatorioFilho.ValorRealizado > 0 ? "text-info" : "text-warning"
+                                    : somatorioFilho.ValorRealizado > 0 ? "text-primary" : "text-danger";
+
+                                <td class="text-end align-top">
+                                <span class="text-nowrap @corValorPlanejadoFilho">@somatorioFilho.ValorPrevisto?.ToString("c")</span>
+                                <br />
+                                <span class="text-nowrap @corValorRealizadoFilho">@somatorioFilho.ValorRealizado?.ToString("c")</span>
+                            </td>
+                        }
+                    </tr>
+                }
+
+                <tr class="table-warning">
+                    <td class="sticky-col first-col align-middle">&nbsp;&nbsp;&nbsp;&nbsp;Total da categoria</td>
+                    @foreach (var ctgPai in item.Somatorios)
+                    {
+                        var corTextoPrevisto = @ctgPai.ValorPrevisto > 0 ? "text-primary" : "text-danger";
+                        var corTextoRealizado = @ctgPai.ValorRealizado > 0 ? "text-primary" : "text-danger";
+
+                        <td class="text-end">
+                            <span class="text-nowrap @corTextoPrevisto">@ctgPai.ValorPrevisto?.ToString("c")</span>
+                            <span class="text-nowrap @corTextoRealizado">@ctgPai.ValorRealizado?.ToString("c")</span>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr class="table-secondary">
+                <td class="sticky-col first-col align-middle">Total geral</td>
+                @foreach (var somatorio in Model.Somatorios)
+                {
+                    var corTextoPrevisto = @somatorio.ValorPrevisto > 0 ? "text-primary" : "text-danger";
+                    var corTextoRealizado = @somatorio.ValorRealizado > 0 ? "text-primary" : "text-danger";
+
+                    <td class="text-end">
+                        <span class="text-nowrap @corTextoPrevisto">
+                            @somatorio.ValorPrevisto?.ToString("c")
+                        </span>
+                        <span class="text-nowrap @corTextoRealizado">
+                            @somatorio.ValorRealizado?.ToString("c")
+                        </span>
+                    </td>
+                }
+            </tr>
+        </tfoot>
+    </table>
+</div>

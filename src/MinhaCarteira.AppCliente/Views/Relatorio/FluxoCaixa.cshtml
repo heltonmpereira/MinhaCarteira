@@ -1,0 +1,44 @@
+﻿@using MinhaCarteira.AppCliente.ViewModel.Relatorio.FluxoCaixa
+@model FluxoCaixaViewModel
+
+@section Css
+{
+    <link rel="stylesheet" href="~/lib/bootstrap-table/bootstrap-table.css">
+    <link rel="stylesheet" href="~/lib/bootstrap-table/extensions/sticky-header/bootstrap-table-sticky-header.css">
+    <link rel="stylesheet" href="~/lib/bootstrap-table/extensions/fixed-columns/bootstrap-table-fixed-columns.css">
+}
+@section Scripts {
+    @{
+        <script asp-append-version="true" nws-csp-add-nonce="true" src="~/lib/printthis/lib/jquery.printthis.js"></script>
+        <script asp-append-version="true" nws-csp-add-nonce="true" src="~/lib/bootstrap-table/bootstrap-table.js"></script>
+        <script asp-append-version="true" nws-csp-add-nonce="true" src="~/lib/bootstrap-table/extensions/sticky-header/bootstrap-table-sticky-header.js"></script>
+        <script asp-append-version="true" nws-csp-add-nonce="true" src="~/lib/bootstrap-table/extensions/fixed-columns/bootstrap-table-fixed-columns.js"></script>
+        <script nws-csp-add-nonce="true" type="text/javascript">
+
+        </script>
+    }
+}
+
+<nav class="navbar navbar-expand-sm navbar-@ViewBag.Theme sticky-top px-2 m-0">
+    <h4 class="px-3">Fluxo de Caixa</h4>
+    <form asp-action="FluxoCaixa" method="post" class="col-6">
+        <div class="row">
+            <div class="col-5">
+                <input asp-for="Ano" class="form-control" placeholder="Ano" autofocus>
+            </div>
+            <div class="col">
+                <input asp-accessando-como type="submit" value="Processar" class="btn @(ViewBag.ClasseBotao)primary" />
+
+                @if (Model != null && Model.Categorias != null && Model.Categorias.Any())
+                {
+                    <a id="btnImprimir" class="btn @(ViewBag.ClasseBotao)secondary float-end">Imprimir</a>
+                }
+            </div>
+        </div>
+    </form>
+</nav>
+
+@if (Model != null && Model.Categorias != null && Model.Categorias.Any())
+{
+    @Html.DisplayFor(model => Model)
+}

@@ -1,0 +1,42 @@
+﻿@using MinhaCarteira.AppCliente.ViewModel
+@model Tuple<IList<ContaBancariaViewModel>, string>
+
+@if (Model != null && Model.Item1.Any())
+{
+    <div class="row mt-4 justify-content-center">
+        @foreach (var item in Model.Item1)
+        {
+        var corFundo = item.InstituicaoFinanceira.CorFundo ?? "bg-gradient-info";
+        var fundo = corFundo.Replace("bg-gradient-", "");
+
+        <div class="col-sm-6 col-lg-4 col-xl-3" title="@item.Nome">
+            <div class="info-box @corFundo">
+                <div class="info-box-icon">
+                    @if (string.IsNullOrEmpty(item.InstituicaoFinanceira?.Icone?.Conteudo))
+                    {
+                        <i class="fa fa-box"></i>
+                    }
+                    else
+                    {
+                        <img src="data:@item.InstituicaoFinanceira.Icone.MimeType;base64,@item.InstituicaoFinanceira.Icone.Conteudo"
+                             alt="Icone para a instituição financeira" class="img-fluid"
+                             asp-append-version="true" />
+                    }
+                </div>
+                <div class="info-box-content">
+                    <p class="text-truncate info-box-content mw175px">@item.Nome</p>
+                    <h5 class="info-box-number">@item.ValorSaldoAtual.ToString("c")</h5>
+
+                    <div class="progress">
+                        <div class="progress-bar w100pct"></div>
+                    </div>
+
+                    <span class="progress-description">
+                        <a class="btn btn-@fundo" target="_blank" asp-controller="MovimentoBancario" asp-action="Index" asp-route-id="@item.Id">Extrato bancário</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+}

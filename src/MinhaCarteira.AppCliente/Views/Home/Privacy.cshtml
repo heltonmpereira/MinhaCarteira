@@ -1,0 +1,36 @@
+﻿@using Microsoft.Extensions.Configuration
+@using System.Security.Claims
+@inject IConfiguration Configuration
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment hostingEnv
+
+@{
+    var urlApi = Configuration["BaseUrlApi"];
+    var routePwa = Configuration["BaseRoutePwa"];
+    ViewData["Title"] = "Privacy Policy";
+}
+
+<div class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>@ViewData["Title"]</h1>
+
+    <p>Use this page to detail your site's privacy policy.</p>
+
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Url Base API</dt>
+        <dd class="col-sm-10">@urlApi</dd>
+
+        <dt class="col-sm-2">Url Base PWA</dt>
+        <dd class="col-sm-10">@routePwa</dd>
+
+        <dt class="col-sm-2">Ambiente de execução</dt>
+        <dd class="col-sm-10">@hostingEnv.EnvironmentName</dd>
+
+        <dt class="col-sm-2">Roles</dt>
+        <dd>
+            @foreach (var role in User.Claims.Where(w => w.Type == ClaimTypes.Role))
+            {
+                <span>@role.Value</span>
+            }
+        </dd>
+    </dl>
+</div>

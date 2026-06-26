@@ -1,0 +1,15 @@
+﻿@using MinhaCarteira.AppCliente.Models
+@model Tuple<TipoMovimento, decimal>
+
+@{
+    var corPrimariaPositiva = ViewBag.Theme == "dark" ? "text-info" : "text-primary";
+    var corPrimariaNegativa = ViewBag.Theme == "dark" ? "text-warning" : "text-danger";
+
+    var corFont = Model.Item1 == TipoMovimento.Debito ? corPrimariaNegativa : corPrimariaPositiva;
+    if (Model.Item2 == 0)
+        corFont = "text-secondary";
+}
+
+<span class="text-nowrap @corFont">
+    @Model.Item2.ToString("c")
+</span>

@@ -1,0 +1,162 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MinhaCarteira.AppCliente.Helper
+@using MinhaCarteira.AppCliente.Models
+@using MinhaCarteira.AppCliente.ViewModel.Base;
+@using MinhaCarteira.AppCliente.Models.Interface;
+@using MinhaCarteira.AppCliente.ViewModel;
+@model ListaBaseViewModel<AgendamentoParcelaViewModel>
+
+@{
+    var mesAnoSelecionado = ViewBag.MesAnoSelecionado as string ?? DateTime.Now.ToString("yyyyMM");
+    var dataInicial = DateTime.ParseExact(mesAnoSelecionado + "01", "yyyyMMdd", null);
+    var isMobile = ((BrowserViewModel)ViewBag.BrowserInfo).IsMobile;
+    var data = dataInicial.AddMonths(isMobile ? -2 : -6);
+    var totalItens = isMobile ? 5 : 13;
+
+    var meses = new List<(string MesAno, string NomeMes, int Ano)>();
+    for (var i = 0; i < totalItens; i++)
+    {
+        var mesAtual = data.AddMonths(i);
+        meses.Add((mesAtual.ToString("yyyyMM"), mesAtual.ToString("MMM"), mesAtual.Year));
+    }
+}
+
+@section ItensCabecalho
+{
+    <li class="nav-item pl-3">
+        <a role="button"
+           href="#"
+           id="btnConciliarParcelasMonitor"
+           class='nav-link bg-info text-nowrap'
+           title="Sincronizar movimentos e agendamentos">
+            <i class='d-inline fa fa-link'></i>
+            <span id="txtBotaoConciliar" class="d-inline">Conciliar</span>
+        </a>
+    </li>
+}
+
+@{
+    ViewData["Title"] = "Agendamento";
+    ViewData["Icone"] = "<i class='fa fa-calendar-day fa-lg'></i>";
+    ViewData["LinkNovo"] = Url.Action("Incluir");
+
+    var filtro = Model?.FiltroViewModel;
+}
+
+<nav class="navbar navbar-expand-sm navbar-@ViewBag.Theme bg-gradient shadow p-0 mb-3 sticky-top">
+    <a class="navbar-brand d-sm-none ps-4" href="#">
+        <span>Meses</span>
+    </a>
+
+    <div class="d-sm-none float-end">
+        <div class="d-inline-block float-end ps-2">
+            <small class="text-sm-end d-block text-truncate mw100px">
+                @meses.FirstOrDefault(m => m.MesAno == mesAnoSelecionado).NomeMes
+            </small>
+            <small class="d-inline-block float-start fs-xs">
+                @meses.FirstOrDefault(m => m.MesAno == mesAnoSelecionado).Ano
+            </small>
+        </div>
+    </div>
+
+    <button class="navbar-toggler" type="button"
+            data-bs-target="#navMeses"
+            data-bs-toggle="collapse"
+            aria-controls="navMeses"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse col-11 mx-auto p-0" id="navMeses">
+        <div class="overflow-auto mx-auto">
+            <ul class="navbar-nav">
+                @foreach (var mes in meses)
+                {
+                    var classe = mes.MesAno == mesAnoSelecionado
+                    ? "active bg-primary"
+                    : "";
+
+                    var corFont = mes.MesAno == mesAnoSelecionado
+                    ? "text-light"
+                    : ViewBag.Theme == "dark" ? "text-info" : "text-primary";
+
+                    <li class="nav-item @classe d-flex">
+                        <a class="nav-link d-flex flex-wrap align-items-center" href="#" data-month="@mes.MesAno">
+                            <div class="text-truncate text-sm-center mx-auto mw150px">
+                                <span class="text-break">@mes.NomeMes</span><br />
+                                <small>@mes.Ano</small>
+                            </div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
+
+@{
+    await Html.RenderPartialAsync("_PartialFiltro", filtro);
+}
+
+
+@if ((ViewBag.RetornoApi != null && !ViewBag.RetornoApi.BemSucedido) || Model == null || Model.Itens.TotalItemCount <= 0)
+{
+    <asp-alerta-vazio class="col-11 mx-auto mt-4 p-4 rounded-3 border shadow-sm"
+                      criterio="filtro"
+                      titulo="Agendamento"
+                      classe-botao-cadastrar="btn btn-lg @(ViewBag.ClasseBotao)info"
+                      icone-botao-cadastrar="fa-calendar-day" />
+}
+else
+{
+    var templateAgendamento = isMobile
+        ? "AgendamentoTabelaExtratoMovel"
+        : "AgendamentoTabelaExtrato";
+
+    @Html.DisplayFor(model => Model, templateAgendamento)
+
+    await Html.RenderPartialAsync("_PartialPaginacao", Model.Itens);
+}
+
+@section Scripts {
+    <script src="~/lib/dompurify/purify.min.js" asp-append-version="true"></script>
+    <script src="~/js/views/paginacao.js" asp-append-version="true"></script>
+    <script language="javascript" type="text/javascript" nws-csp-add-nonce="true">
+        const btnConciliar = document.querySelector("#btnConciliarParcelasMonitor");
+        btnConciliar.addEventListener("click", conciliarParcelasAPartirMonitores, false);
+
+        function conciliarParcelasAPartirMonitores(event) {
+            event.preventDefault();
+            $("#btnConciliarParcelasMonitor").addClass("disabled");
+            $("#txtBotaoConciliar").text('Processando...');
+
+            $.ajax({
+                data: { filtro: $("#FiltroJson").val() },
+                url: window.siteRoot + "/agendamento/conciliar-parcelas-a-partir-monitor",
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                success: function (data) {
+                    window.location.href = window.siteRoot + '/agendamento';
+                },
+                error: function (response) {
+                    if (response.status === 401 || response.status === 403)
+                        window.location.href = window.siteRoot + '/login';
+                    window.location.href = window.siteRoot + '/agendamento';
+                },
+                failure: function (response) {
+                    if (response.status === 401 || response.status === 403)
+                        window.location.href = window.siteRoot + '/login';
+                    window.location.href = window.siteRoot + '/agendamento';
+                }
+            });
+        }
+
+        $(document).on('click', '.nav-link[data-month]', function () {
+            window.location.href = window.siteRoot + '/agendamento?mesAno=' + this.dataset.month;
+        });
+    </script>
+}

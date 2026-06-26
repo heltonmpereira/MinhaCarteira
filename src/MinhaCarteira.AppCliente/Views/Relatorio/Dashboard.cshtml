@@ -1,0 +1,599 @@
+@using MinhaCarteira.AppCliente.ViewModel
+@using MinhaCarteira.AppCliente.ViewModel.Relatorio
+@using Newtonsoft.Json
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model DashboardRelatorioViewModel
+
+@{
+    ViewData["Title"] = "Dashboard de Relatórios";
+    // Serializa os dados para JSON para usar no JavaScript
+    var dadosGastosJson = Model.EvolucaoGastos != null ? JsonConvert.SerializeObject(Model.EvolucaoGastos) : "null";
+
+    // Cria a lista de meses para o dropdown
+    var meses = Enumerable.Range(1, 12).Select(m => new SelectListItem
+    {
+        Text = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m),
+        Value = m.ToString(),
+        Selected = m == Model.Mes
+    }).ToList();
+}
+
+@section Css
+{
+    <link rel="stylesheet" href="~/lib/bootstrap-table/bootstrap-table.css">
+    <style nws-csp-add-nonce="true">
+        .dashboard-row { align-items: stretch; }
+        .grafico-card-body { min-height: 600px; padding: 1rem; }
+        .chart-wrapper { height: 500px; }
+        
+        /* Light theme variables */
+        :root {
+            --heatmap-bg: var(--bs-gray-200);
+            --heatmap-text: var(--bs-body-color);
+            --heatmap-muted: var(--bs-gray-600);
+            --heatmap-day-empty: var(--bs-gray-100);
+            --heatmap-tooltip-bg: var(--bs-gray-800);
+            --heatmap-tooltip-text: var(--bs-white);
+        }
+
+        /* Dark theme variables */
+        [data-bs-theme="dark"] {
+            --heatmap-bg: var(--bs-gray-900);
+            --heatmap-text: var(--bs-white);
+            --heatmap-muted: var(--bs-gray-400);
+            --heatmap-day-empty: var(--bs-gray-800);
+            --heatmap-tooltip-bg: var(--bs-gray-700);
+            --heatmap-tooltip-text: var(--bs-white);
+        }
+        
+        .heatmap-gastos-container { 
+            padding: 16px; 
+            background-color: var(--heatmap-bg); 
+            color: var(--heatmap-text); 
+            border-radius: 8px; 
+        }
+        .heatmap-gastos-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 16px; 
+        }
+        .heatmap-gastos-title { 
+            font-size: 1rem; 
+            font-weight: bold; 
+            color: var(--heatmap-muted); 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+        }
+        .heatmap-gastos-total { 
+            font-size: 3rem; 
+            font-weight: bold; 
+        }
+        .heatmap-gastos-media { 
+            font-size: 1rem; 
+            color: var(--heatmap-muted); 
+            margin-top: 8px; 
+        }
+        .heatmap-gastos-ver-mais { 
+            color: #10b981; 
+            cursor: pointer; 
+        }
+        .heatmap-gastos-table { 
+            border-collapse: separate; 
+            border-spacing: 8px; 
+            width: 100%; 
+            table-layout: fixed; 
+        }
+        .heatmap-gastos-day-label { 
+            width: 24px; 
+            text-align: center; 
+            font-weight: 500; 
+            color: var(--heatmap-muted); 
+        }
+        .heatmap-gastos-day { 
+            width: 100%; 
+            height: 32px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            position: relative;
+            background-color: var(--bs-gray-200);
+            font-weight: 600;
+        }
+        [data-bs-theme="dark"] .heatmap-gastos-day {
+            background-color: var(--bs-gray-800);
+        }
+        .heatmap-gastos-day:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+        }
+        .heatmap-gastos-day.empty { 
+            background-color: transparent; 
+            cursor: default; 
+        }
+        .heatmap-gastos-legend { 
+            display: flex; 
+            gap: 4px; 
+            align-items: center; 
+            margin-top: 24px; 
+            justify-content: space-between; 
+        }
+        .heatmap-gastos-legend-colors { 
+            display: flex; 
+            gap: 4px; 
+        }
+        .heatmap-gastos-legend-color { 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 4px; 
+        }
+        .heatmap-gastos-legend-less { 
+            color: var(--heatmap-muted); 
+        }
+        .heatmap-gastos-legend-more { 
+            color: var(--heatmap-muted); 
+        }
+        .heatmap-gastos-tooltip {
+            position: absolute;
+            background: var(--heatmap-tooltip-bg);
+            color: var(--heatmap-tooltip-text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            z-index: 1000;
+            white-space: nowrap;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            display: none;
+        }
+        .heatmap-gastos-day:hover .heatmap-gastos-tooltip { 
+            display: block; 
+        }
+        .heatmap-gastos-footer { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 24px; 
+        }
+        .heatmap-gastos-footer-label { 
+            color: var(--heatmap-muted); 
+        }
+        .heatmap-gastos-footer-value { 
+            font-size: 1.25rem; 
+            font-weight: bold; 
+            color: var(--bs-danger); 
+        }
+    </style>
+}
+
+<nav class="navbar navbar-expand-sm navbar-@ViewBag.Theme sticky-top px-2 m-0">
+    <h4 class="px-3 mb-2 mb-sm-0">Dashboard de Relatórios</h4>
+    <form id="filtroForm" class="col-12 col-sm-10" asp-action="Dashboard" method="get">
+        <div class="row g-2">
+            <div class="col-6 col-sm-3">
+                <input name="ano" class="form-control" value="@Model.Ano" placeholder="Ano" autofocus>
+            </div>
+            <div class="col-6 col-sm-3">
+                <select name="mes" class="form-select" asp-items="meses">
+                </select>
+            </div>
+            <div class="col-12 col-sm-4">
+                <select name="contaBancariaId" class="form-select" asp-items="@(new SelectList(Model.ContasBancarias, nameof(ContaBancariaViewModel.Id), nameof(ContaBancariaViewModel.Nome), Model.ContaBancariaId))">
+                    <option value="">Todas as contas</option>
+                </select>
+            </div>
+            <div class="col-12 col-sm-2">
+                <button type="submit" class="btn @(ViewBag.ClasseBotao)primary w-100">Atualizar</button>
+            </div>
+        </div>
+    </form>
+</nav>
+
+<div class="container-fluid mt-4">
+    <div class="row dashboard-row">
+        <div class="col-12 col-md-8 mb-4 order-1 order-md-2">
+            <div class="card h-100">
+                <div class="card-header">
+                    Comparativo de Gastos Acumulados (Mês Atual vs Mês Anterior)
+                </div>
+                <div class="card-body grafico-card-body">
+                    <div class="chart-wrapper">
+                        <canvas id="graficoGastos"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-md-4 mb-4 order-2 order-md-1">
+            <div class="card h-100">
+                <div class="card-header">
+                    Mapa de Calor - Gastos
+                </div>
+                <div class="card-body">
+                    <div id="heatmapGastos"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script nws-csp-add-nonce="true" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script nws-csp-add-nonce="true">
+        const verticalLinePlugin = {
+            id: 'verticalLine',
+            beforeDraw: function(chart, args, pluginOptions) {
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+
+                if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
+                    const activePoint = chart.tooltip._active[0];
+                    const x = activePoint.element.x;
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(x, yAxis.top);
+                    ctx.lineTo(x, yAxis.bottom);
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        };
+
+        Chart.register(verticalLinePlugin);
+
+        let dadosGastosGlobal;
+        $(document).ready(function() {
+            dadosGastosGlobal = @Html.Raw(dadosGastosJson);
+            
+            if (dadosGastosGlobal) {
+                criarHeatmapGastos(dadosGastosGlobal);
+                criarGraficoGastos(dadosGastosGlobal);
+            }
+            
+            // Listen for theme changes
+            document.addEventListener('themeChanged', function() {
+                if (dadosGastosGlobal) {
+                    criarHeatmapGastos(dadosGastosGlobal);
+                }
+            });
+        });
+
+        // Helper function to get the current theme
+        function isDarkTheme() {
+            return document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        }
+
+        // Helper function to get color based on percentage (0-1) for expenses (transparent to red)
+        function getColorGastos(porcentagem) {
+            if (porcentagem === 0) {
+                return 'transparent';
+            }
+            const r = 248;
+            const g = 113;
+            const b = 113;
+            return `rgba(${r}, ${g}, ${b}, ${porcentagem})`;
+        }
+
+        function criarHeatmapGastos(dados) {
+            const container = document.getElementById('heatmapGastos');
+            if (!container) return;
+            if (!dados || !dados.Itens || dados.Itens.length === 0) {
+                const p = document.createElement('p');
+                p.className = 'text-muted';
+                p.textContent = 'Sem dados para exibir';
+                container.appendChild(p);
+                return;
+            }
+
+            // Calculate total, average, and highest expense
+            const valores = dados.Itens.map(item => item.GastosMesAtual);
+            const total = valores.reduce((a, b) => a + b, 0);
+            const mediaDiaria = total / valores.length;
+            let maiorGasto = 0;
+            let diaMaiorGasto = 0;
+            dados.Itens.forEach(item => {
+                if (item.GastosMesAtual > maiorGasto) {
+                    maiorGasto = item.GastosMesAtual;
+                    diaMaiorGasto = item.Dia;
+                }
+            });
+
+            const maxVal = Math.max(...valores);
+
+            // Days of the week in Portuguese (short)
+            const diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+
+            // Organize data: create 7 rows (days of week) and up to 5 columns (weeks)
+            const dias = Array(7).fill(null).map(() => Array(5).fill(null)); // [diaSemana][semana]
+
+            dados.Itens.forEach(item => {
+                const data = new Date(item.Data);
+                const diaSemana = data.getDay(); // 0 = Domingo, 6 = Sábado
+                const diaMes = data.getDate();
+                
+                // Calculate week index (0-4)
+                const primeiroDiaMes = new Date(data.getFullYear(), data.getMonth(), 1);
+                const diaSemanaPrimeiroDia = primeiroDiaMes.getDay();
+                const semanaIndex = Math.floor((diaMes + diaSemanaPrimeiroDia - 1) / 7);
+
+                if (semanaIndex >= 0 && semanaIndex < 5) {
+                    dias[diaSemana][semanaIndex] = {
+                        dia: diaMes,
+                        valor: item.GastosMesAtual
+                    };
+                }
+            });
+
+            // Clear container
+            container.innerHTML = '';
+
+            // Create main container
+            const mainContainer = document.createElement('div');
+            mainContainer.className = 'heatmap-gastos-container';
+            container.appendChild(mainContainer);
+
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'heatmap-gastos-header';
+            mainContainer.appendChild(header);
+
+            const headerLeft = document.createElement('div');
+            header.appendChild(headerLeft);
+
+            const title = document.createElement('div');
+            title.className = 'heatmap-gastos-title';
+            title.textContent = 'Mapa de calor';
+            headerLeft.appendChild(title);
+
+            const totalDiv = document.createElement('div');
+            totalDiv.className = 'heatmap-gastos-total';
+            totalDiv.textContent = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            headerLeft.appendChild(totalDiv);
+
+            const mediaDiv = document.createElement('div');
+            mediaDiv.className = 'heatmap-gastos-media';
+            mediaDiv.textContent = `Média diária: ${mediaDiaria.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`;
+            headerLeft.appendChild(mediaDiv);
+
+            const verMais = document.createElement('div');
+            verMais.className = 'heatmap-gastos-ver-mais';
+            // verMais.textContent = 'ver mais →';
+            header.appendChild(verMais);
+
+            // Create table
+            const table = document.createElement('table');
+            table.className = 'heatmap-gastos-table';
+            mainContainer.appendChild(table);
+
+            // Generate rows for each day of the week
+            diasSemana.forEach((diaLabel, diaSemana) => {
+                const tr = document.createElement('tr');
+                table.appendChild(tr);
+
+                const tdLabel = document.createElement('td');
+                tdLabel.className = 'heatmap-gastos-day-label';
+                tdLabel.textContent = diaLabel;
+                tr.appendChild(tdLabel);
+
+                for (let semanaIndex = 0; semanaIndex < 5; semanaIndex++) {
+                    const dia = dias[diaSemana][semanaIndex];
+                    const td = document.createElement('td');
+                    tr.appendChild(td);
+
+                    if (dia) {
+                        const valor = dia.valor;
+                        const porcentagem = maxVal > 0 ? valor / maxVal : 0;
+                        const cor = getColorGastos(porcentagem);
+                        const textoCor = porcentagem > 0.3 ? 'white' : (isDarkTheme() ? '#9ca3af' : '#374151');
+
+                        const dayDiv = document.createElement('div');
+                        dayDiv.className = 'heatmap-gastos-day';
+                        dayDiv.style.backgroundColor = cor;
+                        dayDiv.style.color = textoCor;
+                        dayDiv.textContent = dia.dia;
+                        td.appendChild(dayDiv);
+
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'heatmap-gastos-tooltip';
+                        tooltip.innerHTML = `Dia ${dia.dia}<br>Gastos: ${valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`;
+                        dayDiv.appendChild(tooltip);
+                    } else {
+                        const dayDiv = document.createElement('div');
+                        dayDiv.className = 'heatmap-gastos-day empty';
+                        td.appendChild(dayDiv);
+                    }
+                }
+            });
+
+            // Add legend
+            const legend = document.createElement('div');
+            legend.className = 'heatmap-gastos-legend';
+            mainContainer.appendChild(legend);
+
+            const menosSpan = document.createElement('span');
+            menosSpan.className = 'heatmap-gastos-legend-less';
+            menosSpan.textContent = 'Menos';
+            legend.appendChild(menosSpan);
+
+            const legendColorsDiv = document.createElement('div');
+            legendColorsDiv.className = 'heatmap-gastos-legend-colors';
+            legend.appendChild(legendColorsDiv);
+
+            const steps = 4;
+            for (let i = 0; i <= steps; i++) {
+                const porcentagem = i / steps;
+                const legendColorDiv = document.createElement('div');
+                legendColorDiv.className = 'heatmap-gastos-legend-color';
+                legendColorDiv.style.backgroundColor = getColorGastos(porcentagem);
+                legendColorsDiv.appendChild(legendColorDiv);
+            }
+
+            const maisSpan = document.createElement('span');
+            maisSpan.className = 'heatmap-gastos-legend-more';
+            maisSpan.textContent = 'Mais';
+            legend.appendChild(maisSpan);
+
+            // Add footer with highest expense
+            const footer = document.createElement('div');
+            footer.className = 'heatmap-gastos-footer';
+            mainContainer.appendChild(footer);
+
+            const maiorGastoLabel = document.createElement('span');
+            maiorGastoLabel.className = 'heatmap-gastos-footer-label';
+            maiorGastoLabel.textContent = 'Maior gasto';
+            footer.appendChild(maiorGastoLabel);
+
+            const maiorGastoValue = document.createElement('span');
+            maiorGastoValue.className = 'heatmap-gastos-footer-value';
+            maiorGastoValue.textContent = `${maiorGasto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} dia ${diaMaiorGasto}`;
+            footer.appendChild(maiorGastoValue);
+        }
+
+        function criarGraficoGastos(dados) {
+            const ctx = document.getElementById('graficoGastos').getContext('2d');
+            const hoje = new Date();
+            
+            const labels = dados.Itens.map(item => item.Dia);
+            let mesAtual = dados.Itens.map(item => item.GastosAcumuladosMesAtual);
+            const mesAnterior = dados.Itens.map(item => item.GastosAcumuladosMesAnterior);
+            
+            // Get gastos acumulados for ritmo de gastos
+            let diaAtualGastosAcumulados = null;
+            let diaAnteriorGastosAcumulados = null;
+            
+            // Check if we're viewing current month
+            if (dados.Ano === hoje.getFullYear() && dados.Mes === hoje.getMonth() + 1) {
+                const diaHoje = hoje.getDate();
+                mesAtual = mesAtual.map((valor, indice) => {
+                    const diaItem = labels[indice];
+                    if (diaItem === diaHoje) {
+                        diaAtualGastosAcumulados = dados.Itens[indice].GastosAcumuladosMesAtual;
+                        diaAnteriorGastosAcumulados = dados.Itens[indice].GastosAcumuladosMesAnterior;
+                    }
+                    return diaItem > diaHoje ? null : valor;
+                });
+            } else {
+                // For past months, find the latest item that has both values
+                if (dados.Itens.length > 0) {
+                    // First sort items by Dia descending
+                    const sortedItems = [...dados.Itens].sort((a, b) => b.Dia - a.Dia);
+                    // Find first item that has both values
+                    for (let item of sortedItems) {
+                        if (item.GastosAcumuladosMesAtual !== null && item.GastosAcumuladosMesAtual !== undefined &&
+                            item.GastosAcumuladosMesAnterior !== null && item.GastosAcumuladosMesAnterior !== undefined) {
+                            diaAtualGastosAcumulados = item.GastosAcumuladosMesAtual;
+                            diaAnteriorGastosAcumulados = item.GastosAcumuladosMesAnterior;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: dados.NomeMesAtual,
+                            data: mesAtual,
+                            borderColor: 'rgb(16, 185, 129)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            spanGaps: false
+                        },
+                        {
+                            label: dados.NomeMesAnterior,
+                            data: mesAnterior,
+                            borderColor: 'rgb(107, 114, 128)',
+                            backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const valor = context.raw;
+                                    if (valor === null) {
+                                        return null;
+                                    }
+                                    return context.dataset.label + ': ' + valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                }
+                            }
+                        },
+                        crosshair: false
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Add Ritmo de Gastos
+            const graficoCardBody = document.querySelector('#graficoGastos').closest('.card-body');
+            if (graficoCardBody && diaAtualGastosAcumulados !== null && diaAnteriorGastosAcumulados !== null) {
+                // Remove existing ritmo section if present
+                const existingRitmo = document.getElementById('ritmoGastos');
+                if (existingRitmo) {
+                    existingRitmo.remove();
+                }
+                
+                const ritmoDiv = document.createElement('div');
+                ritmoDiv.id = 'ritmoGastos';
+                ritmoDiv.className = 'mt-3 p-3 border rounded';
+                
+                const title = document.createElement('h6');
+                title.className = 'mb-2';
+                title.textContent = 'Ritmo de gastos';
+                
+                const difference = diaAtualGastosAcumulados - diaAnteriorGastosAcumulados;
+                const percentage = diaAnteriorGastosAcumulados !== 0 ? ((difference / diaAnteriorGastosAcumulados) * 100) : 0;
+                const isHigher = difference > 0;
+                
+                const info = document.createElement('div');
+                info.className = isHigher ? 'text-danger' : 'text-success';
+                info.innerHTML = `
+                    <strong>Diferença:</strong> ${difference.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}<br>
+                    <strong>Porcentagem:</strong> ${percentage.toFixed(2)}%
+                `;
+                
+                ritmoDiv.appendChild(title);
+                ritmoDiv.appendChild(info);
+                
+                // Insert after the chart canvas
+                graficoCardBody.appendChild(ritmoDiv);
+            }
+        }
+    </script>
+}

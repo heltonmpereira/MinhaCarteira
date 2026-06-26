@@ -1,0 +1,67 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.ContaBancariaViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" class="form-control" asp-for="Id" />
+<input type="hidden" class="form-control" asp-for="ProprietarioId" />
+<input type="hidden" class="form-control" asp-for="Ordem" />
+
+<div class="row">
+    <div class="mb-3 col-md-5">
+        <label asp-for="Nome" class="form-label"></label>
+        <input asp-for="Nome" class="form-control" autofocus />
+        <span asp-validation-for="Nome" class="text-danger"></span>
+    </div>
+    <div class="mb-3 col-md-3">
+        <label asp-for="Agencia" class="form-label"></label>
+        <input asp-for="Agencia" class="form-control" />
+        <span asp-validation-for="Agencia" class="text-danger"></span>
+    </div>
+    <div class="mb-3 col-md-4">
+        <label asp-for="Conta" class="form-label"></label>
+        <input asp-for="Conta" class="form-control" />
+        <span asp-validation-for="Conta" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="mb-3 col-md-5">
+        <label asp-for="InstituicaoFinanceiraId" for="txtInstituicao" class="form-label"></label>
+        <input type="hidden" asp-for="InstituicaoFinanceiraId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtInstituicao" asp-for="InstituicaoFinanceiraNome" class="form-control" />
+        </div>
+        <span asp-validation-for="InstituicaoFinanceiraId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3 col-md-3">
+        <label asp-for="DataSaldoInicial" class="form-label"></label>
+        <input type="text" asp-for="DataSaldoInicial" class="form-control date_time" />
+        <span asp-validation-for="DataSaldoInicial" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3 col-md-4">
+        <label asp-for="ValorSaldoInicial" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text" id="basic-addon1">R$</span>
+            <input asp-for="ValorSaldoInicial" class="form-control money" />
+        </div>
+        <span asp-validation-for="ValorSaldoInicial" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="mb-3 col-md-5">
+        <div class="form-check">
+            <input class="form-check-input" asp-for="ExibirNaTelaInicial">
+            <label class="form-check-label" asp-for="ExibirNaTelaInicial"></label>
+        </div>
+    </div>
+</div>
+
+<hr />
+<div class="mb-3">
+    <input asp-accessando-como type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" />
+
+    <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+</div>

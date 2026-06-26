@@ -1,0 +1,352 @@
+@using MinhaCarteira.AppCliente.ViewModel
+@using MinhaCarteira.AppCliente.ViewModel.Relatorio
+@using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldoPeriodo
+@using Newtonsoft.Json
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model EvolucaoSaldoPeriodoRelatorioViewModel
+
+@{
+    // Just serialize the report data for JavaScript
+}
+
+@section Css
+{
+    <link asp-append-version="true" rel="stylesheet" href="~/lib/bootstrap-table/bootstrap-table.css">
+    <style nws-csp-add-nonce="true">
+        @@media print {
+            .nav-tabs, .btn {
+                display: none !important;
+            }
+        }
+        .chart-container {
+            height: 400px;
+        }
+    </style>
+}
+
+@section Scripts {
+    @{
+        <script nws-csp-add-nonce="true" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script asp-append-version="true" nws-csp-add-nonce="true" src="~/lib/printthis/lib/jquery.printthis.js"></script>
+        <script asp-append-version="true" nws-csp-add-nonce="true" src="~/lib/bootstrap-table/bootstrap-table.js"></script>
+        <script nws-csp-add-nonce="true" type="text/javascript">
+                // Store the report data and dates in safe JavaScript variables
+            const relatorioData = @Html.Raw(JsonConvert.SerializeObject(Model.EvolucaoSaldoPeriodo));
+            const dataInicialFormatada = @Html.Raw(JsonConvert.SerializeObject(Model.DataInicial.ToString("dd/MM/yyyy")));
+            const dataFinalFormatada = @Html.Raw(JsonConvert.SerializeObject(Model.DataFinal.ToString("dd/MM/yyyy")));
+
+                function criarGraficoEvolucaoSaldoPeriodo(dados) {
+                    const ctx = document.getElementById('graficoEvolucaoSaldoPeriodo').getContext('2d');
+
+                    const labels = dados.Itens.map(item => new Date(item.Data).toLocaleDateString('pt-BR'));
+                    const saldoFinal = dados.Itens.map(item => item.SaldoFinal);
+
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Saldo',
+                                    data: saldoFinal,
+                                    borderColor: 'rgb(153, 102, 255)',
+                                    backgroundColor: 'rgba(153, 102, 255, 0.1)',
+                                    tension: 0.3,
+                                    fill: true
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const valor = context.raw;
+                                            return context.dataset.label + ': ' + valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                $(document).ready(function() {
+                    @if (Model.EvolucaoSaldoPeriodo != null && Model.EvolucaoSaldoPeriodo.Itens.Count > 0)
+                    {
+                                @:criarGraficoEvolucaoSaldoPeriodo(@Html.Raw(JsonConvert.SerializeObject(Model.EvolucaoSaldoPeriodo)));
+                    }
+
+                    $('#btnImprimir').on('click', function() {
+                        // Show the table tab for printing
+                        $('#tabela-tab').tab('show');
+
+                        setTimeout(() => {
+                            $('#divConteudoImpressao').printThis({
+                                importCSS: true,
+                                importStyle: true,
+                                printContainer: true,
+                                pageTitle: 'Evolução do Saldo'
+                            });
+                        }, 100);
+                    });
+
+                    $('#btnExportarCSV').on('click', function() {
+                        let csv = 'Data,Saldo Inicial,Movimentos Realizados,Movimentos Planejados,Saldo Final\n';
+                        const dados = @Html.Raw(JsonConvert.SerializeObject(Model.EvolucaoSaldoPeriodo.Itens));
+                        dados.forEach(function(item) {
+                            const data = new Date(item.Data).toLocaleDateString('pt-BR');
+                            const linha = `${data},${item.SaldoInicial},${item.MovimentosRealizados},${item.MovimentosPlanejados},${item.SaldoFinal}`;
+                            csv += linha + '\n';
+                        });
+                        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'EvolucaoSaldo.csv';
+                        link.click();
+                        window.URL.revokeObjectURL(url);
+                    });
+
+
+                    $('#btnExportarHTML').on('click', function() {
+                        // Helper function to format currency like C#
+                        function formatCurrency(value) {
+                            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+                        }
+                        // Helper function to format date as dd/MM/yyyy
+                        function formatDate(dateString) {
+                            const date = new Date(dateString);
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = date.getFullYear();
+                            return `${day}/${month}/${year}`;
+                        }
+                        
+                        // Show chart tab first
+                        $('#grafico-tab').tab('show');
+
+                        setTimeout(() => {
+                            const canvas = document.getElementById('graficoEvolucaoSaldoPeriodo');
+                            const chartImage = canvas ? canvas.toDataURL('image/png') : null;
+                            
+                            // Generate HTML only if we have data
+                            let htmlContent = '';
+                            if (relatorioData && relatorioData.Itens && relatorioData.Itens.length > 0) {
+                                // Build chart HTML if we have it
+                                let chartHtml = '';
+                                if (chartImage) {
+                                    chartHtml = `
+                                    <h2 style="color: #1e293b; margin-bottom: 16px; margin-top: 32px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Gráfico de Evolução do Saldo</h2>
+                                    <img src="${chartImage}" style="width: 100%; max-width: 100%; border-radius: 12px; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); margin-bottom: 24px;" />
+                                    `;
+                                }
+                                
+                                // Build table rows
+                                let tableRows = '';
+                                for (const item of relatorioData.Itens) {
+                                    const movRealizadosClass = item.MovimentosRealizados >= 0 ? 'text-success' : 'text-danger';
+                                    const movPlanejadosClass = item.MovimentosPlanejados >= 0 ? 'text-success' : 'text-danger';
+                                    
+                                    tableRows += `
+                                        <tr>
+                                            <td>${formatDate(item.Data)}</td>
+                                            <td>${formatCurrency(item.SaldoInicial)}</td>
+                                            <td class="${movRealizadosClass}">${formatCurrency(item.MovimentosRealizados)}</td>
+                                            <td class="${movPlanejadosClass}">${formatCurrency(item.MovimentosPlanejados)}</td>
+                                            <td>${formatCurrency(item.SaldoFinal)}</td>
+                                        </tr>`;
+                                }
+                                
+                                htmlContent = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolução do Saldo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif; }
+        body { background-color: #f8fafc; padding: 24px; }
+        .container { max-width: 1200px; margin: 0 auto; background-color: white; border-radius: 16px; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); padding: 24px; }
+        h1 { color: #1e293b; margin-bottom: 24px; border-bottom: 2px solid #4f46e5; padding-bottom: 12px; }
+        .summary-card { background-color: #eef2ff; border-radius: 12px; padding: 16px; margin-bottom: 24px; border-left:4px solid #4f46e5; }
+        .summary-card p { color: #475569; font-size: 1.1rem; font-weight: 500; }
+        .summary-card strong { color: #1e293b; }
+        table { width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); }
+        thead { background: linear-gradient(to right, #4f46e5, #6366f1); }
+        th { color: white; padding: 16px; font-weight: 600; text-align: left; }
+        tbody tr { transition: background-color 0.2s ease; }
+        tbody tr:hover { background-color: #f8fafc; }
+        td { padding:16px; border-bottom: 1px solid #e2e8f0; color: #1e293b; }
+        .text-success { color: #10b981; font-weight: 500; }
+        .text-danger { color: #ef4444; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Evolução do Saldo - ${dataInicialFormatada} a ${dataFinalFormatada}</h1>
+        <div class="summary-card">
+            <p><strong>Saldo Inicial Total:</strong> ${formatCurrency(relatorioData.SaldoInicialTotal)}</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Saldo Inicial</th>
+                    <th>Movimentos Realizados</th>
+                    <th>Movimentos Planejados</th>
+                    <th>Saldo Final</th>
+                </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+        </table>
+        ${chartHtml}
+    </div>
+</body>
+</html>`;
+                            }
+                            
+                            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+                            const url = window.URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = 'EvolucaoSaldo.html';
+                            link.click();
+                            window.URL.revokeObjectURL(url);
+                        }, 200);
+                    });
+            });
+        </script>
+    }
+}
+
+<nav class="navbar navbar-expand-sm navbar-@ViewBag.Theme sticky-top px-2 m-0">
+    <h4 class="px-3 mb-2 mb-sm-0">Evolução do Saldo (Período Personalizado)</h4>
+    <form asp-action="EvolucaoSaldoPeriodo" method="get" class="col-12 col-sm-10">
+        <div class="row g-2">
+            <div class="col-6 col-sm-3">
+                <label asp-for="DataInicial" class="form-label">Data Inicial</label>
+                <input asp-for="DataInicial" type="date" class="form-control">
+            </div>
+            <div class="col-6 col-sm-3">
+                <label asp-for="DataFinal" class="form-label">Data Final</label>
+                <input asp-for="DataFinal" type="date" class="form-control">
+            </div>
+            <div class="col-12 col-sm-3">
+                <label asp-for="ContaBancariaId" class="form-label">Conta Bancária</label>
+                <select asp-for="ContaBancariaId" asp-items="new SelectList(Model.ContasBancarias, nameof(ContaBancariaViewModel.Id), nameof(ContaBancariaViewModel.Nome))" class="form-select">
+                    <option value="">Todas as Contas</option>
+                </select>
+            </div>
+            <div class="col-12 col-sm-3 pt-0 pt-sm-4">
+                <input type="submit" value="Processar" class="btn @(ViewBag.ClasseBotao)primary w-100" />
+            </div>
+        </div>
+    </form>
+</nav>
+
+<div id="divConteudoImpressao" class="container-fluid p-3">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="grafico-tab" data-bs-toggle="tab" data-bs-target="#grafico-tab-pane" type="button" role="tab" aria-controls="grafico-tab-pane" aria-selected="true">Gráfico</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tabela-tab" data-bs-toggle="tab" data-bs-target="#tabela-tab-pane" type="button" role="tab" aria-controls="tabela-tab-pane" aria-selected="false">Tabela</button>
+                            </li>
+                        </ul>
+
+                        @if (Model.EvolucaoSaldoPeriodo != null && Model.EvolucaoSaldoPeriodo.Itens.Count > 0)
+                        {
+                            <div class="btn-group" role="group">
+                                <button type="button" id="btnImprimir" class="btn @(ViewBag.ClasseBotao)secondary">
+                                    <i class="fas fa-print me-2"></i>Imprimir
+                                </button>
+                                <button type="button" id="btnExportarCSV" class="btn @(ViewBag.ClasseBotao)info">
+                                    <i class="fas fa-file-csv me-2"></i>CSV
+                                </button>
+                                <button type="button" id="btnExportarHTML" class="btn @(ViewBag.ClasseBotao)success">
+                                    <i class="fas fa-file-code me-2"></i>HTML
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active pt-3" id="grafico-tab-pane" role="tabpanel" aria-labelledby="grafico-tab">
+                            <h5 class="card-title">Evolução do Saldo no Período</h5>
+                            <div class="chart-container">
+                                <canvas id="graficoEvolucaoSaldoPeriodo"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade pt-3" id="tabela-tab-pane" role="tabpanel" aria-labelledby="tabela-tab">
+                            <h5 class="card-title">Saldos Diários</h5>
+                            <div class="table-responsive">
+                                <table id="tableEvolucaoSaldo" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Saldo Inicial</th>
+                                            <th>Movimentos Realizados</th>
+                                            <th>Movimentos Planejados</th>
+                                            <th>Saldo Final</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.EvolucaoSaldoPeriodo != null && Model.EvolucaoSaldoPeriodo.Itens.Count > 0)
+                                        {
+                                            @foreach (var item in Model.EvolucaoSaldoPeriodo.Itens)
+                                            {
+                                                <tr>
+                                                    <td>@item.Data.ToString("dd/MM/yyyy")</td>
+                                                    <td>@item.SaldoInicial.ToString("C2")</td>
+                                                    <td class="@(item.MovimentosRealizados >= 0 ? "text-success" : "text-danger")">@item.MovimentosRealizados.ToString("C2")</td>
+                                                    <td class="@(item.MovimentosPlanejados >= 0 ? "text-success" : "text-danger")">@item.MovimentosPlanejados.ToString("C2")</td>
+                                                    <td>@item.SaldoFinal.ToString("C2")</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.EvolucaoSaldoPeriodo != null)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Resumo do Período</h5>
+                        <p><strong>Saldo Inicial Total:</strong> @Model.EvolucaoSaldoPeriodo.SaldoInicialTotal.ToString("C2")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

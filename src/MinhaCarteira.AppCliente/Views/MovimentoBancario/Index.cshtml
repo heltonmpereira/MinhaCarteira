@@ -1,0 +1,176 @@
+﻿@using MinhaCarteira.AppCliente.Models
+@using MinhaCarteira.AppCliente.Models.Interface;
+@using MinhaCarteira.AppCliente.ViewModel;
+@model ListaMovimentoBancarioViewModel;
+
+@{
+    var classeBotaoTransferir = Model.Contas.Count > 1
+        ? "bg-success btn-success"
+        : "btn-secondary disabled";
+
+    var idContaBancaria = Model?.ContaSelecionada?.Id ?? Guid.Empty;
+    var classDesabilitado = idContaBancaria == Guid.Empty ? "disabled" : "";
+
+    ViewData["Title"] = "Movimento Bancário";
+    ViewData["Icone"] = "<i class='fa fa-money-bill-transfer fa-lg d-inline'></i>";
+    ViewData["LinkNovo"] = Model.ContaSelecionada == null
+        ? "#" : Url.Action("Incluir", new { idContaBancaria });
+
+    var filtro = Model?.FiltroViewModel;
+}
+
+@section ItensCabecalho
+{
+    <li class="nav-item pl-3">
+        <a class='nav-link text-nowrap @classeBotaoTransferir' asp-action="Transferir" asp-controller="MovimentoBancario" asp-route-idContaBancaria="@idContaBancaria" role="button">
+            <i class='d-inline fa fa-add'></i>
+            <span class="d-inline">Transferir</span>
+        </a>
+    </li>
+}
+
+@section Scripts {
+    <script src="~/lib/dompurify/purify.min.js" asp-append-version="true"></script>
+    <script src="~/js/views/paginacao.js" asp-append-version="true"></script>
+    <script type="text/javascript" nws-csp-add-nonce="true">
+        $(".contabancaria a").click(function (event) {
+            let contaBancariaId = $(this).attr('id');
+            let itens = jQuery.parseJSON($("#FiltroJson").val());
+
+            $.each(itens, function (i, grupo) {
+                $.each(grupo.Filtros, function (j, filtro) {
+                    if (filtro.NomePropriedade === 'ContaBancariaId') {
+                        filtro.Valor = contaBancariaId;
+                    }
+                })
+            });
+
+            $("#FiltroJson").val(JSON.stringify(itens));
+
+            if (event.preventDefault) {
+                event.preventDefault();
+            } else {
+                event.returnValue = false;
+            }
+
+            var url = new URL($(this)[0].href);
+            var page = url.searchParams.get("page");
+
+            $("#page").val(page);
+            $("#PaginaAtual").val(page);
+            $("#MetaDados").val(contaBancariaId);
+            $("#formBusca").trigger("submit");
+        });
+    </script>
+}
+
+@if (Model?.Contas == null || !Model.Contas.Any())
+{
+    <asp-alerta-vazio class="col-11 mx-auto p-4 rounded-3 border shadow-sm"
+                      criterio="filtro"
+                      titulo="Conta bancária"
+                      icone-botao-cadastrar="fa-money-check-dollar"
+                      asp-controller="ContaBancaria"
+                      texto-botao-cadastrar="Conta Bancária" />
+}
+else
+{
+    <nav class="navbar navbar-expand-sm navbar-@ViewBag.Theme bg-gradient shadow p-0 mb-3 sticky-top contasBancarias">
+        <a class="navbar-brand d-sm-none ps-4" href="#">
+            <span>Contas bancárias</span>
+        </a>
+
+        <div class="d-sm-none float-end">
+            @if (!string.IsNullOrWhiteSpace(Model.ContaSelecionada?.InstituicaoFinanceira.Icone?.Conteudo))
+            {
+                <img src="data:@Model.ContaSelecionada.InstituicaoFinanceira.Icone.MimeType;base64,@Model.ContaSelecionada.InstituicaoFinanceira.Icone.Conteudo"
+                     height="24" width="24" asp-append-version="true" class="img-fluid pt-2" alt="Ícone @Model.ContaSelecionada.InstituicaoFinanceira.Nome" />
+            }
+
+            <div class="d-inline-block float-end ps-2">
+                <small class="text-sm-end d-block text-truncate mw100px">
+                    @Model.ContaSelecionada?.Nome
+                </small>
+                <small class="d-inline-block float-start fs-xs">
+                    @Model.ContaSelecionada?.ValorSaldoAtual.ToString("c")
+                </small>
+            </div>
+        </div>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-target="#navContas"
+                data-bs-toggle="collapse"
+                aria-controls="navContas"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse col-11 mx-auto p-0" id="navContas">
+            <div class="overflow-auto">
+                <ul class="navbar-nav">
+                    @foreach (var contaBancaria in Model.Contas)
+                    {
+                        var classe = contaBancaria.Id == Model.ContaSelecionada?.Id
+                        ? "active bg-primary"
+                        : "";
+
+                        var corFont = contaBancaria.Id == Model.ContaSelecionada?.Id
+                        ? "text-light"
+                        : contaBancaria.ValorSaldoAtual > 0
+                        ? ViewBag.Theme == "dark" ? "text-info" : "text-primary"
+                        : contaBancaria.ValorSaldoAtual < 0
+                        ? ViewBag.Theme == "dark" ? "text-warning" : "text-danger"
+                        : "text-secondary";
+
+                        <li class="nav-item @classe contabancaria d-flex">
+                            <a class="nav-link d-flex flex-wrap align-items-center" href="#" id="@contaBancaria.Id">
+                                @if (!string.IsNullOrWhiteSpace(contaBancaria.InstituicaoFinanceira.Icone?.Conteudo))
+                                {
+                                    <img src="data:@contaBancaria.InstituicaoFinanceira.Icone.MimeType;base64,@contaBancaria.InstituicaoFinanceira.Icone.Conteudo"
+                                         height="40" width="40" asp-append-version="true" class="mx-auto p-0 shadow" alt="Ícone @contaBancaria.InstituicaoFinanceira.Nome" />
+                                }
+                                <div class="text-truncate text-sm-center mx-auto mw150px">
+                                    <span class="text-break">@contaBancaria.Nome</span><br />
+
+                                    <small>Saldo</small>
+                                    <small class="@corFont text-end">
+                                        <strong>
+                                            @Html.DisplayFor(modelItem => contaBancaria.ValorSaldoAtual)
+                                        </strong>
+                                    </small>
+                                </div>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    if (filtro != null)
+    {
+        filtro.MetaDados = Model?.ContaSelecionada?.Id.ToString();
+        await Html.RenderPartialAsync("_PartialFiltro", filtro);
+    }
+}
+
+@if (Model?.Itens == null || !Model.Itens.Any())
+{
+    <asp-alerta-vazio class="col-11 mx-auto mt-4 p-4 rounded-3 border shadow-sm"
+                      criterio="filtro"
+                      titulo="Movimento Bancário"
+                      classe-botao-cadastrar="btn btn-lg @(ViewBag.ClasseBotao)success @classDesabilitado"
+                      icone-botao-cadastrar="fa-money-bill-transfer"
+                      asp-route-idContaBancaria="@idContaBancaria" />
+}
+else
+{
+    var templateExtrato = ((BrowserViewModel)ViewBag.BrowserInfo).IsMobile
+        ? "MovimentoBancarioTabelaExtratoMovel"
+        : "MovimentoBancarioTabelaExtrato";
+
+    @Html.DisplayFor(model => Model, templateExtrato)
+
+    await Html.RenderPartialAsync("_PartialPaginacao", Model.Itens);
+}

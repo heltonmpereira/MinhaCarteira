@@ -1,0 +1,132 @@
+@using MinhaCarteira.AppCliente.Models
+@model MinhaCarteira.AppCliente.ViewModel.AgendamentoParcelaViewModel
+
+@{
+    var title = Model.Agendamento.Tipo == TipoMovimento.Debito ? "Pagamento" : "Recebimento";
+    var corBotao = Model.Agendamento.Tipo == TipoMovimento.Debito ? "warning" : "success";
+    var classBotao = ViewBag.Theme == "dark" ? string.Empty : "-outline";
+    var corFont = Model.Agendamento.Tipo == TipoMovimento.Credito ? "text-primary" : "text-danger";
+    var classLinha = Model.StatusParcela switch
+    {
+        StatusParcela.Paga => "table-info",
+        StatusParcela.Vencida => "table-warning",
+        StatusParcela.Conciliada => "table-primary",
+        _ => ""
+    };
+}
+
+<tr class="@classLinha @(Model.DespesaOpcional ? "opacity-75" : "")">
+    <td data-title="Categoria">
+        @if (!string.IsNullOrWhiteSpace(Model.Agendamento.Categoria.Icone?.Conteudo))
+        {
+            <img src="data:@Model.Agendamento.Categoria.Icone.MimeType;base64,@Model.Agendamento.Categoria.Icone.Conteudo"
+                 title="@Model.Agendamento.Categoria.Nome"
+                 height="40" width="40"
+                 alt="@Model.Agendamento.Categoria.Nome"
+                 class="rounded-circle"
+                 asp-append-version="true" />
+        }
+        else
+        {
+            <img src="~/img/categ.svg"
+                 title="@Model.Agendamento.Categoria.Nome"
+                 height="40" width="40"
+                 alt="@Model.Agendamento.Categoria.Nome"
+                 class="rounded-circle"
+                 asp-append-version="true" />
+        }
+    </td>
+    <td data-title="Data / Valor">
+        <div>
+            <small class="text-muted d-block mb-1">
+                @if (Model.DataPagamento == null)
+                {
+                    @Html.DisplayFor(modelItem => Model.Data)
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => Model.DataPagamento)
+                }
+            </small>
+            <span class="fw-bold @corFont">
+                @if (Model.ValorPago == null)
+                {
+                    @Html.DisplayFor(modelItem => Model.Valor)
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => Model.ValorPago)
+                }
+            </span>
+        </div>
+    </td>
+    <td data-title="Conta Bancária">
+        @if (!string.IsNullOrWhiteSpace(Model.NomeContaBancaria))
+        {
+            <div class="d-flex align-items-center">
+                <i class="fa fa-university me-2 text-muted"></i>
+                @Model.NomeContaBancaria
+            </div>
+        }
+    </td>
+    <td data-title="Descrição">
+        <div class="d-block">
+            <span class="fw-medium">@Model.Agendamento.Descricao</span>
+            @if (Model.Agendamento.TipoParcelas == TipoParcelas.Parcelada)
+            {
+                <span class="ms-2 text-muted small">
+                    <i class="fa fa-repeat me-1"></i>
+                    (@Model.NumeroParcela/@Model.Agendamento.QuantidadeParcelas)
+                </span>
+            }
+        </div>
+        <small class="text-muted d-block mt-1">
+            @if (!string.IsNullOrWhiteSpace(Model.NomePessoa))
+            {
+                <span><i class="fa fa-user me-1"></i>@Model.NomePessoa</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.NomePessoa) && !string.IsNullOrWhiteSpace(Model.Agendamento.NomeCentroClassificacao))
+            {
+                <span class="mx-1">•</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Agendamento.NomeCentroClassificacao))
+            {
+                <span><i class="fa fa-tag me-1"></i>@Model.Agendamento.NomeCentroClassificacao</span>
+            }
+        </small>
+    </td>
+    <td class="text-end">
+        <div class="btn-group" role="group" aria-label="Botões de ação">
+            @switch (Model.StatusParcela)
+            {
+                case StatusParcela.Paga:
+                    <a title="Conciliar" class="btn btn@(classBotao)-info btn-acao p-1" asp-action="ConciliarParcela" asp-route-id="@Model.Id">
+                        <i class="fa fa-link"></i>
+                    </a>
+                    <a title="Desfazer @title" class="btn btn@(classBotao)-@(corBotao) btn-acao p-1" asp-action="RestaurarCondicaoParcela" asp-route-id="@Model.Id">
+                        <i class="fa-solid fa-undo"></i>
+                    </a>
+                    break;
+                case StatusParcela.Conciliada:
+                    <a title="Desfazer conciliação" class="btn btn@(classBotao)-info btn-acao p-1" asp-action="RestaurarCondicaoParcela" asp-route-id="@Model.Id">
+                        <i class="fa fa-undo"></i>
+                    </a>
+                    break;
+                default:
+                    <a title="@title" class="btn btn@(classBotao)-@(corBotao) btn-acao p-1" asp-action="PagarParcela" asp-route-id="@Model.Id">
+                        <i class="fa-solid fa-credit-card"></i>
+                    </a>
+                    break;
+            }
+            <a title="Alterar" class="btn btn@(classBotao)-primary btn-acao p-1" asp-action="AlterarParcela" asp-route-id="@Model.Id">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </a>
+            <a title="Remover parcela" class="btn btn@(classBotao)-danger btn-acao p-1" asp-action="DeletarParcela" asp-route-id="@Model.Id">
+                <i class="fa-solid fa-trash"></i>
+            </a>
+            <a title="Clonar" class="btn btn@(classBotao)-info btn-acao p-1" asp-action="Clonar" asp-route-id="@Model.Agendamento.Id">
+                <i class="fa-solid fa-clone"></i>
+            </a>
+        </div>
+    </td>
+</tr>

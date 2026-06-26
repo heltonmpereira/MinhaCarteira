@@ -1,0 +1,28 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+ARG AZURE_DEVOPS_PAT
+
+COPY . .
+
+RUN test -n "$AZURE_DEVOPS_PAT"
+
+RUN dotnet nuget remove source DhaniProjetos || true
+
+RUN dotnet nuget add source "https://pkgs.dev.azure.com/DhaniProjetos/_packaging/DhaniProjetos/nuget/v3/index.json" \
+    --name "DhaniProjetos" \
+    --username "az" \
+    --password "$AZURE_DEVOPS_PAT" \
+    --store-password-in-clear-text
+
+RUN dotnet restore MinhaCarteira.sln
+RUN dotnet publish MinhaCarteira.AppServer -c Release -o /app/publish/api --no-restoreRUN
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+WORKDIR /app
+
+COPY --from=build /app/publish/api .
+
+ENV ASPNETCORE_URLS=http://+:${PORT}
+
+ENTRYPOINT ["dotnet", "MinhaCarteira.AppServer.dll"]

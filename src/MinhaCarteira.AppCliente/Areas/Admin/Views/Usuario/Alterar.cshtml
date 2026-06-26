@@ -1,0 +1,20 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.UsuarioViewModel
+
+@{
+    ViewData["Title"] = "Usuários";
+    ViewData["Icone"] = "<i class='fa fa-user fa-lg'></i>";
+    @section Scripts {
+        <script src="~/lib/dompurify/purify.min.js" asp-append-version="true"></script>
+        <script src="~/js/views/paginacao.js" asp-append-version="true"></script>
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<form asp-action="Alterar" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Perfil de usuário</h1>
+    <hr />
+
+    @Html.EditorForModel()
+</form>

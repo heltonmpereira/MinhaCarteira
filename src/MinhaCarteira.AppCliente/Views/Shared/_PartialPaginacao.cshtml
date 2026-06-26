@@ -1,0 +1,36 @@
+﻿@using MinhaCarteira.AppCliente.Models
+@using Dhani.Utilitarios.Helper
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList
+
+@{
+    var classFlutuarPaginacao = ((BrowserViewModel)ViewBag.BrowserInfo).IsMobile ? string.Empty : "float-start";
+    var classFlutuarInformacao = ((BrowserViewModel)ViewBag.BrowserInfo).IsMobile ? string.Empty : "float-end text-end col-5 my-2";
+}
+
+<div class="col-11 mt-2 p-0 mx-auto clearfix">
+    @if (Model != null)
+    {
+        @Html.PagedListPager(
+            Model,
+            page => Url.Action("Index", new { page }),
+            new PagedListRenderOptions
+            {
+                PageClasses = new[] { "page-link" },
+                ContainerDivClasses = new[] { "pagination-container", classFlutuarPaginacao, "p-0", "d-inline" },
+                UlElementClasses = new[] { "pagination"},
+                LiElementClasses = new[] { "page-item" },
+                DisplayItemSliceAndTotal = false,
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded,
+                DisplayLinkToLastPage = PagedListDisplayMode.IfNeeded,
+                MaximumPageNumbersToDisplay = 4
+            })
+
+        <div class="p-0 d-inline @classFlutuarInformacao">
+            Exibindo @Model.GetValue("Count") Ite@(Model.TotalItemCount == 1 ? "m" : "ns")
+            de @Model.TotalItemCount / página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+        </div>
+    }
+</div>

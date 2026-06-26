@@ -1,0 +1,20 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.AgendamentoViewModel
+
+@{
+    ViewData["Title"] = "Agendamento";
+    ViewData["Icone"] = "<i class='fa fa-calendar-day fa-lg'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<div class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Detalhes</h1>
+
+    @Html.DisplayFor(model => model)
+
+    <hr />
+    <a class="btn btn-default" asp-action="Index">Cancelar</a>
+</div>

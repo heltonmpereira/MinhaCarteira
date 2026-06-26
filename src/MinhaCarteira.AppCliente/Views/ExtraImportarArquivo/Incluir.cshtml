@@ -1,0 +1,240 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.ImportarArquivoViewModel
+
+@section Css
+{
+    <link rel="stylesheet" href="~/css/uploadFileDragDrop.css">
+}
+@{
+    ViewData["Title"] = "ImportarArquivo";
+}
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/lib/datatables.net/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="~/js/autoComplete/configurarAutoComplete.js" asp-append-version="true"></script>
+    <script src="~/js/autoComplete/cadastroAutoComplete.js" asp-append-version="true"></script>
+    <script src="~/js/uploadFileDragDrop.js" asp-append-version="true"></script>
+    <script language="javascript" type="text/javascript" nws-csp-add-nonce="true">
+        document.addEventListener('DOMContentLoaded', function () {
+            let btnDefinirPadrao = document.getElementById('btnDefinirPadrao');
+            if (btnDefinirPadrao !== null) {
+                btnDefinirPadrao.addEventListener('click', definirValorPadraoCamposVazio);
+            }
+        });
+
+        $(document).ready(function () {
+            configurarAutoComplete("#edtPessoaVaziaNome"             , "#edtPessoaVaziaId"             , "/pessoa/obterTodos"             , aoSelecionarPessoaPadrao);
+            configurarAutoComplete("#edtCategoriaVaziaNome"          , "#edtCategoriaVaziaId"          , "/admin/categoria/obterTodos"    );
+            configurarAutoComplete("#edtCentroClassificacaoVaziaNome", "#edtCentroClassificacaoVaziaId", "/centroClassificacao/obterTodos");
+        });
+
+        function aoSelecionarPessoaPadrao(campoId, campoNome, item) {
+            if (isEmpty(item.meta))
+                return;
+
+            var obj = JSON.parse(item.meta);
+            if (obj !== null && obj.Categoria !== null) {
+                $("#txtCategoriaVazia").val(obj.Categoria.Caminho);
+                $("#edtCategoriaVaziaId").val(obj.Categoria.Id);
+                $("#edtCategoriaVaziaNome").val(obj.Categoria.Caminho);
+            }
+
+            if (obj !== null && obj.CentroClassificacao !== null) {
+                $("#edtCentroClassificacaoVaziaId").val(obj.CentroClassificacao.Id);
+                $("#edtCentroClassificacaoVaziaNome").val(obj.CentroClassificacao.Nome);
+            }
+
+            $("#btnDefinirPadrao").removeClass('btn-disabled');
+            $('#btnDefinirPadrao').prop('disabled', false);
+        }
+
+        function definirValorPadraoCamposVazio(){
+            let pessoaId = $('#edtPessoaVaziaId').val();
+            let pessoaNome = $('#edtPessoaVaziaNome').val();
+
+            let categoriaId =   $('#edtCategoriaVaziaId').val();
+            let categoriaNome = $('#edtCategoriaVaziaNome').val();
+
+            let centroClassificacaoId =   $('#edtCentroClassificacaoVaziaId').val();
+            let centroClassificacaoNome = $('#edtCentroClassificacaoVaziaNome').val();
+
+            if (isEmpty(pessoaId)) {
+                alert('Obrigatório definir o valor do campo "Pessoa"');
+                return;
+            }
+
+            if (isEmpty(categoriaId)){
+                alert('Obrigatório definir o valor do campo "Categoria"');
+                return;
+            }
+
+            if (isEmpty(centroClassificacaoId)){
+                alert('Obrigatório definir o valor do campo "Centro de Classificação"');
+                return;
+            }
+
+            $('#bodyRegistros tr').each(function(){
+                let alterado = false;
+
+                $(this).find("input").each(function(){
+                    if (isEmpty($(this).val()) && $(this).attr("id").startsWith("edtPessoaId")){
+                        $(this).val(pessoaId);
+                        alterado = true;
+                    }
+                    if (isEmpty($(this).val()) && $(this).attr("id").startsWith("edtPessoaNome")){
+                        $(this).val(pessoaNome);
+                        alterado = true;
+                    }
+
+                    if (isEmpty($(this).val()) && $(this).attr("id").startsWith("edtCategoriaId")){
+                        $(this).val(categoriaId);
+                        alterado = true;
+                    }
+                    if (isEmpty($(this).val()) && $(this).attr("id").startsWith("edtCategoriaNome")){
+                        $(this).val(categoriaNome);
+                        alterado = true;
+                    }
+
+                    if (isEmpty($(this).val()) && $(this).attr("id").startsWith("edtCentroClassificacaoId")){
+                        $(this).val(centroClassificacaoId);
+                        alterado = true;
+                    }
+                    if (isEmpty($(this).val()) && $(this).attr("id").startsWith("edtCentroClassificacaoNome")){
+                        $(this).val(centroClassificacaoNome);
+                        alterado = true;
+                    }
+
+                    if (alterado && $(this).attr("id").startsWith("edtMetadata")){
+                        var json = $(this).val();
+                        var registro = JSON.parse(json);
+                        registro["pessoaId"] = pessoaId;
+                        registro["categoriaId"] = categoriaId;
+                        registro["centroClassificacaoId"] = centroClassificacaoId;
+
+                        $(this).val(JSON.stringify(registro));
+                    }
+                });
+            });
+        }
+    </script>
+}
+
+<div class="row col-sm-11 mx-auto pt-4">
+    <div class="col-md-6 p-0">
+        <div class="drop-section">
+            <div class="row d-block">
+                <form method="post">
+                    <label asp-for="ContaBancariaId" for="txtContaBancaria" class="form-label text-body"></label>
+                    <input type="hidden" asp-for="ContaBancariaId" class="form-control" />
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                        <input type="search" id="txtContaBancaria" asp-for="NomeContaBancaria" class="form-control d-block" autofocus />
+                    </div>
+                </form>
+                <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+            </div>
+
+            <div class="col text-center">
+                <div class="cloud-icon d-inline">
+                    <img src="~/img/cloud.png" alt="cloud">
+                </div>
+                <div class="d-inline">
+                    <span>Arraste & Solte seus arquivos aqui</span>
+                    <span>OU</span>
+                    <button class="file-selector">Procurar arquivos...</button>
+                    <input type="file" class="file-selector-input" multiple>
+                    <input type="hidden" asp-for="Id">
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="drop-here">Solte aqui</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 overflow-auto p-0 mh300px">
+        <div class="list-section">
+            <div class="list"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row col-sm-11 mx-auto d-none" id="registros">
+    <div class="list-title p-0 py-3">
+        <button class="btn btn-primary" id="btnImportarMovimentos">
+            Importar arquivos
+        </button>
+    </div>
+    <table class="table table-striped table-hover table-valign-middle" id="tabelaRegistros">
+        <thead class="table-primary">
+            <tr>
+                <th></th>
+                <th width="150" class="text-end"></th>
+                <th width="250">Pessoa</th>
+                <th width="250">Categoria</th>
+                <th width="250">C.Classificação</th>
+                <th width="50"></th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody id="bodyRegistros"></tbody>
+
+        <tbody id="bodyPadrao">
+            <tr class="table-warning">
+                <td colspan="2" class="text-end">Valores padrões</td>
+                <td id="colPessoasVazia">
+                    <div>
+                        <span id="txtPessoasVazia" class="d-none"></span>
+                        <input id="edtPessoaVaziaId" name="edtPessoaVaziaId" type="hidden">
+                        <div class="input-group">
+                            <input class="form-control ui-autocomplete-input" id="edtPessoaVaziaNome" name="edtPessoaVaziaNome" type="text" autocomplete="off" />
+                            <span class='input-group-text'>
+                                <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-search' viewBox='0 0 16 16'>
+                                    <path d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'></path>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </td>
+
+                <td id="colCategoriaVazia">
+                    <div>
+                        <span id="txtCategoriaVazia" class="d-none"></span>
+                        <input id="edtCategoriaVaziaId" name="edtCategoriaVaziaId" type="hidden">
+                        <div class="input-group">
+                            <input class="form-control ui-autocomplete-input" id="edtCategoriaVaziaNome" name="edtCategoriaVaziaNome" type="text" autocomplete="off" />
+                            <span class='input-group-text'>
+                                <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-search' viewBox='0 0 16 16'>
+                                    <path d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'></path>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </td>
+
+                <td id="colCentroClassificacaoVazia">
+                    <div>
+                        <span id="txtCentroClassificacaoVazia" class="d-none"></span>
+                        <input id="edtCentroClassificacaoVaziaId" name="edtCentroClassificacaoVaziaId" type="hidden">
+                        <div class="input-group">
+                            <input class="form-control ui-autocomplete-input" id="edtCentroClassificacaoVaziaNome" name="edtCentroClassificacaoVaziaNome" type="text" autocomplete="off" />
+                            <span class='input-group-text'>
+                                <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-search' viewBox='0 0 16 16'>
+                                    <path d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'></path>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </td>
+
+                <td colspan="2">
+                    <button id="btnDefinirPadrao" class="btn btn-success btn-disabled" disabled>Padrão</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

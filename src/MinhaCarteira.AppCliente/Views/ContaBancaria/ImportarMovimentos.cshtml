@@ -1,0 +1,75 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.ContaBancariaViewModel
+
+@section Css
+{
+    <link rel="stylesheet" href="~/css/uploadFileDragDrop.css">
+}
+@section Scripts
+{
+    <script src="~/js/autoComplete/configurarAutoComplete.js" asp-append-version="true"></script>
+    <script src="~/js/uploadFileDragDrop.js" asp-append-version="true"></script>
+}
+
+<div class="row col-sm-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <div class="col-md-6">
+        <div class="drop-section">
+            <div class="container col-8 pt-3">
+                @if (!string.IsNullOrWhiteSpace(Model.InstituicaoFinanceira.Icone?.Conteudo))
+                {
+                    <img src="data:@Model.InstituicaoFinanceira.Icone.MimeType;base64,@Model.InstituicaoFinanceira.Icone.Conteudo"
+                         height="48" width="48" class="me-2 rounded shadow-sm float-left"
+                         alt="@Model.InstituicaoFinanceira.Nome"
+                         asp-append-version="true" />
+                }
+                <span class="modernWay">
+                    @Html.DisplayFor(modelItem => Model.Nome)
+                </span>
+                <small class="text-black fst-italic d-block p-0">
+                    Importação de movimentos bancários
+                </small>
+            </div>
+
+            <div class="col text-center">
+                <div class="cloud-icon">
+                    <img src="~/img/cloud.png" alt="cloud">
+                </div>
+                <span>Arraste & Solte seus arquivos aqui</span>
+                <span>OU</span>
+                <button class="file-selector">Procurar arquivos...</button>
+                <input type="file" class="file-selector-input" multiple>
+                <input type="hidden" asp-for="Id">
+            </div>
+
+            <div class="col">
+                <div class="drop-here">Solte aqui</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="list-title">
+            <button class="btn btn-primary" id="btnImportarMovimentos">
+                Importar arquivos
+            </button>
+        </div>
+        <div class="list-section">
+            <div class="list"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row col-sm-11 px-sm-3 px-md-0 pt-4 mx-auto d-none" id="registros">
+    <table class="table table-striped table-hover table-valign-middle" id="tabelaRegistros">
+        <thead class="table-primary">
+            <tr>
+                <th width="150" class="text-end">Data/Valor</th>
+                <th>Descrição</th>
+                <th width="250">Pessoa</th>
+                <th width="250">Categoria</th>
+                <th width="250">C.Classificação</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>

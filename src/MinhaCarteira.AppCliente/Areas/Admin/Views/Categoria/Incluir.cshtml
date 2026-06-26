@@ -1,0 +1,21 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.CategoriaViewModel
+
+@{
+    ViewData["Title"] = "Categoria";
+    ViewData["Icone"] = "<i class='fa fa-layer-group fa-lg d-inline'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+            <script src="~/js/autoComplete/configurarAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/autoComplete/cadastroAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/views/loadIcon.js" asp-append-version="true"></script>
+        }
+    }
+}
+
+<form asp-action="Incluir" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto" enctype="multipart/form-data">
+    <h1>Cadastrar</h1>
+    <hr />
+
+    @Html.EditorForModel()
+</form>

@@ -1,0 +1,213 @@
+@using MinhaCarteira.AppCliente.Models
+@using MinhaCarteira.AppCliente.ViewModel;
+@using MinhaCarteira.AppCliente.ViewModel.Base;
+@model ListaBaseViewModel<AgendamentoParcelaViewModel>;
+
+@{
+    var total = (decimal)0.00;
+    var totalSaidas = (decimal)0.00;
+    var totalEntradas = (decimal)0.00;
+    var tableTheme = $"table-{ViewBag.Theme}";
+    var classBotao = ViewBag.Theme == "dark" ? string.Empty : "-outline";
+}
+
+<div class="table-responsive col-sm-11 px-sm-3 px-md-0 pt-4 mx-auto p-0 p-sm-2">
+    <table class="table table-striped table-hover table-valign-middle @tableTheme">
+        <thead class="table-primary">
+            <tr>
+                <th class="p-0" width="42"></th>
+                <th class="p-0" width="35"></th>
+                <th class="p-0 py-1 text-end" width="120">
+                    <asp-cabecalho asp-for="@Model.Itens.FirstOrDefault().Data" />
+                    <asp-cabecalho campo="TipoMovimento;Valor" titulo="Valor" />
+                </th>
+                <th class="p-0 px-3">
+                    <asp-cabecalho asp-for="@Model.Itens.FirstOrDefault().Agendamento.Descricao" />
+                </th>
+                <th class="p-0 py-1" width="30"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Itens)
+            {
+                switch (item.Agendamento.Tipo)
+                {
+                    case TipoMovimento.Debito:
+                        totalSaidas += item.ValorPago ?? item.Valor;
+                        break;
+                    case TipoMovimento.Credito:
+                    default:
+                        totalEntradas += item.ValorPago ?? item.Valor;
+                        break;
+                }
+
+                var classLinha = item.StatusParcela switch
+                {
+                    StatusParcela.Paga => "table-info",
+                    StatusParcela.Vencida => "table-warning",
+                    StatusParcela.Conciliada => "table-primary",
+                    _ => ""
+                };
+
+                var corFont = item.Agendamento.Tipo == TipoMovimento.Credito ? "text-primary" : "text-danger";
+                var corDescricao = item.StatusParcela switch
+                {
+                    StatusParcela.Paga => "primary",
+                    StatusParcela.Vencida => "primary",
+                    StatusParcela.Conciliada => "primary",
+                    _ => ViewBag.ThemeInverse
+                };
+
+                <tr class="align-middle @classLinha">
+                    <td class="align-middle">
+                        @if (item.StatusParcela == StatusParcela.Conciliada)
+                        {
+                            <i class="text-success fa fa-link"></i>
+                        }
+                    </td>
+
+                    <td class="align-middle p-0 px-1">
+                        @if (!string.IsNullOrWhiteSpace(item.Agendamento.Categoria.Icone?.Conteudo))
+                        {
+                            <img src="data:@item.Agendamento.Categoria.Icone.MimeType;base64,@item.Agendamento.Categoria.Icone.Conteudo"
+                                 title="@item.Agendamento.Categoria.Nome"
+                                 alt="@item.Agendamento.Categoria.Nome"
+                                 width="42" height="42"
+                                 class="ps-1"
+                                 asp-append-version="true" />
+                        }
+                        else
+                        {
+                            <img src="~/img/categ.svg"
+                                 title="@item.Agendamento.Categoria.Nome"
+                                 alt="@item.Agendamento.Categoria.Nome"
+                                 width="42" height="42"
+                                 class="ps-1"
+                                 asp-append-version="true" />
+                        }
+                    </td>
+
+                    <td class="text-end align-middle" data-title="Valor">
+                        <small class="text-secondary">
+                            @if (item.DataPagamento == null)
+                            {
+                                @Convert.ToDateTime(item.Data).ToString("dd MMM yy")
+                            }
+                            else
+                            {
+                                @Convert.ToDateTime(item.DataPagamento).ToString("dd MMM yy")
+                            }
+                        </small>
+                        <span class="@corFont d-block text-nowrap fw-bold">
+                            @if (item.ValorPago == null)
+                            {
+                                @Html.DisplayFor(modelItem => item.Valor)
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.ValorPago)
+                            }
+                        </span>
+                    </td>
+
+                    <td class="align-middle p-0">
+                        <a asp-action="AlterarParcela" asp-route-id="@item.Id" class="text-@corDescricao d-block p-0 py-2">
+                            <span>
+                                @Html.DisplayFor(modelItem => item.Agendamento.Descricao)
+                                @if (item.Agendamento.TipoParcelas == TipoParcelas.Parcelada)
+                                {
+                                    <span class="ms-2 text-muted small">
+                                        (@item.NumeroParcela/@item.Agendamento.QuantidadeParcelas)
+                                    </span>
+                                }
+                            </span>
+                            <small class="text-secondary d-block"
+                                   title="@Html.DisplayFor(modelItem => item.NomePessoa) | @Html.DisplayFor(modelItem => item.Agendamento.NomeCentroClassificacao)">
+                                <span class="d-inline-block">
+                                    @Html.DisplayFor(modelItem => item.NomePessoa) |
+                                </span>
+                                <span class="d-inline-block">
+                                    @Html.DisplayFor(modelItem => item.Agendamento.NomeCentroClassificacao)
+                                </span>
+                            </small>
+                        </a>
+                    </td>
+
+                    <td class="align-middle p-0" width="10">
+                        <div class="d-flex float-end">
+                            @switch (item.StatusParcela)
+                            {
+                                case StatusParcela.Paga:
+                                    <a class="icon-link link-info" asp-action="ConciliarParcela" asp-route-id="@item.Id" title="Conciliar">
+                                        <i class="fa-solid fa-lg fa-link"></i>&nbsp;
+                                    </a>
+                                    <a class="icon-link link-warning" asp-action="RestaurarCondicaoParcela" asp-route-id="@item.Id" title="Desfazer pagamento">
+                                        <i class="fa-solid fa-lg fa-undo"></i>&nbsp;
+                                    </a>
+                                    break;
+                                case StatusParcela.Conciliada:
+                                    <a class="icon-link link-info" asp-action="RestaurarCondicaoParcela" asp-route-id="@item.Id" title="Desfazer conciliação">
+                                        <i class="fa-solid fa-lg fa-undo"></i>&nbsp;
+                                    </a>
+                                    break;
+                                default:
+                                    <a class="icon-link link-success" asp-action="PagarParcela" asp-route-id="@item.Id" title="Pagar/Receber">
+                                        <i class="fa-solid fa-lg fa-credit-card"></i>&nbsp;
+                                    </a>
+                                    break;
+                            }
+                            <a class="icon-link link-primary" asp-action="AlterarParcela" asp-route-id="@item.Id" title="Alterar">
+                                <i class="fa-solid fa-lg fa-pen-to-square"></i>&nbsp;
+                            </a>
+                            <a class="icon-link link-danger" asp-action="DeletarParcela" asp-route-id="@item.Id" title="Remover parcela">
+                                <i class="fa-solid fa-lg fa-trash-can"></i>&nbsp;
+                            </a>
+                            <a class="icon-link link-info" asp-action="Clonar" asp-route-id="@item.Agendamento.Id" title="Clonar">
+                                <i class="fa-solid fa-lg fa-clone"></i>&nbsp;
+                            </a>
+                            <a class="icon-link link-secondary" asp-action="EstenderParcelasPor5Anos" asp-route-id="@item.Agendamento.Id" title="Estender parcelas por 5 anos">
+                                <i class="fa-solid fa-lg fa-calendar-plus"></i>&nbsp;
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot class="table-secondary">
+            @{
+                total = totalEntradas - totalSaidas;
+                var corFontRodape = total > 0
+                ? "text-primary"
+                : total < 0
+                ? "text-danger"
+                : "text-secondary";
+            }
+            <tr>
+                <td class="p-1 text-center" colspan="6">
+                    <div class="d-flex p-0">
+                        <div class="col">
+                            Entradas
+                            <small class="d-block text-nowrap @(totalEntradas > 0 ? "text-primary" : "text-secondary")">
+                                @totalEntradas.ToString("c")
+                            </small>
+                        </div>
+                        <div class="col">
+                            Saídas
+                            <small class="d-block text-nowrap @(totalSaidas > 0 ? "text-danger" : "text-secondary")">
+                                @totalSaidas.ToString("c")
+                            </small>
+                        </div>
+                        <div class="col">
+                            Total
+                            <small class="d-block text-nowrap fw-bold @corFontRodape">
+                                @total.ToString("c")
+                            </small>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

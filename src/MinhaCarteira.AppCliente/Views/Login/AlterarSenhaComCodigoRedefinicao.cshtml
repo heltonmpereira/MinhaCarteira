@@ -1,0 +1,38 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.Login.RedefinirSenhaViewModel
+
+@{
+    ViewData["Title"] = "Redefinição de senha";
+}
+
+<form asp-action="AlterarSenhaComCodigoRedefinicao" method="post" class="col-sm-10 col-md-6 col-lg-5 px-5 pt-4">
+    <h1>Redefinição de senha</h1>
+
+    <hr />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" class="form-control" />
+    <input type="hidden" asp-for="CodigoRedefinicaoSenha" class="form-control" />
+
+    <div class="form-group">
+        <label asp-for="Password" class="control-label"></label>
+        <input asp-for="Password" class="form-control" autofocus />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ConfirmarPassword" class="control-label"></label>
+        <input asp-for="ConfirmarPassword" class="form-control" />
+        <span asp-validation-for="ConfirmarPassword" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <hr />
+        <input type="submit" value="Redefinir Senha" class="btn btn-primary" />
+        <a class="btn btn-default" asp-action="Index">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

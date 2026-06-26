@@ -1,0 +1,88 @@
+﻿@using MinhaCarteira.AppCliente.ViewModel;
+@model PapelViewModel;
+
+@{
+    ViewData["Title"] = "Papéis";
+    ViewData["Icone"] = "<i class='fa fa-newspaper fa-lg'></i>";
+
+    @section Scripts {
+        <script src="~/lib/dompurify/purify.min.js" asp-append-version="true"></script>
+        <script src="~/js/views/paginacao.js" asp-append-version="true"></script>
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+        <script src="~/js/views/papel/usuarios.js" asp-append-version="true"></script>
+    }
+}
+
+<form method="post" id="form" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Seleção de usuários</h1>
+    <hr />
+    <input asp-for="Id" type="hidden" />
+
+    <div class="row col-sm-12">
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label class="form-label" for="origem">Filtro</label>
+                <div class="input-group">
+                    <input type="text" aria-label="First name" class="form-control" placeholder="Nome do usuário" id="txtBuscarUsuarioDisponiveis">
+                    <button class="btn @(ViewBag.ClasseBotao)secondary" type="button" id="buscarUsuariosDisponiveis">Buscar</button>
+                </div>
+            </div>
+
+            <label class="form-label" for="origem">Usuários disponíveis</label>
+        </div>
+
+        <div class="col-sm-2">
+        </div>
+
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label class="form-label" for="origem">Filtro</label>
+                <div class="input-group">
+                    <input type="text" aria-label="First name" class="form-control" placeholder="Nome do usuário">
+                    <button class="btn @(ViewBag.ClasseBotao)secondary" type="button" id="button-addon2">Filtrar</button>
+                </div>
+            </div>
+            <label class="form-label" for="destino">Usuários selecionados</label>
+        </div>
+    </div>
+
+    <div class="row col-sm-12">
+        <div class="col-sm-5">
+            <select id="origem" class="form-select h-100 font-monospace" multiple>
+            </select>
+        </div>
+
+        <div class="col-sm-2 text-center">
+            <button class="col-6 m-2 btn btn-lg btn-primary" id="add">
+                <i class="fa fa-lg fa-angle-right"></i>
+            </button>
+            <button class="col-6 m-2 btn btn-lg btn-primary" id="addTodos">
+                <i class="fa fa-lg fa-angles-right"></i>
+            </button>
+            <button class="col-6 m-2 btn btn-lg btn-warning" id="remove">
+                <i class="fa fa-lg fa-angle-left"></i>
+            </button>
+            <button class="col-6 m-2 btn btn-lg btn-warning" id="removerTodos">
+                <i class="fa fa-lg fa-angles-left"></i>
+            </button>
+        </div>
+
+        <div class="col-sm-5">
+            @*
+            <select id="destino" class="form-select h-100 font-monospace" multiple>
+            </select>
+            *@
+            <select id="destino" class="form-select h-100 font-monospace" multiple
+                    asp-for="FiltroJson"
+                    asp-items="@Model.UsuariosSelecionados">
+            </select>
+
+        </div>
+    </div>
+
+    <hr />
+    <input asp-accessando-como type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" />
+    <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+</form>

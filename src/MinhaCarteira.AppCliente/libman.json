@@ -1,0 +1,136 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "admin-lte@3.2.0",
+      "destination": "wwwroot/lib/admin-lte/",
+      "files": [
+        "js/adminlte.min.js",
+        "css/adminlte.min.css"
+      ]
+    },
+    {
+      "library": "jquery.mask@1.14.16",
+      "destination": "wwwroot/lib/jquery.mask/"
+    },
+    {
+      "library": "jquery@3.7.1",
+      "destination": "wwwroot/lib/jquery/",
+      "files": [
+        "jquery.js"
+      ]
+    },
+    {
+      "library": "dompurify@3.2.3",
+      "destination": "wwwroot/lib/dompurify/",
+      "files": [
+        "purify.min.js"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "jquery-validation@1.21.0",
+      "destination": "wwwroot/lib/jquery-validation/",
+      "files": [
+        "dist/jquery.validate.min.js",
+        "dist/additional-methods.min.js"
+      ]
+    },
+    {
+      "library": "jquery-validation-unobtrusive@4.0.0",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/",
+      "files": [
+        "jquery.validate.unobtrusive.min.js"
+      ]
+    },
+    {
+      "library": "bootstrap@5.3.3",
+      "destination": "wwwroot/lib/bootstrap/",
+      "files": [
+        "css/bootstrap-reboot.min.css",
+        "css/bootstrap.min.css",
+        "js/bootstrap.min.js"
+      ]
+    },
+    {
+      "library": "popper.js@2.11.8",
+      "destination": "wwwroot/lib/popper/",
+      "files": [
+        "umd/popper.min.js"
+      ]
+    },
+    {
+      "library": "font-awesome@6.7.2",
+      "destination": "wwwroot/lib/font-awesome/",
+      "files": [
+        "js/all.js",
+        "js/all.min.js",
+        "js/fontawesome.min.js",
+        "js/brands.min.js",
+        "js/solid.min.js",
+        "css/all.css",
+        "css/all.min.css",
+        "css/brands.min.css",
+        "css/solid.min.css",
+        "css/v5-font-face.min.css",
+        "webfonts/fa-solid-900.ttf",
+        "webfonts/fa-solid-900.woff2",
+        "webfonts/fa-regular-400.woff2"
+      ]
+    },
+    {
+      "library": "highlight.js@11.11.1",
+      "destination": "wwwroot/lib/highlight/",
+      "files": [
+        "highlight.min.js",
+        "styles/tokyo-night-light.min.css",
+        "styles/default.min.css"
+      ]
+    },
+    {
+      "library": "jqueryui@1.13.2",
+      "destination": "wwwroot/lib/jqueryui/",
+      "files": [
+        "jquery-ui.min.js",
+        "themes/hot-sneaks/jquery-ui.css"
+      ]
+    },
+    {
+      "library": "tinymce@7.9.1",
+      "destination": "wwwroot/lib/tinymce/"
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "netstack.js@1.1.2",
+      "destination": "wwwroot/lib/netstack.js/",
+      "files": [
+        "netstack.js"
+      ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "datatables.net@2.1.1",
+      "destination": "wwwroot/lib/datatables.net/"
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "jquery-plugin-printthis@1.0.1",
+      "destination": "wwwroot/lib/printThis/",
+      "files": ["lib/jquery.printThis.js"]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "bootstrap-table@1.23.5",
+      "destination": "wwwroot/lib/bootstrap-table/",
+      "files": [
+        "bootstrap-table.css",
+        "extensions/sticky-header/bootstrap-table-sticky-header.css",
+        "extensions/fixed-columns/bootstrap-table-fixed-columns.css",
+        "bootstrap-table.js",
+        "extensions/sticky-header/bootstrap-table-sticky-header.js",
+        "extensions/fixed-columns/bootstrap-table-fixed-columns.js"
+      ]
+    }
+  ]
+}

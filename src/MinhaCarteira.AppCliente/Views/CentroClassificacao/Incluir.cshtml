@@ -1,0 +1,18 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.CentroClassificacaoViewModel
+
+@{
+    ViewData["Title"] = "Centro de Classificação";
+    ViewData["Icone"] = "<i class='fa fa-arrows-to-circle fa-lg d-inline'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<form asp-action="Incluir" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Cadastrar</h1>
+    <hr />
+
+    @Html.EditorForModel()
+</form>

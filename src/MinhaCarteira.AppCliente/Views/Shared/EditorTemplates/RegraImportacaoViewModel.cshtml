@@ -1,0 +1,107 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.RegraImportacaoViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+<div class="row mb-3">
+    <div class="form-group col-sm-6">
+        <label asp-for="Nome" class="control-label"></label>
+        <input asp-for="Nome" class="form-control" autofocus />
+        <span asp-validation-for="Nome" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-6">
+        <label asp-for="ContaBancariaId" for="txtContaBancaria" class="form-label"></label>
+        <input type="hidden" asp-for="ContaBancariaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtContaBancaria" asp-for="NomeContaBancaria" class="form-control" />
+        </div>
+        <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-4">
+        <label asp-for="PessoaId" for="txtPessoa" class="form-label"></label>
+        <input type="hidden" asp-for="PessoaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtPessoa" asp-for="NomePessoa" class="form-control" />
+        </div>
+        <span asp-validation-for="PessoaId" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-4">
+        <label asp-for="CategoriaId" for="txtCategoria" class="form-label"></label>
+        <input type="hidden" asp-for="CategoriaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtCategoria" asp-for="CaminhoCategoria" class="form-control" />
+        </div>
+        <span asp-validation-for="CategoriaId" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-4">
+        <label asp-for="CentroClassificacaoId" for="txtCentroClassificacao" class="form-label"></label>
+        <input type="hidden" asp-for="CentroClassificacaoId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtCentroClassificacao" asp-for="NomeCentroClassificacao" class="form-control" />
+        </div>
+        <span asp-validation-for="CentroClassificacaoId" class="text-danger"></span>
+    </div>
+</div>
+
+<fieldset class="pt-5">
+    <legend>Critérios (informar ao menos um)</legend>
+    <hr />
+
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <label asp-for="PalavrasChave" class="control-label"></label>
+            <textarea asp-for="PalavrasChave" class="form-control"></textarea>
+            <span asp-validation-for="PalavrasChave" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label asp-for="Descricao" class="control-label"></label>
+                <input asp-for="Descricao" class="form-control" />
+                <span asp-validation-for="Descricao" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label asp-for="ValorMinimo" class="control-label"></label>
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1">R$</span>
+                    <input asp-for="ValorMinimo" class="form-control money" />
+                </div>
+                <span asp-validation-for="ValorMinimo" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label asp-for="ValorMaximo" class="control-label"></label>
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1">R$</span>
+                    <input asp-for="ValorMaximo" class="form-control money" />
+                </div>
+                <span asp-validation-for="ValorMaximo" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+
+<hr />
+<div class="mb-3">
+    <input asp-accessando-como type="submit" value="Salvar" class="btn btn-primary" />
+
+    <a class="btn btn-default" asp-action="Index">Cancelar</a>
+</div>

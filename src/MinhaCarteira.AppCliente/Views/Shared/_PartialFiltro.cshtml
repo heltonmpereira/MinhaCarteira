@@ -1,0 +1,182 @@
+﻿@using System.Linq
+@using Dhani.Utilitarios.Filtro
+@model MinhaCarteira.AppCliente.Models.Interface.ICriterioViewModel
+
+@{
+    var possuiGrupoTela = false;
+    var possuiFiltroVisivel = false;
+
+    if (Model != null)
+    {
+        possuiGrupoTela = Model.GruposFiltro.Any(w => w.NomeGrupoKey.Equals("tela", StringComparison.InvariantCultureIgnoreCase));
+        possuiFiltroVisivel = Model.GruposFiltro.Any(w => w.Filtros.Any(w => w.Visivel));
+    }
+
+    var estadoCabecalho = possuiGrupoTela && possuiFiltroVisivel ? string.Empty : "collapsed";
+    var estadoAccordion = possuiGrupoTela && possuiFiltroVisivel ? "show" : string.Empty;
+}
+
+<div class="col-11 mx-auto p-0 pt-3">
+    <div class="accordion" id="accordionPainelBusca">
+        <div class="accordion-item">
+
+            <h2 class="accordion-header" id="cabecalhoPainelBusca">
+                <button class="accordion-button bg-body bg-opacity-10 fs-5 @estadoCabecalho"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#painelBusca"
+                        aria-expanded="true"
+                        aria-controls="painelBusca">
+                    Filtros
+                </button>
+            </h2>
+
+            <div class="accordion-collapse bg-body collapse @estadoAccordion"
+                 id="painelBusca"
+                 aria-labelledby="cabecalhoPainelBusca"
+                 data-bs-parent="#accordionPainelBusca">
+
+                <div class="accordion-body">
+                    <div class="row">
+                        <form id="formBusca"
+                              method="post"
+                              asp-action="IndexFiltrado"
+                              asp-antiforgery="true">
+
+                            <input type="hidden" asp-for="PaginaAtual" />
+
+                            <div class="input-group mb-3">
+                                @if (Model != null)
+                                {
+                                    <select class="form-select bg-light mw200px"
+                                            asp-items="Model.Colunas"
+                                            asp-for="FiltroAtual.NomePropriedade">
+                                        <option selected>Selecione</option>
+                                    </select>
+                                }
+
+                                <select class="form-select bg-light mmw175px"
+                                        asp-for="FiltroAtual.Operador">
+                                    @{
+                                        var operadores = Enum
+                                        .GetValues(typeof(TipoOperadorBusca))
+                                        .Cast<TipoOperadorBusca>();
+
+                                        @foreach (var c in operadores)
+                                        {
+                                            <option value="@c">@c</option>
+                                        }
+                                    }
+                                </select>
+
+                                <div class="flex-fill" id="divCampoValor">
+                                    <input class="form-control"
+                                           type="text"
+                                           autofocus
+                                           placeholder="Valor a ser procurado..."
+                                           asp-for="FiltroAtual.ValorTexto">
+                                </div>
+
+                                <select class="form-select bg-light mw130px"
+                                        title="Quantidade de itens por página"
+                                        asp-for="ItensPorPagina">
+                                    <option value="20">20 itens</option>
+                                    <option value="50">50 itens</option>
+                                    <option value="100">100 itens</option>
+                                    <option value="500">500 itens</option>
+                                    <option value="1">Todos</option>
+                                </select>
+
+                                <button type="submit" class="btn @(ViewBag.ClasseBotao)primary col-auto">
+                                    <svg class="bi bi-search"
+                                         id="btnBuscar"
+                                         width="16" height="16"
+                                         fill="currentColor"
+                                         viewBox="0 0 16 16"
+                                         xmlns="http://www.w3.org/2000/svg">
+
+                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z">
+                                        </path>
+                                    </svg>
+
+                                    <span>Buscar</span>
+                                </button>
+                            </div>
+
+                            <input type="hidden" class="form-control" asp-for="@Model.MetaDados">
+                            <input type="hidden" class="form-control" asp-for="@Model.Ordenacao">
+                            <textarea hidden class="form-control" asp-for="@Model.FiltroJson"></textarea>
+                        </form>
+                    </div>
+
+                    @if (Model != null && Model.GruposFiltro != null && possuiFiltroVisivel)
+                    {
+                        @foreach (var grupo in Model.GruposFiltro)
+                        {
+                            var filtros = grupo.Filtros
+                            .Where(w => w.Visivel)
+                            .Distinct()
+                            .ToList();
+
+                            if (!filtros.Any()) continue;
+
+                            <div class="mb-3 input-group">
+
+                                @for (int i = 0; i < filtros.Count; i++)
+                                {
+                                    var filtro = filtros[i];
+                                    <div class="chip bg-light bg-opacity-25 shadow-sm">
+                                        <div class="operador">
+                                            <i class="fa-solid @filtro.IconeOperador() text-primary"
+                                               title="@filtro.DescricaoOperador()"></i>
+                                        </div>
+
+                                        @if (filtros.Count > 1 && i < filtros.Count - 1)
+                                        {
+                                            <select class="relacionamento bg-body bg-opacity-10"
+                                                    id="relacionamento@(filtro.Id)"
+                                                    aria-id="filtro.Id"
+                                                    asp-for="@filtro.RelacaoOutrosFiltros">
+                                                @{
+                                                    var relacionamento = Enum
+                                                    .GetValues(typeof(TipoOperadorLogico))
+                                                    .Cast<TipoOperadorLogico>();
+
+                                                    @foreach (var c in relacionamento)
+                                                    {
+                                                        <option value="@((int)c)">@c</option>
+                                                    }
+                                                }
+                                            </select>
+                                        }
+
+                                        <table class="d-inline">
+                                            <tr>
+                                                <th class="fst-italic fs-6">
+                                                    @filtro.NomePropriedade
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <td>@filtro.Valor</td>
+                                            </tr>
+                                        </table>
+
+                                        <span class="closebtn removerFiltro" id="btnRemoverFiltro" aria-id="@filtro.Id">
+                                            &times;
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="text-right">
+                            <a class="btn @(ViewBag.ClasseBotao)danger" id="btnLimparFiltros">
+                                Remover filtros
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

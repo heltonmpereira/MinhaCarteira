@@ -1,0 +1,60 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.UsuarioViewModel
+
+@{
+    ViewData["Title"] = "Alterar";
+    @section Scripts {
+        @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
+}
+
+<form asp-action="MeuPerfil" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Meu Perfil</h1>
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="PasswordHash" type="hidden" />
+    <input asp-for="OrganizacaoId" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <fieldset>
+        <legend class="col-form-label">Dados pessoais</legend>
+        <div class="row">
+            <div class="col-sm-6 form-group">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" autofocus />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label asp-for="Sobrenome" class="control-label"></label>
+                <input asp-for="Sobrenome" class="form-control" />
+                <span asp-validation-for="Sobrenome" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6 form-group">
+                <label asp-for="Username" class="control-label"></label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+
+            <div class="col-sm-6 form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+    </fieldset>
+    <div class="row">
+        <div class="col-sm-12">
+            <hr />
+            <div class="form-group">
+                <input asp-accessando-como type="submit" value="Salvar" class="btn btn-primary" />
+
+                <a class="btn btn-default" asp-action="Index" asp-controller="Home">Cancelar</a>
+
+                <a asp-accessando-como class="btn btn-warning float-right" asp-action="AlterarSenha" asp-route-id="@Model.Id">Alterar Senha</a>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,207 @@
+@using Microsoft.AspNetCore.Http
+
+<aside class="main-sidebar sidebar-dark-light elevation-1">
+    <a class="brand-link text-decoration-none ps-1 pt-3"
+       asp-area="" asp-controller="Home" asp-action="Index" id="brandLink">
+        <img class="brand-image ms-0" src="~/img/logoSistema.png" alt="Icone do sistema">
+        <span class="brand-text" id="brandText">dhani projetos</span>
+    </a>
+
+    <div class="sidebar">
+        <div class="user-panel my-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" id="menuLogin" data-widget="treeview" role="menu" data-accordion="false">
+                @if (User.Identity is not { IsAuthenticated: true })
+                {
+                    <li class="nav-item">
+                        <a is-active-route destacar-subaction="true" asp-area="" asp-controller="Login" asp-action="Index" class="nav-link">
+                            <i class="nav-icon fas fa-user"></i>
+                            <p>Login</p>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    var estahAcessandoComo = !string.IsNullOrWhiteSpace(@User.Claims.FirstOrDefault(w => w.Type == "AcessadoVia").Value);
+
+                    <li class="nav-item">
+                        <a is-active-route destacar-subaction="true" class="nav-link" asp-controller="Login" asp-action="Index">
+                            <i class="nav-icon fas fa-user"></i>
+                            <p class="d-inline-flex">
+                                <span class="text-truncate" id="nomeUsuario">
+                                    @User.Claims.FirstOrDefault(w => w.Type == "FullName").Value
+
+                                    @if (estahAcessandoComo)
+                                    {
+                                        <small class="fs-xs">
+                                            <br />
+                                            Via
+                                            @User.Claims.FirstOrDefault(w => w.Type == "AcessadoVia").Value
+                                        </small>
+                                    }
+                                </span>
+
+                                <i class="float-right right fas fa-angle-left"
+                                   id="arrowLateral"></i>
+                            </p>
+                        </a>
+
+                        <ul class="nav nav-treeview">
+                            @if (User.IsInRole("admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="admin" asp-controller="home" asp-action="index">
+                                        <i class="nav-icon fa fa-home-user"></i> <p>Administração</p>
+                                    </a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-area=""
+                                   asp-controller="Login"
+                                   asp-action="MeuPerfil"
+                                   asp-route-id="@User.Claims.FirstOrDefault(w => w.Type == "UsuarioId").Value">
+                                    <i class="nav-icon fa fa-address-card"></i> <p>Meu Perfil</p>
+                                </a>
+                            </li>
+
+                            @if (!estahAcessandoComo)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Login" asp-action="Sair">
+                                        <i class="nav-icon fa fa-door-open"></i> <p>Sair</p>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Login" asp-action="SairAcessoComo">
+                                        <i class="nav-icon fa fa-door-open"></i> <p>Sair do acesso como</p>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" id="menuLateral" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                        <i class="nav-icon fa fa-home-alt"></i> <p>Home</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="" asp-controller="Agendamento" asp-action="Index">
+                        <i class='nav-icon fa fa-calendar-day text-primary'></i> <p>Agendamento</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="" asp-controller="MovimentoBancario" asp-action="Index">
+                        <i class='nav-icon fa fa-money-bill-transfer text-success'></i> <p>Movimento Bancário</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="" asp-controller="ContaBancaria" asp-action="Index">
+                        <i class='nav-icon fa fa-money-check-dollar'></i> <p>Conta Bancária</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="" asp-controller="Pessoa" asp-action="Index">
+                        <i class='nav-icon fa fa-users'></i> <p>Pessoa</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="" asp-controller="CentroClassificacao" asp-action="Index">
+                        <i class='nav-icon fa fa-arrows-to-circle'></i> <p>Centro de Classificação</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="" asp-controller="CategoriaPessoal" asp-action="Index">
+                        <i class='nav-icon fa fa-layer-group'></i> <p>Categoria</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" destacar-subaction="true" asp-area="" asp-controller="DashboardMonitor" asp-action="Index">
+                        <i class='nav-icon fa fa-dashboard'></i> <p>Monitor</p>
+                    </a>
+                </li>
+
+                @{
+                    var controller = ViewContext.RouteData.Values["Controller"].ToString();
+                    var classMenuExtra = !string.IsNullOrEmpty(controller) && controller.StartsWith("Extra")
+                        ? "menu-open" : string.Empty;
+                    var classMenuRelatorio = !string.IsNullOrEmpty(controller) && controller.StartsWith("Relatorio")
+                        ? "menu-open" : string.Empty;
+                }
+                <li class="nav-item @classMenuExtra">
+                    <a class="nav-link" href="#">
+                        <i class="nav-icon fa fa-tools"></i>
+                        <p>
+                            Extras
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a is-active-route class="nav-link" destacar-subaction="true" asp-area="" asp-controller="ExtraImportarArquivo" asp-action="Index">
+                                <i class='nav-icon fa fa-file-import'></i> <p>Importar Movimentos</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a is-active-route class="nav-link" destacar-subaction="true" asp-area="" asp-controller="ExtraRegraImportacao" asp-action="Index">
+                                <i class='nav-icon fa fa-money-check-dollar'></i> <p>Regras de importação</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item @classMenuRelatorio ">
+                    <a class="nav-link" href="#">
+                        <i class="nav-icon fa fa-print"></i>
+                        <p>
+                            Relatório
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a is-active-route class="nav-link" destacar-subaction="false" asp-area="" asp-controller="Relatorio" asp-action="Dashboard">
+                                <i class='nav-icon fa fa-chart-line'></i> <p>Dashboard</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a is-active-route class="nav-link" destacar-subaction="false" asp-area="" asp-controller="Relatorio" asp-action="FluxoCaixa">
+                                <i class='nav-icon fa fa-cash-register'></i> <p>Fluxo de Caixa</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a is-active-route class="nav-link" destacar-subaction="false" asp-area="" asp-controller="Relatorio" asp-action="EvolucaoSaldoPeriodo">
+                                <i class='nav-icon fa fa-chart-area'></i> <p>Evolução por período</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a is-active-route class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                        <i class='nav-icon fa fa-key'></i> <p>Privacy</p>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+</aside>

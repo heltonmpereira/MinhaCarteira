@@ -1,0 +1,23 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.AgendamentoParcelaViewModel
+
+@{
+    ViewData["Title"] = "Agendamento";
+    ViewData["Icone"] = "<i class='fa fa-calendar-day fa-lg'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<form asp-action="RestaurarCondicaoParcela" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Restaurar condição da parcela</h1>
+    <h4>Tem certeza que deseja restaurar a condição anterior deste registro?</h4>
+
+    @Html.DisplayFor(model => model)
+
+    <hr />
+
+    <input type="submit" value="Desfazer" class="btn btn-danger" />
+    <a class="btn btn-default" asp-action="Index">Cancelar</a>
+</form>

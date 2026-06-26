@@ -1,0 +1,301 @@
+﻿﻿hr {
+    border: none;
+    border-top: 1px solid !important;
+}
+
+/* Change Autocomplete styles in Chrome*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    /*border: 1px solid green;*/
+    /*-webkit-text-fill-color: white;*/
+    -webkit-box-shadow: 0 0 0px 1000px #7393B3 inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+td a {
+    /*width: 100%;*/
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.btn-acao {
+    padding: 0px;
+    line-height: 30px;
+    height: 40px;
+    width: 50px;
+}
+
+table thead th {
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
+}
+
+.ascending {
+    background-image: url(asc.gif);
+}
+
+.decending {
+    background-image: url(desc.gif);
+}
+
+.titulo {
+    max-width: 240px;
+}
+
+@media (max-width: 450px) {
+    .titulo {
+        max-width: 140px !important;
+    }
+}
+
+/*********************************************/
+/* Classes para estilização do botão de tema */
+/*********************************************/
+.theme-container {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+}
+
+    .theme-container:hover {
+        opacity: 0.9;
+    }
+
+@keyframes change {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.4);
+    }
+}
+
+.change {
+    animation-name: change;
+    animation-duration: 1s;
+    animation-direction: alternate;
+}
+
+/***********************************************/
+/* Classes para estilizar os chips de filtros  */
+/***********************************************/
+.chip {
+    display: inline-block;
+    height: 50px;
+    border-radius: 25px;
+    /*background-color: #f1f1f1;*/
+}
+
+    .chip .operador {
+        float: left;
+        border-radius: 15%;
+        /*background-color: #ccc;*/
+        font-size: 0.75rem;
+        margin: 12px;
+        width: 25px;
+        line-height: 25px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .chip .relacionamento {
+        float: right;
+        width: 45px;
+        border: 0px;
+        height: 50px;
+        /*background-color: #ccc;*/
+        font-size: 0.75rem;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .chip .closebtn {
+        float: right;
+        border-radius: 50%;
+        background-color: darkred;
+        margin: 10px;
+        font-weight: bold;
+        width: 30px;
+        line-height: 30px;
+        text-align: center;
+        color: white;
+        cursor: pointer;
+    }
+
+        .chip .closebtn:hover {
+            color: whitesmoke;
+        }
+
+.modernWay {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.modernWay1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.small-box .icon img {
+    width: 70px;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    transition: -webkit-transform .3s linear;
+    transition: transform .3s linear;
+    transition: transform .3s linear,-webkit-transform .3s linear
+}
+
+.mw100px {
+    max-width: 100px;
+}
+
+.mw130px {
+    max-width: 130px;
+}
+
+.mw150px {
+    max-width: 150px;
+}
+
+.mw175px {
+    max-width: 175px;
+}
+
+.mmw175px {
+    max-width: 175px !important;
+    min-width: 175px !important;
+}
+
+.mw200px {
+    max-width: 200px;
+}
+
+.mw210px {
+    max-width: 210px;
+}
+
+.mw215px {
+    max-width: 215px;
+}
+
+.mw220px {
+    max-width: 220px;
+}
+
+.mw225px {
+    max-width: 225px;
+}
+
+.mw250px {
+    max-width: 250px;
+}
+
+.w36px {
+    width: 36px;
+}
+
+.w50px {
+    width: 50px;
+}
+
+.w80px {
+    width: 80px;
+}
+
+.w100pct {
+    width: 100%;
+}
+
+.w100px {
+    width: 100px;
+}
+
+.w140px {
+    width: 140px;
+}
+
+.w150px {
+    width: 150px;
+}
+
+.w200px {
+    width: 200px;
+}
+
+.h5px {
+    height: 5px !important;
+}
+
+.h200px {
+    height: 200px;
+}
+
+.mh300px {
+    max-height: 300px;
+}
+
+.fs-mxs {
+    font-size: 0.4em;
+    font-weight: 600;
+}
+
+.contasBancarias {
+    z-index: 99;
+    top: 57px;
+}
+
+.botaoFechar {
+    z-index: 9999;
+    max-width: 100%;
+}
+
+.table-disabled {
+    pointer-events: none !important;
+    font-style: italic;
+    color: #666 !important;
+}
+
+.vh-80 {
+    height: 80vh;
+    display: block;
+}
+
+.fixTableHead {
+    overflow-y: auto;
+    height: 80vh;
+}
+
+    .fixTableHead thead th {
+        position: sticky;
+        top: -1px;
+    }
+
+.sticky-col {
+    position: -webkit-sticky;
+    top: 33px;
+    position: sticky;
+    background-color: white;
+    z-index: 99;
+}
+
+.first-col {
+    left: 0px;
+}

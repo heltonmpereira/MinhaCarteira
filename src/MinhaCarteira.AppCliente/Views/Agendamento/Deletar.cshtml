@@ -1,0 +1,23 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.AgendamentoViewModel
+
+@{
+    ViewData["Title"] = "Agendamento";
+    ViewData["Icone"] = "<i class='fa fa-calendar-day fa-lg'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<form asp-action="Deletar" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Deletar</h1>
+    <h4>Tem certeza que deseja remover este registro?</h4>
+
+    @Html.DisplayFor(model => model)
+
+    <hr />
+
+    <input type="submit" value="Deletar" class="btn btn-danger" />
+    <a class="btn btn-default" asp-action="Index">Cancelar</a>
+</form>

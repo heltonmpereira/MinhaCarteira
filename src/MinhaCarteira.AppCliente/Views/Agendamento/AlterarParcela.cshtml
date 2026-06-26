@@ -1,0 +1,45 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.AgendamentoParcelaViewModel
+
+@{
+    ViewData["Title"] = "Agendamento";
+    ViewData["Icone"] = "<i class='fa fa-calendar-day fa-lg'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+            <script src="~/js/autoComplete/configurarAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/autoComplete/cadastroAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/views/agendamentoView.js" asp-append-version="true"></script>
+            <script type="text/javascript" nws-csp-add-nonce="true">
+                @{
+                    var opcao = "tipoParcela" + Model.Agendamento.TipoParcelas;
+                }
+
+                    let opcao = "@opcao";
+                definirTipoParcelas(opcao);
+            </script>
+        }
+    }
+}
+
+<form asp-action="AlterarParcela" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Alterar</h1>
+    <hr />
+
+    <div class="row mb-3 bg-body-secondary p-2 mx-auto">
+        <div class="col-sm-4">
+            <div class="form-check form-switch ms-3">
+                <input class="form-check-input" asp-for="AlterarAPenasEstaParcela">
+                <label class="form-check-label" asp-for="AlterarAPenasEstaParcela"></label>
+            </div>
+        </div>
+
+        <div class="col-sm-8">
+            <div class="form-check form-switch ms-3">
+                <input class="form-check-input" asp-for="DespesaOpcional">
+                <label class="form-check-label" asp-for="DespesaOpcional"></label>
+            </div>
+        </div>
+    </div>
+
+    @Html.EditorForModel()
+</form>

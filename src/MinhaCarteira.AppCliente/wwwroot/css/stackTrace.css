@@ -1,0 +1,44 @@
+﻿.pre-wrapper {
+    white-space: pre-wrap; /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+.stacktrace {
+    background-color: #eee;
+    color: #333;
+}
+
+.st-type {
+    color: #2b91af;
+    font-weight: normal;
+}
+
+.st-method {
+    color: #2b91af;
+    font-weight: bolder;
+}
+
+.st-frame-params {
+    color: #099;
+    font-weight: normal;
+}
+
+.st-param-type {
+    color: #74531f;
+}
+
+.st-param-name {
+    color: #009;
+}
+
+.st-file {
+    color: #900;
+}
+
+.st-line {
+    color: #ff4f68;
+    font-weight: bolder;
+}

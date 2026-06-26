@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="text-center mb-5">
+    <h1 class="display-4">Administração</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div class="row col-sm-8 mx-auto mb-3">
+    <a class="btn @(ViewBag.ClasseBotao)info btn-lg col-sm-5 mx-auto"
+       asp-action="Index" asp-controller="Agendamento" asp-area="">
+        <i class='fa fa-calendar-day d-inline'></i>
+        <p class="d-inline ps-2">Agendamento</p>
+    </a>
+
+    <a class="btn @(ViewBag.ClasseBotao)success btn-lg col-sm-5 mx-auto"
+       asp-action="Index" asp-controller="MovimentoBancario" asp-area="">
+        <i class='fa fa-money-bill-transfer d-inline'></i>
+        <p class="d-inline ps-2">Movimentos</p>
+    </a>
+</div>
+
+<div class="row col-sm-8 mx-auto mb-3">
+    <a class="btn @(ViewBag.ClasseBotao)primary btn-sm col-sm-3 mx-auto"
+       asp-action="Index" asp-controller="ContaBancaria" asp-area="">
+        <i class='fa fa-money-check-dollar d-inline'></i>
+        <p class="d-inline ps-2">Contas</p>
+    </a>
+
+    <a class="btn @(ViewBag.ClasseBotao)primary btn-sm col-sm-3 mx-auto"
+       asp-action="Index" asp-controller="CentroClassificacao" asp-area="">
+        <i class='fa fa-arrows-to-circle d-inline'></i>
+        <p class="d-inline ps-2">Classificação</p>
+    </a>
+
+    <a class="btn @(ViewBag.ClasseBotao)primary btn-sm col-sm-3 mx-auto"
+       asp-action="Index" asp-controller="Pessoa" asp-area="">
+        <i class='fa fa-users d-inline'></i>
+        <p class="d-inline ps-2">Pessoas</p>
+    </a>
+</div>
+
+<div class="row col-sm-8 mx-auto mb-3">
+    <a class="btn @(ViewBag.ClasseBotao)primary col-sm-5 mx-auto"
+       asp-action="Index" asp-controller="Categoria" asp-area="admin">
+        <i class='fa fa-layer-group d-inline'></i>
+        <p class="d-inline ps-2">Categoria</p>
+    </a>
+
+    <a class="btn @(ViewBag.ClasseBotao)primary col-sm-5 mx-auto"
+       asp-action="Index" asp-controller="InstituicaoFinanceira" asp-area="admin">
+        <i class='fa fa-building-columns d-inline'></i>
+        <p class="d-inline ps-2">Instituição Financeira</p>
+    </a>
+</div>

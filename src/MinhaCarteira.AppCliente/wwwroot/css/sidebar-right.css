@@ -1,0 +1,9 @@
+﻿.content-wrapper, .main-header {
+    margin-left: unset !important;
+    margin-right: 250px !important;
+}
+
+.layout-fixed .main-sidebar {
+    left: unset !important;
+    right: 0px !important;
+}

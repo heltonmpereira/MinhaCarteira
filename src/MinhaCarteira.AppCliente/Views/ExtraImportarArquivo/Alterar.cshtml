@@ -1,0 +1,23 @@
+﻿
+@model MinhaCarteira.AppCliente.ViewModel.ImportarArquivoViewModel
+
+@{
+    ViewData["Title"] = "ImportarArquivo";
+    ViewData["Icone"] = "<i class='fa fa-home fa-lg text-primary'></i>";
+
+    @section Scripts {
+        @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<h1>Alterar</h1>
+<hr />
+
+<form asp-action="Alterar" method="post">
+
+    @Html.EditorForModel()
+
+</form>
+

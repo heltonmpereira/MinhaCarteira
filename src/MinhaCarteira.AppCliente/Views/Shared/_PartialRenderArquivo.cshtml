@@ -1,0 +1,32 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.IconeViewModel
+
+@if (Model != null && !string.IsNullOrWhiteSpace(Model.Extensao))
+{
+    var icone = @Model.Extensao.Replace(".", "");
+
+    var extensaoImagem = new[] { "apng", "png", "avif", "gif", "jpeg", "jpg", "svg", "webp", "bmp", "ico", "tiff" };
+    var extensaoArquivos = new[] { "ofx", "txt" };
+    var extensaoExcel = new[] { "xls", "xlsx" };
+    var extensaoWord = new[] { "doc", "docx" };
+
+    if (extensaoImagem.Contains(icone))
+        icone = "file-image";
+    else if (extensaoArquivos.Contains(icone))
+        icone = "file";
+    else if (extensaoExcel.Contains(icone))
+        icone = "file-excel";
+    else if (extensaoWord.Contains(icone))
+        icone = "file-word";
+    else icone = "file-" + icone;
+
+    <div class="row">
+        <a class="btn btn-sm btn-primary" href="@Url.Action("BaixarArquivo", "MovimentoBancario", new { arquivoId = Model.Id })">
+            <i class="fa-solid fa-lg fa-@icone"></i>&nbsp;@Model.Nome
+        </a>
+
+        <div class="d-inline-block">
+            <input type="checkbox" asp-for="Deletado"/>
+            <label>&nbsp;Remover</label>
+        </div>
+    </div>
+}

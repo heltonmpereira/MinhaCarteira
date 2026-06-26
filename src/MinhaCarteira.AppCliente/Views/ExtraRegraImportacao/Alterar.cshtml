@@ -1,0 +1,22 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.RegraImportacaoViewModel
+
+@{
+    ViewData["Title"] = "RegraImportacao";
+    ViewData["Icone"] = "<i class='fa fa-home fa-lg'></i>";
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+            <script src="~/js/autoComplete/configurarAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/autoComplete/cadastroAutoComplete.js" asp-append-version="true"></script>
+        }
+    }
+}
+
+<form asp-action="Alterar" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Alterar</h1>
+    <hr />
+
+    @Html.EditorForModel()
+</form>
+

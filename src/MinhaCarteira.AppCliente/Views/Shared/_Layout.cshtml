@@ -1,0 +1,195 @@
+﻿@using Microsoft.Extensions.Configuration
+@using MinhaCarteira.AppCliente.Models;
+
+@inject IConfiguration Configuration
+@{
+    var routePwa = Configuration["BaseRoutePwa"];
+    var condicaoSideBar = ViewBag.CondicaoSideBar ?? "sidebar-open";
+    var mode = ViewBag.Theme == "light" ? string.Empty : "dark-mode";
+    var navTheme = $"navbar-{ViewBag.Theme}";
+}
+
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="@ViewBag.Theme">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Minha Carteira - @ViewData["Title"]</title>
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Minha Carteira">
+    <link rel="apple-touch-icon" href="/img/icon-192x192.png">
+
+    <link rel="icon" type="image/x-icon" href="@routePwa/favicon.ico">
+    <environment include="Development">
+        <link rel="manifest" href="@routePwa/manifest.json">
+    </environment>
+    <environment include="Production">
+        <link rel="manifest" href="@routePwa/manifest.Production.json">
+    </environment>
+
+    <link rel="stylesheet" asp-append-version="true" href="~/css/bundle.css">
+    <link rel="stylesheet" asp-append-version="true" href="~/css/site.css">
+    <link rel="stylesheet" asp-append-version="true" href="~/css/larguras.css">
+    <script asp-append-version="true" nws-csp-add-nonce="true" src="~/lib/jquery/jquery.js"></script>
+    <script asp-append-version="true" nws-csp-add-nonce="true" src="~/js/bundle.js"></script>
+
+    @if (!String.IsNullOrWhiteSpace(Context.Request.PathBase.Value))
+    {
+        <script type="text/javascript" nws-csp-add-nonce="true">
+            window.siteRoot = "@($"{@Context.Request.Scheme}://{Context.Request.Host.Value}{Context.Request.PathBase.Value}")";
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript" nws-csp-add-nonce="true">
+            window.siteRoot = "@($"{@Context.Request.Scheme}://{Context.Request.Host.Value}")";
+        </script>
+    }
+    <script nws-csp-add-nonce="true" src="~/js/theme.js" asp-append-version="true"></script>
+    <style nws-csp-add-nonce="true">
+        #pushMenu {
+            width: 24px;
+        }
+
+        #breadcrumb {
+            height: 40px;
+        }
+
+        #brandLink {
+            height: 57px;
+        }
+
+        #brandText {
+            font-family: 'Raleway', sans-serif;
+        }
+
+        #wipeArea {
+            width: 25px;
+            z-index: 0;
+        }
+
+        #arrowLateral {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+
+        #nomeUsuario {
+            max-width: 165px;
+            min-width: 165px;
+        }
+    </style>
+
+    @await RenderSectionAsync("Css", required: false)
+    @await RenderSectionAsync("ScriptsHead", required: false)
+
+</head>
+<body class="sidebar-mini layout-fixed layout-navbar-fixed @mode @condicaoSideBar">
+    <div class="wrapper">
+        <nav class="main-header navbar navbar-expand shadow-sm @navTheme">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <!--data-enable-remember="true"-->
+                    <a class="nav-link" data-widget="pushmenu"
+                       role="button" id="pushMenu">
+                        <i class="fas fa-bars"></i>
+                    </a>
+                </li>
+
+                @if (ViewData["LinkNovo"] != null)
+                {
+                    <li class="nav-item pl-3">
+                        <a class='nav-link bg-primary text-nowrap' href="@ViewData["LinkNovo"]">
+                            @if (ViewData["Icone"] != null)
+                            {
+                                @Html.Raw(ViewData["Icone"])
+                            }
+                            else
+                            {
+                                <i class='d-inline fa fa-add'></i>
+                            }
+                            <span class="d-inline">Novo</span>
+                        </a>
+                    </li>
+                }
+                @await RenderSectionAsync("ItensCabecalho", required: false)
+            </ul>
+
+            <ol class="breadcrumb align-center bg-transparent m-0 p-0 pl-3 text-truncate texto" id="breadcrumb">
+                @if (ViewBag.Breadcrumbs != null)
+                {
+                    var primeiro = ViewBag.Breadcrumbs[0] as Breadcrumb;
+                    if (primeiro != null && !string.IsNullOrEmpty(primeiro.Area))
+                    {
+                        <li class="pt-2 breadcrumb-item" aria-current="page">
+                            @primeiro.Area
+                        </li>
+                    }
+
+                    @foreach (var breadcrumb in ViewBag.Breadcrumbs as List<Breadcrumb>)
+                    {
+                        if (breadcrumb.Active)
+                        {
+                            <li class="pt-2 breadcrumb-item active">
+                                <a asp-action="@breadcrumb.Action" asp-area="@breadcrumb.Area" asp-controller="@breadcrumb.Controller">
+                                    @breadcrumb.Text
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="pt-2 breadcrumb-item" aria-current="page">
+                                @breadcrumb.Text
+                            </li>
+                        }
+                    }
+                }
+            </ol>
+
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <div class="theme-container shadow-dark">
+                        <img id="theme-icon" width="40" height="40"
+                             src="~/img/@(mode == "dark-mode" ? "dark" : "light").png" alt="Tema">
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        @{
+            await Html.RenderPartialAsync("_MenuLateral");
+        }
+
+        <div id="wipearea" class="d-sm-none position-absolute h-100" id="wipeArea"></div>
+        <main class="content-wrapper p-0">
+            @{
+                await Html.RenderPartialAsync("_PartialAlertas");
+            }
+
+            <section class="container-fluid p-0 m-0 main" role="main">
+                @RenderBody()
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <a class="link-primary text-decoration-none" href="https://dhaniprojetos.com">DhaniProjetos</a> © <strong>@DateTime.Now.Year</strong>
+            <div class="float-right d-sm-inline-block">
+                <b>Versão</b> 1.2.0
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/js/bundleRodape.js" asp-append-version="true" nws-csp-add-nonce="true"></script>
+    <script src="~/js/bundleRodape2.js" asp-append-version="true" nws-csp-add-nonce="true"></script>
+    @* <script src="~/lib/highlight/highlight.min.js" asp-append-version="true" nws-csp-add-nonce="true"></script> *@
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script nws-csp-add-nonce="true">
+        hljs.highlightAll();
+        $('.stacktrace').netStack();
+    </script>
+
+</body>
+</html>

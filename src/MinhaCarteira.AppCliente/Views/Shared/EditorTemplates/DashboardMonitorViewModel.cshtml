@@ -1,0 +1,108 @@
+﻿@using Dhani.Utilitarios.Filtro
+@model MinhaCarteira.AppCliente.ViewModel.DashboardMonitorViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" class="form-control" asp-for="Id" />
+<input type="hidden" class="form-control" asp-for="ProprietarioId" />
+
+<div class="row">
+    <div class="mb-3 col-sm-12 col-md-6">
+        <label asp-for="Titulo" class="control-label"></label>
+        <input asp-for="Titulo" class="form-control" autofocus />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3 col-sm-6 col-md-3">
+        <label asp-for="CorFundo" class="control-label"></label>
+        <input asp-for="CorFundo" class="form-control" autofocus />
+        <span asp-validation-for="CorFundo" class="text-danger"></span>
+        <div class="form-text">
+            <a href="https://adminlte.io/themes/v3/pages/widgets.html" target="_blank">Documentação</a>
+            <code>bg-gradient-*</code>
+        </div>
+    </div>
+
+    <div class="mb-3 col-sm-6 col-md-3">
+        <label asp-for="AgendamentoId" for="txtInstituicao" class="form-label"></label>
+        <input type="hidden" asp-for="AgendamentoId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtAgendamentoDescricao" asp-for="AgendamentoDescricao" class="form-control" />
+        </div>
+        <span asp-validation-for="AgendamentoId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="card card-primary">
+    <div class="card-header">
+        <h5 class="card-title">
+            <i class="fas fa-filter"></i>
+            Filtro para localizar os movimentos bancários
+        </h5>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+
+            <div class="input-group mb-3">
+                <select class="form-select bg-light mw200px"
+                        asp-items="Model.Criterio.Colunas"
+                        id="edtCampo">
+                    <option value="Campo" selected>Campo</option>
+                </select>
+
+                <select class="form-select bg-light mw130px"
+                        id="edtOperador">
+                    @{
+                        var operadores = Enum
+                        .GetValues(typeof(TipoOperadorBusca))
+                        .Cast<TipoOperadorBusca>();
+
+                        @foreach (var c in operadores)
+                        {
+                            <option value="@c">@c</option>
+                        }
+                    }
+                </select>
+
+                <input class="form-control"
+                       id="edtTxtFiltro"
+                       type="text"
+                       autofocus
+                       placeholder="Valor a ser filtrado...">
+
+                <button class="btn btn-primary" type="button" id="btnAdicionarFiltro">
+                    Adicionar
+                </button>
+            </div>
+
+            <div class="row">
+                <div class="mb-3 input-group" id="divFiltros">
+                </div>
+            </div>
+
+            <div class="row d-none" id="divBtnRemover">
+                <div class="text-end">
+                    <a class="btn @(ViewBag.ClasseBotao)danger" id="btnLimparFiltros">
+                        Remover filtros
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-none">
+            <div class="mb-3">
+                <label asp-for="CriterioBuscaMovimentosJson" class="control-label"></label>
+                <input asp-for="CriterioBuscaMovimentosJson" class="form-control" autofocus />
+                <span asp-validation-for="CriterioBuscaMovimentosJson" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+<div class="mb-3">
+    <input asp-accessando-como type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" />
+
+    <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+</div>

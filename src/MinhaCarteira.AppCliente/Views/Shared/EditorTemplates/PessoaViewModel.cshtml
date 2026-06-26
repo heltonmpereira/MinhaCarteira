@@ -1,0 +1,77 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.PessoaViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input disabled type="hidden" class="form-control" asp-for="Id" />
+<input disabled type="hidden" class="form-control" asp-for="ProprietarioId" />
+
+<div class="row">
+    <div class="mb-3 col-md-6">
+        <label class="form-label d-block" for="TipoPessoa">Tipo de pessoa</label>
+
+        <div class="input-group" role="group" aria-label="Tipo de pessoa" id="TipoPessoa">
+            <input class="btn-check" asp-for="EhCliente" autocomplete="off">
+            <label class="btn @(ViewBag.ClasseBotao)primary" asp-for="EhCliente"></label>
+
+            <input class="btn-check" asp-for="EhFornecedor" autocomplete="off">
+            <label class="btn @(ViewBag.ClasseBotao)primary" asp-for="EhFornecedor"></label>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="mb-3 col-md-6">
+        <label asp-for="Nome" class="control-label"></label>
+        <input asp-for="Nome" class="form-control" autofocus />
+        <span asp-validation-for="Nome" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3 col-md-5">
+        <label asp-for="NomeExtrato" class="control-label"></label>
+        <input asp-for="NomeExtrato" class="form-control" />
+        <span asp-validation-for="NomeExtrato" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3 col-md-1">
+        <label asp-for="IdAuxiliar" class="control-label"></label>
+        <input asp-for="IdAuxiliar" class="form-control" />
+        <span asp-validation-for="IdAuxiliar" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="CategoriaId" for="txtCategoria" class="form-label"></label>
+        <input type="hidden" asp-for="CategoriaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtCategoria" asp-for="CaminhoCategoria" class="form-control" />
+        </div>
+        <span asp-validation-for="CategoriaId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="CentroClassificacaoId" for="txtCentroClassificacao" class="form-label"></label>
+        <input type="hidden" asp-for="CentroClassificacaoId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtCentroClassificacao" asp-for="NomeCentroClassificacao" class="form-control" />
+        </div>
+        <span asp-validation-for="CentroClassificacaoId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="mb-3 col-md-5">
+        <div class="form-check">
+            <input class="form-check-input" asp-for="IgnorarMovimentacoes">
+            <label class="form-check-label" asp-for="IgnorarMovimentacoes"></label>
+        </div>
+    </div>
+</div>
+
+<hr />
+<div class="mb-3">
+    <input asp-accessando-como type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" />
+
+    <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+</div>

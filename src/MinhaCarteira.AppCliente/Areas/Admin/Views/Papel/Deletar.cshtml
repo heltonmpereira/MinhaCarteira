@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Papéis";
+    ViewData["Icone"] = "<i class='fa fa-newspaper fa-lg'></i>";
+    @section Scripts {
+        <script src="~/lib/dompurify/purify.min.js" asp-append-version="true"></script>
+        <script src="~/js/views/paginacao.js" asp-append-version="true"></script>
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<div class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Deletar</h1>
+
+    <h4>Tem certeza que deseja remover este registro?</h4>
+
+    @Html.DisplayFor(model => model)
+
+    <hr />
+    <form asp-action="Deletar" method="post">
+        <input type="submit" value="Deletar" class="btn @(ViewBag.ClasseBotao)danger" />
+        <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+    </form>
+</div>

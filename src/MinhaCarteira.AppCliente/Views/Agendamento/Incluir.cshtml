@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Razor.Language.Extensions
+@model MinhaCarteira.AppCliente.ViewModel.AgendamentoViewModel
+
+@{
+    ViewData["Title"] = "Agendamento";
+    ViewData["Icone"] = "<i class='fa fa-calendar-day fa-lg'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+            <script src="~/js/autoComplete/configurarAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/autoComplete/cadastroAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/views/agendamentoView.js" asp-append-version="true"></script>
+        }
+    }
+}
+
+<form asp-action="Incluir" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Cadastrar</h1>
+    <hr />
+
+    @Html.EditorForModel()
+</form>

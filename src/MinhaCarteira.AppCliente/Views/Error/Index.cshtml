@@ -1,0 +1,57 @@
+﻿@using MinhaCarteira.AppCliente.Models;
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h4>Não foi possível processar sua solicitação.</h4>
+    @if (Model.ShowRequestId)
+    {
+        <p>
+            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+        </p>
+    }
+
+    <div class="alert p-0">
+        <span><strong>Url:</strong> @Model.Caminho</span>
+        <h5>Detalhes da exceção</h5>
+        <pre class="text-dark p-0 pre-wrapper">@Model.Mensagem</pre>
+
+        @if (!string.IsNullOrWhiteSpace(Model.MensagensInternas))
+        {
+            <strong>Mensagens internas</strong>
+            <pre class="text-dark p-0 pre-wrapper">@Model.MensagensInternas</pre>
+        }
+
+        <environment include="Development">
+            @if (!string.IsNullOrWhiteSpace(Model.MensagemApi))
+            {
+                <strong>Retorno da API</strong>
+                <pre class="pre-wrapper text-dark">
+                <code id="mensagemApi" class="language-json hljs">@Model.MensagemApi</code>
+                                            </pre>
+            }
+
+            <hr class="col-xs-12" />
+            <h5>Pilha de chamada</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" checked id="chkWrapper">
+                <label class="form-check-label" for="chkWrapper">
+                    Quebrar linhas automaticamente
+                </label>
+                <br />
+            </div>
+
+            <pre id="stackTrace" class="stacktrace pre-wrapper">
+<code>@Model.StackTrace</code>
+    </pre>
+        </environment>
+    </div>
+</div>
+
+@section Css {
+    <link rel="stylesheet" href="~/css/stackTrace.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/highlight.js/styles/default.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/highlight.js/styles/tokyo-night-light.min.css" asp-append-version="true" />
+}

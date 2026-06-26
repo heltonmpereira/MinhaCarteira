@@ -1,0 +1,90 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.InstituicaoFinanceiraViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input hidden asp-for="Icone.Conteudo" />
+<input hidden asp-for="Icone.Nome" />
+
+<div class="row">
+    <div class="col-sm-9 mb-3">
+        <div class="row">
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input asp-for="Id" class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 form-group">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" autofocus />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+
+            <div class="col-2 form-group">
+                <label asp-for="DelimitadorCsv" class="control-label"></label>
+                <input asp-for="DelimitadorCsv" class="form-control" autofocus />
+                <span asp-validation-for="DelimitadorCsv" class="text-danger"></span>
+            </div>
+
+            <div class="col-4">
+                <label asp-for="CorFundo" class="control-label"></label>
+                <input asp-for="CorFundo" class="form-control" autofocus />
+                <span asp-validation-for="CorFundo" class="text-danger"></span>
+                <div class="form-text">
+                    <a href="https://adminlte.io/themes/v3/pages/widgets.html" target="_blank">Documentação</a>
+                    <code>bg-gradient-*</code>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" asp-for="NomeCamposPrimeiraLinha">
+                <label class="form-check-label" asp-for="NomeCamposPrimeiraLinha"></label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label asp-for="MapeamentoCamposCsv" class="control-label"></label>
+                <textarea asp-for="MapeamentoCamposCsv" class="form-control h200px"></textarea>
+                <div id="help1" class="form-text">Método de serialização do template: <code>Template.Parse(campo.Value)</code></div>
+                <div class="form-text">Método de renderização: <code>template.RenderAsync(new { model = row })</code></div>
+                <div class="form-text">
+                    Os espaços em branco nos nomes das colunas serão trocados "_" (underline); os caracteres "(", ")", "/" e "$" serão removidos dos nomes das colunas
+                </div>
+                <div class="form-text">
+                    Utilize "=>" como operador de atribuição. Ex.: <code>Descricao => {{ model.Descrição }};Valor => {{ model.Valor }}  </code>
+                </div>
+                <div class="form-text">
+                    Para maiores informações sobre a sintaxe consulte os sites oficiais do pacote Scriban:
+                    <a href="https://github.com/scriban/scriban" target="_blank">Github</a>,
+                    <a href="https://github.com/scriban/scriban/blob/master/doc/language.md" target="_blank">Language</a>,
+                    <a href="https://shopify.github.io/liquid/" target="_blank">Liquid</a>,
+                    <a href="https://scribanonline.azurewebsites.net/" target="_blank">Scriban online</a>.
+                </div>
+                <span asp-validation-for="MapeamentoCamposCsv" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3 mb-3">
+        <label asp-for="Icone.IconeForm" class="form-label"></label>
+        <div class="custom-file">
+            <input asp-for="Icone.IconeForm" class="custom-file-input mb-2">
+            <label class="custom-file-label" asp-for="Icone.IconeForm">Procurar ícone...</label>
+            <img id="preview" class="img-fluid border-0 @(Model.Icone?.Conteudo == null ? "d-none" : string.Empty)"
+                 src="data:@Model.Icone?.MimeType;base64,@Model.Icone?.Conteudo"
+                 asp-append-version="true" height="78" width="78" />
+        </div>
+        <span asp-validation-for="Icone.IconeForm" class="text-danger"></span>
+    </div>
+</div>
+
+<hr />
+<div class="mb-3">
+    <input asp-accessando-como type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" />
+
+    <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+</div>

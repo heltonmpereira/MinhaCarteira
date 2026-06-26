@@ -1,0 +1,29 @@
+﻿@model MinhaCarteira.AppCliente.ViewModel.AgendamentoParcelaViewModel
+
+@{
+    ViewData["Title"] = "Pagamento";
+    ViewData["Icone"] = "<i class='fa fa-calendar-day fa-lg'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+            <script src="~/js/autoComplete/configurarAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/autoComplete/cadastroAutoComplete.js" asp-append-version="true"></script>
+            <script src="~/js/views/agendamentoView.js" asp-append-version="true"></script>
+            <script type="text/javascript" nws-csp-add-nonce="true">
+                @{
+                    var opcao = "tipoParcela" + Model.Agendamento.TipoParcelas;
+                }
+
+                    let opcao = "@opcao";
+                definirTipoParcelas(opcao);
+            </script>
+        }
+    }
+}
+
+<form asp-action="PagarParcela" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Pagamento</h1>
+    <hr />
+
+    @Html.EditorForModel()
+</form>

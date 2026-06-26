@@ -1,0 +1,204 @@
+﻿@using MinhaCarteira.AppCliente.Models
+@using MinhaCarteira.AppCliente.ViewModel;
+@model ListaMovimentoBancarioViewModel;
+
+@{
+    var total = (decimal)0.00;
+    var totalSaidas = (decimal)0.00;
+    var totalEntradas = (decimal)0.00;
+    var tableTheme = $"table-{ViewBag.Theme}";
+}
+
+<div class="table-responsive col-sm-11 px-sm-3 px-md-0 pt-4 mx-auto p-0 p-sm-2">
+    <table class="table table-striped table-hover table-valign-middle @tableTheme">
+        <thead class="table-primary">
+            <tr>
+                <th class="p-0" width="42"></th>
+                <th class="p-0" width="35"></th>
+
+                <th class="p-0 py-1 text-end" width="120">
+                    <asp-cabecalho asp-for="@Model.Itens.FirstOrDefault().DataMovimento" />
+                    <asp-cabecalho campo="TipoMovimento;Valor" titulo="Valor" />
+                </th>
+
+                <th class="p-0 px-3">
+                    <asp-cabecalho asp-for="@Model.Itens.FirstOrDefault().Descricao" />
+                </th>
+
+                <th class="p-0 py-1" width="30"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Itens)
+            {
+                total += item.ValorReal;
+                switch (item.TipoMovimento)
+                {
+                    case TipoMovimento.Debito:
+                        totalSaidas += item.Valor;
+                        break;
+                    case TipoMovimento.Credito:
+                    default:
+                        totalEntradas += item.Valor;
+                        break;
+                }
+
+                var txtTitleTransferencia = item.TransferenciaBancariaId == null
+                ? string.Empty
+                : item.TipoMovimento == TipoMovimento.Debito
+                ? $"Enviado para {item.TransferenciaBancaria?.Destino?.ContaBancaria?.Nome}"
+                : $"Recebido de {item.TransferenciaBancaria?.Origem?.ContaBancaria?.Nome}";
+
+                var corTextoTransferencia = item.TransferenciaBancariaId == null
+                ? string.Empty
+                : item.TipoMovimento == TipoMovimento.Debito
+                ? "text-danger"
+                : "text-primary";
+
+                var corFont = item.ValorReal > 0
+                ? "text-primary"
+                : item.ValorReal < 0
+                ? "text-danger"
+                : "text-secondary";
+
+                <tr class="align-middle">
+                    <td class="align-middle">
+                        @if (item.ConciliacaoBancariaMovimentoId != null && item.ConciliacaoBancariaMovimentoId != Guid.Empty)
+                        {
+                            <i class="text-success fa fa-link"></i>
+                        }
+
+                        @if (item.TransferenciaBancariaId != null)
+                        {
+                            <i class="@corTextoTransferencia fa fa-arrow-right-arrow-left"
+                               Title="@txtTitleTransferencia"></i>
+                        }
+                    </td>
+
+                    <td class="align-middle p-0 px-1">
+                        @if (!string.IsNullOrWhiteSpace(item.Categoria.Icone?.Conteudo))
+                        {
+                            <img src="data:@item.Categoria.Icone.MimeType;base64,@item.Categoria.Icone.Conteudo"
+                                 title="@item.Categoria.Nome"
+                                 alt="@item.Categoria.Nome"
+                                 width="42" height="42"
+                                 class="ps-1"
+                                 asp-append-version="true" />
+                        }
+                        else
+                        {
+                            <img src="~/img/categ.svg"
+                                 title="@item.Categoria.Nome"
+                                 alt="@item.Categoria.Nome"
+                                 width="42" height="42"
+                                 class="ps-1"
+                                 asp-append-version="true" />
+                        }
+                    </td>
+
+                    <td class="text-end align-middle" data-title="Valor">
+                        <small class="text-secondary">
+                            @Convert.ToDateTime(item.DataMovimento).ToString("dd MMM yy HH:mm")
+                        </small>
+                        <span class="@corFont d-block text-nowrap fw-bold">
+                            @Html.DisplayFor(modelItem => item.ValorReal)
+                        </span>
+                    </td>
+
+                    <td class="align-middle p-0">
+                        <a asp-action="Alterar" asp-route-id="@item.Id" class="text-@ViewBag.ThemeInverse d-block p-0 py-2">
+                            <span>
+                                @Html.DisplayFor(modelItem => item.Descricao)
+                            </span>
+
+                            <small class="text-secondary d-block"
+                                   title="@Html.DisplayFor(modelItem => item.Pessoa.Nome) | @Html.DisplayFor(modelItem => item.CentroClassificacao.Nome)">
+                                <span class="d-inline-block">
+                                    @Html.DisplayFor(modelItem => item.Pessoa.Nome) |
+                                </span>
+                                <span class="d-inline-block">
+                                    @Html.DisplayFor(modelItem => item.CentroClassificacao.Nome)
+                                </span>
+                            </small>
+                        </a>
+                    </td>
+
+                    <td class="align-middle p-0" width="10">
+                        <div class="d-flex float-end">
+                            @if (item.MovimentoBancarioArquivos?.Any() == true)
+                            {
+                                <div class="dropdown">
+                                    <button class="btn btn-link" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa-solid fa-paperclip fa-lg"></i>
+                                    </button>
+
+                                    <ul class="dropdown-menu">
+                                        @foreach (var anexo in item.MovimentoBancarioArquivos)
+                                        {
+                                            <li>
+                                                <a class="dropdown-item" target="_blank" href="@Url.Action("BaixarArquivo", "MovimentoBancario", new { arquivoId = anexo.ArquivoId })">
+                                                    <i class="fa-solid fa-lg fa-paperclip"></i>&nbsp;@anexo.Arquivo.Nome
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+    
+                            @if (item.ConciliacaoBancariaMovimentoId == null)
+                            {
+                                <a class="icon-link link-success" asp-action="ConciliarMovimento" asp-route-id="@item.Id" title="Conciliar">
+                                    <i class="fa-solid fa-lg fa-link"></i>&nbsp;
+                                </a>
+                            }
+                            
+                            <a class="icon-link link-danger" asp-action="Deletar" asp-route-id="@item.Id" title="Remover">
+                                <i class="fa-solid fa-lg fa-trash-can"></i>&nbsp;
+                            </a>
+
+                            <a class="icon-link link-primary" asp-action="Clonar" asp-route-id="@item.Id" title="Clonar">
+                                <i class="fa-solid fa-lg fa-clone"></i>&nbsp;
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot class="table-secondary">
+            @{
+                var corFontRodape = total > 0
+                ? "text-primary"
+                : total < 0
+                ? "text-danger"
+                : "text-secondary";
+            }
+
+            <tr>
+                <td class="p-1 text-center" colspan="6">
+                    <div class="d-flex p-0">
+                        <div class="col">
+                            Entradas
+                            <small class="d-block text-nowrap @(totalEntradas > 0 ? "text-primary" : "text-secondary")">
+                                @totalEntradas.ToString("c")
+                            </small>
+                        </div>
+                        <div class="col">
+                            Saídas
+                            <small class="d-block text-nowrap @(totalSaidas > 0 ? "text-danger" : "text-secondary")">
+                                @totalSaidas.ToString("c")
+                            </small>
+                        </div>
+                        <div class="col">
+                            Total
+                            <small class="d-block text-nowrap fw-bold @corFontRodape">
+                                @total.ToString("c")
+                            </small>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

@@ -1,0 +1,25 @@
+﻿@using System.Linq
+@using MinhaCarteira.AppCliente.Models.Interface;
+@model Tuple<ICriterioViewModel, string, object>
+
+<div class="col-11 mx-auto mx-2 mt-4 p-4 rounded-3 border shadow-sm">
+    @if (Model.Item1 != null && Model.Item1.GruposFiltro.Any(a => a.Filtros.Any(f => f.Visivel)))
+    {
+        <h1 class="display-5 fw-bold">@Model.Item2</h1>
+        <p class="col-md-12 fs-4">Nenhum registro foi localizado a partir do filtro especificado.</p>
+        <p class="col-md-12 fs-6">Por gentileza, remova ou especifique o filtro especificado para verificar os registros cadastrados.</p>
+    }
+    else
+    {
+        <h1 class="display-5 fw-bold">@Model.Item2</h1>
+        <p class="col-md-12 fs-4">Você não possui nenhum registro a ser listada por aqui.</p>
+        <p class="col-md-12 fs-6">Clique no botão abaixo para cadastrar um novo item.</p>
+
+        @Html.ActionLink(
+            linkText: "Cadastrar",
+            actionName: "Incluir",
+            controllerName: null,
+            routeValues: Model.Item3,
+            htmlAttributes: new { @class = $"btn btn-primary {ViewBag.ClasseBotao}lg" })
+    }
+</div>

@@ -1,0 +1,189 @@
+﻿@using MinhaCarteira.AppCliente.Helper
+@using MinhaCarteira.AppCliente.Models
+@model MinhaCarteira.AppCliente.ViewModel.MovimentoBancarioViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input disabled type="hidden" class="form-control" asp-for="Id" />
+<input disabled type="hidden" class="form-control" asp-for="ProprietarioId" />
+
+<div class="row mb-3">
+    <div class="col-sm-4 col-md-3">
+        <label for="tipoMovimentoDebito" class="form-label">Tipo</label>
+        <br class="d-none d-sm-block" />
+        <div class="btn-group" role="group" aria-label="Tipo de movimento (Débito ou Crédito)">
+            <input class="btn-check" autocomplete="off"
+                   id="tipoMovimentoDebito"
+                   asp-for="TipoMovimento"
+                   type="radio"
+                   value="Debito"
+                   checked="@(TipoMovimento.Debito == Model?.TipoMovimento)" />
+            <label class="btn btn-outline-danger" for="tipoMovimentoDebito">
+                @TipoMovimento.Debito.GetDescription()
+            </label>
+
+            <input class="btn-check" autocomplete="off"
+                   id="tipoMovimentoCredito"
+                   asp-for="TipoMovimento"
+                   type="radio"
+                   value="Credito"
+                   checked="@(TipoMovimento.Credito == Model?.TipoMovimento)" />
+            <label class="btn btn-outline-info" for="tipoMovimentoCredito">
+                @TipoMovimento.Credito.GetDescription()
+            </label>
+        </div>
+        <span asp-validation-for="TipoMovimento" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-4 col-md-3">
+        <label asp-for="Competencia" class="form-label"></label>
+        <input asp-for="Competencia" class="form-control" />
+        <span asp-validation-for="Competencia" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-3">
+        <label asp-for="DataMovimento" class="form-label"></label>
+        <input asp-for="DataMovimento" class="form-control" />
+        <span asp-validation-for="DataMovimento" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-3">
+        <label asp-for="Valor" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text" id="basic-addon1">R$</span>
+            <input asp-for="Valor" class="form-control money" autofocus />
+        </div>
+        <span asp-validation-for="Valor" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-6">
+        <label asp-for="Descricao" class="form-label"></label>
+        <input asp-for="Descricao" class="form-control" />
+        <span asp-validation-for="Descricao" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label asp-for="ContaBancariaId" for="txtContaBancaria" class="form-label"></label>
+        <input type="hidden" asp-for="ContaBancariaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtContaBancaria" asp-for="NomeContaBancaria" class="form-control" />
+        </div>
+        <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="PessoaId" for="txtPessoa" class="form-label"></label>
+        <input type="hidden" asp-for="PessoaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtPessoa" asp-for="NomePessoa" class="form-control" />
+        </div>
+        <span asp-validation-for="PessoaId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label asp-for="CategoriaId" for="txtCategoria" class="form-label"></label>
+        <input type="hidden" asp-for="CategoriaId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtCategoria" asp-for="CaminhoCategoria" class="form-control" />
+        </div>
+        <span asp-validation-for="CategoriaId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="CentroClassificacaoId" for="txtCentroClassificacao" class="form-label"></label>
+        <input type="hidden" asp-for="CentroClassificacaoId" class="form-control" />
+        <div class="input-group">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input type="search" id="txtCentroClassificacao" asp-for="NomeCentroClassificacao" class="form-control" />
+        </div>
+        <span asp-validation-for="CentroClassificacaoId" class="text-danger"></span>
+    </div>
+</div>
+
+@if (Model.MovimentoBancarioArquivos != null && Model.MovimentoBancarioArquivos.Any())
+{
+    <h5>Anexos:</h5>
+    <div id="lista-arquivos-existentes" class="list-group list-group-horizontal mb-3">
+        @for (int i = 0; i < Model.MovimentoBancarioArquivos.Count; i++)
+        {
+            var icone = Model.MovimentoBancarioArquivos[i].Arquivo?.Extensao?.Replace(".", "");
+
+            var extensaoImagem = new[] { "apng", "png", "avif", "gif", "jpeg", "jpg", "svg", "webp", "bmp", "ico", "tiff" };
+            var extensaoArquivos = new[] { "ofx", "txt" };
+            var extensaoExcel = new[] { "xls", "xlsx" };
+            var extensaoWord = new[] { "doc", "docx" };
+
+            if (extensaoImagem.Contains(icone))
+                icone = "file-image";
+            else if (extensaoArquivos.Contains(icone))
+                icone = "file";
+            else if (extensaoExcel.Contains(icone))
+                icone = "file-excel";
+            else if (extensaoWord.Contains(icone))
+                icone = "file-word";
+            else icone = "file-" + icone;
+
+            <div class="">
+                <a class="btn btn-sm btn-primary list-group-item list-group-item-action list-group-item-light" target="_blank" href="@Url.Action("BaixarArquivo", "MovimentoBancario", new { arquivoId = Model.MovimentoBancarioArquivos[i].Arquivo.Id })">
+                    <i class="fa-solid fa-lg fa-@icone"></i>&nbsp;@Model.MovimentoBancarioArquivos[i].Arquivo.Nome
+                </a>
+
+                <div class="d-inline-block">
+                    <input type="checkbox" asp-for="@Model.MovimentoBancarioArquivos[i].Deletado" />
+                    <label asp-for="@Model.MovimentoBancarioArquivos[i].Deletado">&nbsp;Remover</label>
+                    <span asp-validation-for="@Model.MovimentoBancarioArquivos[i].Arquivo.IconeForm" class="text-danger"></span>
+                </div>
+
+                <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].Id" />
+                <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].Deletado" />
+                <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].DataCadastro" />
+                <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].ArquivoId" />
+                <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].MovimentoBancarioId" />
+                <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].Arquivo.Id" />
+                <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].Arquivo.Nome" />
+                <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].Arquivo.Conteudo" />
+                <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].Arquivo.Extensao" />
+            </div>
+            @*             <div class="list-group-item list-group-item-action">
+                <div class="d-flex flex-column">
+                </div>
+            </div>
+ *@        }
+        </div>
+    }
+
+    <div class="row mb-3">
+        <div class="col-auto">
+            <button id="btnAdicionarArquivo" type="button" class="btn btn-primary" title="Adicionar arquivo">
+                <i class="fa-solid fa-lg fa-file-circle-plus"></i>&nbsp;
+            </button>
+        </div>
+
+        <div id="arquivos-container" class="col-11 row">
+            <!-- Aqui os campos de arquivos serão adicionados -->
+        </div>
+        <span asp-validation-for="MovimentoBancarioArquivos" class="text-danger"></span>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-12 mb-3">
+            <label asp-for="Observacao" class="form-label"></label>
+            <textarea asp-for="Observacao" class="form-control"></textarea>
+            <span asp-validation-for="Observacao" class="text-danger"></span>
+        </div>
+    </div>
+
+    <hr />
+    <div class="mb-3">
+        <input asp-accessando-como type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" />
+
+        <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+    </div>

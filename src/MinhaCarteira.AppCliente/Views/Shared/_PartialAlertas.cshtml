@@ -1,0 +1,72 @@
+﻿@using Dhani.Utilitarios.Helper;
+@using Newtonsoft.Json;
+
+@{
+    var retornoApi = ViewBag.RetornoApi != null
+        ? ViewBag.RetornoApi
+        : null;
+
+    if (retornoApi == null)
+    {
+        var tempData = TempData["RetornoApi"] != null
+            ? TempData["RetornoApi"]
+            : null;
+
+        if (tempData != null)
+            retornoApi = JsonConvert.DeserializeObject<RespostaServico<object>>(tempData.ToString());
+
+        //TempData["RetornoApi"].Mensagem != "Nenhum registro localizado."
+    }
+
+    if (retornoApi == null) return;
+
+    var bemSucedido = retornoApi.BemSucedido;
+    var msg = retornoApi.MensagemErro ?? retornoApi.Mensagem;
+
+    if (msg == "Nenhum registro localizado.") return;
+
+    var titulo = retornoApi.Mensagem;
+    var stackTrace = string.Empty;
+    var erroDetalhado = retornoApi.Mensagem;
+
+    if (retornoApi.Dados is Exception ex)
+    {
+        titulo ??= ex.GetType().FullName;
+        msg ??= ex.Message;
+        stackTrace = ex.StackTrace;
+        erroDetalhado = ex.DescreverErro();
+    }
+
+    var classFont = "text-black";
+    var classAlert = "alert-success";
+    var iconeFont = "fa-check-circle";
+
+    if (!bemSucedido && !string.IsNullOrWhiteSpace(msg))
+    {
+        classFont = "text-white";
+        classAlert = "alert-danger";
+        iconeFont = "fa-circle-exclamation";
+    }
+
+    <div class="alert @classAlert alert-dismissible fade show position-fixed bottom-0 end-0 me-3 botaoFechar" role="alert">
+        <input type="hidden" value="@erroDetalhado" id="txtDetalhesErro" />
+        <button class="float-right btn m-0 @classFont btn-copiar-detalhes">
+            <i class="fa fa-clipboard"></i>
+        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+        <h5 class="alert-heading">
+            <i class="fa @iconeFont fs-6"></i>
+            <span>@titulo</span>
+        </h5>
+        <span>@Html.Raw(msg) </span>
+
+        <environment include="Development">
+            @if (!string.IsNullOrWhiteSpace(stackTrace))
+            {
+                <hr />
+                <pre id="stackTrace" class="stacktrace pre-wrapper @classFont bg-body opacity-75"><code>@stackTrace</code></pre>
+            }
+        </environment>
+    </div>
+}
