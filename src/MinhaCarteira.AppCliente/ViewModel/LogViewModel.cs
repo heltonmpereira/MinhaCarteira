@@ -1,6 +1,7 @@
 
 using System;
 using System.ComponentModel;
+using MinhaCarteira.AppCliente.Models;
 using MinhaCarteira.AppCliente.Models.Interface;
 using MinhaCarteira.AppCliente.ViewModel.Base;
 
@@ -15,7 +16,7 @@ public class LogViewModel : BaseViewModel, IEntidade<Guid>
     public DateTime DataHora { get; set; }
 
     [DisplayName("Tipo de Log")]
-    public string TipoLog { get; set; }
+    public TipoLogEnum TipoLog { get; set; }
 
     public string Categoria { get; set; }
     public string Mensagem { get; set; }
