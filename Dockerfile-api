@@ -15,8 +15,8 @@ RUN dotnet nuget add source "https://pkgs.dev.azure.com/DhaniProjetos/_packaging
     --password "$AZURE_DEVOPS_PAT" \
     --store-password-in-clear-text
 
-RUN dotnet restore MinhaCarteira.sln
-RUN dotnet publish MinhaCarteira.AppServer -c Release -o /app/publish/api --no-restoreRUN
+RUN dotnet restore src/MinhaCarteira.sln
+RUN dotnet publish src/MinhaCarteira.AppServer -c Release -o /app/publish/api --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
