@@ -13,6 +13,14 @@ public class AuditoriaActionFilter : IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        // Skip auditing the Auditoria controller itself
+        var controllerName = context.Controller.GetType().Name.Replace("Controller", "");
+        if (controllerName.Equals("Auditoria", StringComparison.OrdinalIgnoreCase))
+        {
+            await next();
+            return;
+        }
+
         var resultContext = await next();
         
         // Only log successful actions
