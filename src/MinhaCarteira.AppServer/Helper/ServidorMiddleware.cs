@@ -73,6 +73,9 @@ public static class ServidorMiddleware
         services.AddScoped<IAuditoriaRepositorio, AuditoriaRepositorio>();
         services.AddScoped<IAuditoriaServico, AuditoriaServico>();
         services.AddScoped<IRegistroAuditoriaServico, RegistroAuditoriaServico>();
+        
+        services.AddScoped<ILogRepositorio, LogRepositorio>();
+        services.AddScoped<ILogServico, LogServico>();
 
         services.AddScoped<RelatorioServico>();
         services.AddScoped<RelatorioRepositorio>();

@@ -168,4 +168,5 @@ public class MinhaCarteiraContext(DbContextOptions<MinhaCarteiraContext> options
     public DbSet<Agendamento> Agendamentos { get; set; }
     public DbSet<AgendamentoParcela> AgendamentoParcelas { get; set; }
     public DbSet<Auditoria> Auditorias { get; set; }
+    public DbSet<Log> Logs { get; set; }
 }
