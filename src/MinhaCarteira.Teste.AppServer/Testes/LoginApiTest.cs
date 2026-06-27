@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Modelo.Usuario;
 using MinhaCarteira.Teste.AppServer.Base;
@@ -23,6 +24,7 @@ public class LoginApiTest(TestFixture fixture)
 
         var rota = "/api/login";
         var retorno = await _client.EnviarPostAsync<UsuarioToken>(rota, login);
+        
         Assert.Equal(resultadoEsperado, retorno.Mensagem);
     }
 
