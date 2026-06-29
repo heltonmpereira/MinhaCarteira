@@ -1,4 +1,4 @@
-﻿using Dhani.Utilitarios.Filtro;
+using Dhani.Utilitarios.Filtro;
 using Dhani.Utilitarios.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,10 +27,7 @@ public class PadraoApiController<TServico> : ControllerBase
     private PadraoApiController(IHttpContextAccessor httpContextAccessor)
     {
         HttpContextAccessor = httpContextAccessor;
-        IdUsuarioLogado = httpContextAccessor.HttpContext?
-            .User
-            .FindFirst("UsuarioId")?
-            .Value;
+        IdUsuarioLogado = httpContextAccessor.HttpContext?.User?.FindFirst("UsuarioId")?.Value;
     }
     protected PadraoApiController(TServico servico, IHttpContextAccessor httpContextAccessor) : this(httpContextAccessor)
     {
@@ -63,9 +60,7 @@ public class PadraoApiController<TServico> : ControllerBase
             item.SetValue(nomePropriedade, IdUsuarioLogado);
     }
 
-    protected IActionResult ConfrontarUsuarioLogadoEProprietario<TEntidade>(
-        IActionResult respostaServico, 
-        string nomePropriedade = "ProprietarioId")
+    protected IActionResult ConfrontarUsuarioLogadoEProprietario<TEntidade>(IActionResult respostaServico, string nomePropriedade = "ProprietarioId")
     {
         if (respostaServico is OkObjectResult retornoOk)
         {
@@ -77,11 +72,11 @@ public class PadraoApiController<TServico> : ControllerBase
                 var proprietarioId = (Guid)propProprietarioId;
                 if (proprietarioId != new Guid(IdUsuarioLogado))
                 {
-                    var retorno = new RespostaServico<Usuario>(null, "Falha ao validar informações do usuário")
+                    var retorno = new RespostaServico<Usuario>(null, "Falha ao validar informacoes do usuario")
                     {
                         BemSucedido = false,
                         StatusCode = HttpStatusCode.BadRequest,
-                        MensagemErro = "Falha ao validar informações do usuário"
+                        MensagemErro = "Falha ao validar informacoes do usuario"
                     };
 
                     return BadRequest(retorno);

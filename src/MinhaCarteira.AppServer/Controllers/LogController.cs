@@ -1,3 +1,4 @@
+
 using System;
 using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
@@ -7,17 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Entidade;
-using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Definicao.Interface.Servico;
+using MinhaCarteira.Definicao.Modelo;
 
 namespace MinhaCarteira.AppServer.Controllers;
 
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class AuditoriaController(IAuditoriaServico servico, IHttpContextAccessor httpContextAccessor) : ControllerBase
+public class LogController(ILogServico servico, IHttpContextAccessor httpContextAccessor) : ControllerBase
 {
-    protected IAuditoriaServico Servico { get; } = servico;
+    protected ILogServico Servico { get; } = servico;
     protected IHttpContextAccessor HttpContextAccessor { get; } = httpContextAccessor;
 
     [HttpGet]
@@ -46,7 +47,7 @@ public class AuditoriaController(IAuditoriaServico servico, IHttpContextAccessor
             criterio.AdicionarGrupo(grupoRegistrosDeletados);
         }
 
-        // Filter by OrganizacaoId (commented out so admins see all)
+        //// Filter by OrganizacaoId
         //var organizacaoIdClaim = HttpContextAccessor.HttpContext?.User.FindFirst("OrganizacaoId")?.Value;
         //if (!string.IsNullOrEmpty(organizacaoIdClaim))
         //{
@@ -63,14 +64,14 @@ public class AuditoriaController(IAuditoriaServico servico, IHttpContextAccessor
         //    criterio.AdicionarGrupo(grupoOrganizacao);
         //}
 
-        return await Servico.RespostaPaginadaServicoAsync<Auditoria>(
+        return await Servico.RespostaPaginadaServicoAsync<Log>(
             criterio: criterio);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> ObterPorId(Guid id)
     {
-        return await Servico.RespostaServicoAsync<Auditoria>(
+        return await Servico.RespostaServicoAsync<Log>(
             parameters: [id, true]);
     }
 }
