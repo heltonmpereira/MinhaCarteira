@@ -1,0 +1,68 @@
+
+
+@model MinhaCarteira.AppCliente.ViewModel.LogViewModel
+
+@{
+    ViewData["Title"] = "Logs";
+    ViewData["Icone"] = "<i class='fa-solid fa-file-lines fa-lg d-inline'></i>";
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+<div class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
+    <h1>Detalhes do Log</h1>
+
+    <dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DataHora)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.DataHora)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TipoLog)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.TipoLog)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Categoria)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Categoria)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Mensagem)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Mensagem)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Usuario)</dt>
+        <dd class="col-sm-9">@Model.Usuario?.NomeCompleto</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IpUsuario)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.IpUsuario)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UserAgent)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UserAgent)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Url)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Url)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.MetodoHttp)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.MetodoHttp)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.StatusCode)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.StatusCode)</dd>
+
+        @if (!string.IsNullOrEmpty(Model.DadosSerializados))
+        {
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DadosSerializados)</dt>
+            <dd class="col-sm-9">
+                <pre style="max-height:200px;overflow-y:auto;white-space:pre-wrap;word-wrap:break-word;background-color:#f5f5f5;padding:10px;border-radius:4px;">@Html.DisplayFor(model => model.DadosSerializados)</pre>
+            </dd>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.StackTrace))
+        {
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.StackTrace)</dt>
+            <dd class="col-sm-9">
+                <pre style="max-height:400px;overflow-y:auto;white-space:pre-wrap;word-wrap:break-word;background-color:#f5f5f5;padding:10px;border-radius:4px;">@Html.DisplayFor(model => model.StackTrace)</pre>
+            </dd>
+        }
+    </dl>
+
+    <hr />
+    <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Voltar</a>
+</div>

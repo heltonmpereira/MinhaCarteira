@@ -1,0 +1,85 @@
+
+
+@using MinhaCarteira.AppCliente.Models.Interface;
+@using MinhaCarteira.AppCliente.ViewModel.Base;
+@using MinhaCarteira.AppCliente.ViewModel;
+@model ListaBaseViewModel<LogViewModel>
+
+@{
+    ViewData["Title"] = "Logs";
+    ViewData["Icone"] = "<i class='fa-solid fa-file-lines fa-lg d-inline'></i>";
+
+    var filtro = Model == null ? null : Model.FiltroViewModel;
+    await Html.RenderPartialAsync("_PartialFiltro", filtro);
+
+    @section Scripts {
+        <script src="~/lib/dompurify/purify.min.js" asp-append-version="true"></script>
+        <script src="~/js/views/paginacao.js" asp-append-version="true"></script>
+    }
+}
+
+@if ((ViewBag?.RetornoApi == null || ViewBag?.RetornoApi.BemSucedido) && (Model == null || !Model.Itens.Any()))
+{
+    <asp-alerta-vazio class="col-11 mx-auto mt-4 p-4 rounded-3 border shadow-sm" criterio="filtro" titulo="Logs" icone-botao-cadastrar="fa-file-lines"></asp-alerta-vazio>
+}
+else
+{
+    var tableTheme = $"table-{ViewBag.Theme}";
+    var classBotao = ViewBag.Theme == "dark" ? string.Empty : "-outline";
+
+    <div class="table-responsive col-sm-11 px-sm-3 px-md-0 pt-4 mx-auto">
+        <table class="table table-striped table-hover table-valign-middle @tableTheme">
+            <thead class="table-primary">
+                <tr>
+                    <th>
+                        <asp-cabecalho asp-for="Itens.FirstOrDefault().DataHora"></asp-cabecalho>
+                    </th>
+                    <th>
+                        <asp-cabecalho asp-for="Itens.FirstOrDefault().TipoLog"></asp-cabecalho>
+                    </th>
+                    <th>
+                        <asp-cabecalho asp-for="Itens.FirstOrDefault().Categoria"></asp-cabecalho>
+                    </th>
+                    <th>
+                        <asp-cabecalho asp-for="Itens.FirstOrDefault().Mensagem"></asp-cabecalho>
+                    </th>
+                    <th>
+                        <asp-cabecalho asp-for="Itens.FirstOrDefault().Usuario"></asp-cabecalho>
+                    </th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                @foreach (var item in Model.Itens)
+                {
+                    <tr class="align-middle">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DataHora)
+                        </td>
+                        <td>
+                            @item.TipoLog
+                        </td>
+                        <td>
+                            @item.Categoria
+                        </td>
+                        <td>
+                            @item.Mensagem
+                        </td>
+                        <td>
+                            @item.Usuario?.NomeCompleto
+                        </td>
+                        <td class="p-2 align-content-center w150px">
+                            <div class="btn-group" role="group" aria-label="Botões de ação">
+                                <a title="Detalhes" class="btn btn@(classBotao)-success btn-acao p-0 pt-1 pb-1" asp-action="Detalhes" asp-route-id="@item.Id">
+                                    <i class="fa-solid fa-lg fa-info-circle"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    await Html.RenderPartialAsync("_PartialPaginacao", Model.Itens);
+}
