@@ -1,4 +1,5 @@
-﻿using Dhani.Utilitarios.Filtro;
+
+using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,10 @@ namespace MinhaCarteira.AppServer.Controllers.Base;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
-    TServico servico,
-    IHttpContextAccessor httpContextAccessor) : PadraoApiController<TServico>(servico, httpContextAccessor)
-    where TEntidade : class, IEntidade<TPK>
-    where TRepositorio : IRepositorio<TEntidade, TPK>
+public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(TServico servico, IHttpContextAccessor httpContextAccessor) 
+    : PadraoApiController<TServico>(servico, httpContextAccessor) 
+    where TEntidade : class, IEntidade<TPK> 
+    where TRepositorio : IRepositorio<TEntidade, TPK> 
     where TServico : IServico<TEntidade, TPK, TRepositorio>
 {
     [HttpGet]
@@ -28,7 +28,7 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
         if (!exibirRegistrosDeletados)
         {
             var grupoRegistrosDeletados = new GrupoFiltro("Deletados", [
-                new FiltroOpcao(){
+                new FiltroOpcao() {
                     NomePropriedade = "Deletado",
                     Valor = false,
                     Operador = TipoOperadorBusca.Igual,
@@ -42,16 +42,13 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
             filtroInicial.AdicionarGrupo(grupoRegistrosDeletados);
         }
 
-        return await Servico.RespostaPaginadaServicoAsync<TEntidade>(
-            criterio: filtroInicial);
+        return await Servico.RespostaPaginadaServicoAsync<TEntidade>(criterio: filtroInicial);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> ObterPorId(TPK id)
     {
-        var resposta = await Servico.RespostaServicoAsync<TEntidade>(
-            parameters: [id, true]);
-
+        var resposta = await Servico.RespostaServicoAsync<TEntidade>(parameters: [id, true]);
         return ConfrontarUsuarioLogadoEProprietario<TEntidade>(resposta);
     }
 
@@ -59,25 +56,21 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
     public virtual async Task<IActionResult> Incluir(TEntidade item)
     {
         DefinirUsuarioLogado(item);
-        return await Servico.RespostaServicoAsync<TEntidade>(
-            parameters: [item]);
+        return await Servico.RespostaServicoAsync<TEntidade>(parameters: [item]);
     }
 
     [HttpPut]
     public async Task<IActionResult> Alterar(TEntidade item)
     {
         DefinirUsuarioLogado(item);
-        return await Servico.RespostaServicoAsync<TEntidade>(
-            parameters: [item]);
+        return await Servico.RespostaServicoAsync<TEntidade>(parameters: [item]);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Deletar(TPK id) =>
-        await Servico.RespostaServicoAsync<int>(
-            parameters: [id]);
+    public async Task<IActionResult> Deletar(TPK id)
+        => await Servico.RespostaServicoAsync<int>(parameters: [id]);
 
     [HttpDelete("DeletarRange")]
-    public async Task<IActionResult> DeletarRange(TPK[] ids) =>
-        await Servico.RespostaServicoAsync<int>(
-            parameters: [ids]);
+    public async Task<IActionResult> DeletarRange(TPK[] ids)
+        => await Servico.RespostaServicoAsync<int>(parameters: [ids]);
 }
