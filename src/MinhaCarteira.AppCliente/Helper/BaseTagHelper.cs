@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace MinhaCarteira.AppCliente.Helper;
 
-public abstract class BaseTagHelper(IActionContextAccessor accessor) : TagHelper
+public abstract class BaseTagHelper(IHttpContextAccessor accessor) : TagHelper
 {
     public ClaimsPrincipal User { get; private set; } = accessor.ActionContext?.HttpContext.User;
 
