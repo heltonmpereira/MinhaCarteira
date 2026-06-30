@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace MinhaCarteira.AppCliente.Helper;
@@ -8,10 +8,10 @@ public class AcessarComoTagHelper : BaseTagHelper
 {
     private readonly string _acessadoVia;
 
-    public AcessarComoTagHelper(IActionContextAccessor accessor) : base(accessor)
+    public AcessarComoTagHelper(IHttpContextAccessor accessor) : base(accessor)
     {
-        if (accessor.ActionContext == null) return;
-        var user = accessor.ActionContext.HttpContext.User;
+        if (accessor.HttpContext == null) return;
+        var user = accessor.HttpContext.User;
         _acessadoVia = user.FindFirst("AcessadoVia")?.Value;
     }
 
