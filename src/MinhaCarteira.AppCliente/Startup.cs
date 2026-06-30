@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -56,7 +55,8 @@ public class Startup
                 ForwardedHeaders.XForwardedFor |
                 ForwardedHeaders.XForwardedProto;
 
-            options.KnownNetworks.Clear();
+
+            options.KnownIPNetworks.Clear();
             options.KnownProxies.Clear();
         });
         
@@ -160,7 +160,7 @@ public class Startup
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
 
-        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         var options = new PwaOptions()
         {
