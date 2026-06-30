@@ -1,11 +1,11 @@
 ﻿using System.Linq;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace MinhaCarteira.AppCliente.Helper;
 
 [HtmlTargetElement(Attributes = "possui-papel")]
-public class PossuiPapelTagHelper(IActionContextAccessor accessor) : BaseTagHelper(accessor)
+public class PossuiPapelTagHelper(IHttpContextAccessor accessor) : BaseTagHelper(accessor)
 {
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {

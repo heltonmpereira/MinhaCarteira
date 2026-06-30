@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace MinhaCarteira.AppCliente.Helper;
 
 public abstract class BaseTagHelper(IHttpContextAccessor accessor) : TagHelper
 {
-    public ClaimsPrincipal User { get; private set; } = accessor.ActionContext?.HttpContext.User;
+    public ClaimsPrincipal User { get; private set; } = accessor.HttpContext?.User;
 
     protected static void AdicionarClassDesabilitar(TagHelperOutput output, string targetElement)
     {
