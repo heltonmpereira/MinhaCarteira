@@ -22,7 +22,7 @@
       ]
     },
     {
-      "library": "dompurify@3.2.3",
+      "library": "dompurify@3.4.11",
       "destination": "wwwroot/lib/dompurify/",
       "files": [
         "purify.min.js"
@@ -30,7 +30,7 @@
     },
     {
       "provider": "jsdelivr",
-      "library": "jquery-validation@1.21.0",
+      "library": "jquery-validation@1.22.1",
       "destination": "wwwroot/lib/jquery-validation/",
       "files": [
         "dist/jquery.validate.min.js",
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "library": "bootstrap@5.3.3",
+      "library": "bootstrap@5.3.8",
       "destination": "wwwroot/lib/bootstrap/",
       "files": [
         "css/bootstrap-reboot.min.css",
@@ -61,7 +61,7 @@
       ]
     },
     {
-      "library": "font-awesome@6.7.2",
+      "library": "font-awesome@7.0.1",
       "destination": "wwwroot/lib/font-awesome/",
       "files": [
         "js/all.js",
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "library": "jqueryui@1.13.2",
+      "library": "jqueryui@1.14.2",
       "destination": "wwwroot/lib/jqueryui/",
       "files": [
         "jquery-ui.min.js",
@@ -97,12 +97,12 @@
       ]
     },
     {
-      "library": "tinymce@7.9.1",
+      "library": "tinymce@8.5.1",
       "destination": "wwwroot/lib/tinymce/"
     },
     {
       "provider": "jsdelivr",
-      "library": "netstack.js@1.1.2",
+      "library": "netstack.js@2.1.4",
       "destination": "wwwroot/lib/netstack.js/",
       "files": [
         "netstack.js"
@@ -110,7 +110,7 @@
     },
     {
       "provider": "cdnjs",
-      "library": "datatables.net@2.1.1",
+      "library": "datatables.net@2.3.4",
       "destination": "wwwroot/lib/datatables.net/"
     },
     {
@@ -121,7 +121,7 @@
     },
     {
       "provider": "cdnjs",
-      "library": "bootstrap-table@1.23.5",
+      "library": "bootstrap-table@1.27.3",
       "destination": "wwwroot/lib/bootstrap-table/",
       "files": [
         "bootstrap-table.css",
