@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Http
 
-<aside class="main-sidebar sidebar-dark-light elevation-1">
-    <a class="brand-link text-decoration-none ps-1 pt-3"
+<aside class="app-sidebar sidebar-dark-light elevation-1">
+    <a class="sidebar-brand text-decoration-none ps-1 pt-3"
        asp-area="" asp-controller="Home" asp-action="Index" id="brandLink">
         <img class="brand-image ms-0" src="~/img/logoSistema.png" alt="Icone do sistema">
         <span class="brand-text" id="brandText">dhani projetos</span>
@@ -9,7 +9,7 @@
 
     <div class="sidebar">
         <div class="user-panel my-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" id="menuLogin" data-widget="treeview" role="menu" data-accordion="false">
+            <ul class="nav sidebar-menu flex-column" id="menuLogin" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 @if (User.Identity is not { IsAuthenticated: true })
                 {
                     <li class="nav-item">
@@ -87,7 +87,7 @@
         </div>
 
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" id="menuLateral" data-widget="treeview" role="menu" data-accordion="false">
+            <ul class="nav sidebar-menu flex-column" id="menuLateral" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
                     <a is-active-route class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
                         <i class="nav-icon fa fa-home-alt"></i> <p>Home</p>

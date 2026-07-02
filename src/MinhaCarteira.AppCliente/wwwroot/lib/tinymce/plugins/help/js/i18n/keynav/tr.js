@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.tr',
   '  <strong>Shift+Sekme</strong> tuşlarına basın.</p>\n' +
   '\n' +
   '<p>Mevcut sekmeler arasında geçiş yapmak için sekme menüsüne odaklanıp uygun <strong>Ok</strong> tuşuna basarak\n' +
-  '  başka bir iletişim kutusu sekmesine geçiş yapın.</p>\n');
+  '  başka bir iletişim kutusu sekmesine geçiş yapın.</p>\n')

@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.sl_SI',
   '  kombinacije tipke <strong>shift + tabulatorke</strong>.</p>\n' +
   '\n' +
   '<p>Na drug zavihek pogovornega okna preklopite tako, da fokus prestavite na meni zavihka in nato pritisnete ustrezno <strong>puščično</strong>\n' +
-  '  tipko, da se pomaknete med razpoložljivimi zavihki.</p>\n');
+  '  tipko, da se pomaknete med razpoložljivimi zavihki.</p>\n')

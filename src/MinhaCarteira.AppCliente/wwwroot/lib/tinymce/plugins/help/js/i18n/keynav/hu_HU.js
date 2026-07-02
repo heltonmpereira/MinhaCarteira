@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.hu_HU',
   '  <strong>Shift+Tab</strong> billentyűvel navigálhat.</p>\n' +
   '\n' +
   '<p>A párbeszédablak másik lapjára úgy léphet, hogy a fókuszt a lapmenüre állítja, majd lenyomja a megfelelő <strong>nyílbillentyűt</strong>\n' +
-  '  a rendelkezésre álló lapok közötti lépkedéshez.</p>\n');
+  '  a rendelkezésre álló lapok közötti lépkedéshez.</p>\n')

@@ -5,7 +5,6 @@
 @{
     var routePwa = Configuration["BaseRoutePwa"];
     var condicaoSideBar = ViewBag.CondicaoSideBar ?? "sidebar-open";
-    var mode = ViewBag.Theme == "light" ? string.Empty : "dark-mode";
     var navTheme = $"navbar-{ViewBag.Theme}";
 }
 
@@ -86,13 +85,13 @@
     @await RenderSectionAsync("ScriptsHead", required: false)
 
 </head>
-<body class="sidebar-mini layout-fixed layout-navbar-fixed @mode @condicaoSideBar">
-    <div class="wrapper">
-        <nav class="main-header navbar navbar-expand shadow-sm @navTheme">
+<body class="sidebar-mini layout-fixed layout-navbar-fixed @condicaoSideBar" data-bs-theme="@ViewBag.Theme">
+    <div class="app-wrapper">
+        <nav class="app-header navbar navbar-expand shadow-sm @navTheme">
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <!--data-enable-remember="true"-->
-                    <a class="nav-link" data-widget="pushmenu"
+                    <a class="nav-link" data-lte-toggle="sidebar"
                        role="button" id="pushMenu">
                         <i class="fas fa-bars"></i>
                     </a>
@@ -152,7 +151,7 @@
                 <li class="nav-item">
                     <div class="theme-container shadow-dark">
                         <img id="theme-icon" width="40" height="40"
-                             src="~/img/@(mode == "dark-mode" ? "dark" : "light").png" alt="Tema">
+                             src="~/img/@(ViewBag.Theme).png" alt="Tema">
                     </div>
                 </li>
             </ul>
@@ -163,7 +162,7 @@
         }
 
         <div id="wipearea" class="d-sm-none position-absolute h-100" id="wipeArea"></div>
-        <main class="content-wrapper p-0">
+        <main class="app-main p-0">
             @{
                 await Html.RenderPartialAsync("_PartialAlertas");
             }
@@ -173,7 +172,7 @@
             </section>
         </main>
 
-        <footer class="main-footer">
+        <footer class="app-footer">
             <a class="link-primary text-decoration-none" href="https://dhaniprojetos.com">DhaniProjetos</a> © <strong>@DateTime.Now.Year</strong>
             <div class="float-right d-sm-inline-block">
                 <b>Versão</b> 1.2.0
@@ -188,7 +187,7 @@
 
     <script nws-csp-add-nonce="true">
         hljs.highlightAll();
-        $('.stacktrace').netStack();
+        // $('.stacktrace').netStack();
     </script>
 
 </body>

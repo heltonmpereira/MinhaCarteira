@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.cs',
   '  kombinace <strong>Shift+Tab</strong>.</p>\n' +
   '\n' +
   '<p>Chcete-li přepnout na další záložku dialogového okna, přejděte na nabídku záložek a poté můžete stisknutím požadované <strong>šipky</strong>\n' +
-  '  přepínat mezi dostupnými záložkami.</p>\n');
+  '  přepínat mezi dostupnými záložkami.</p>\n')

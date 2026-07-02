@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.ja',
   '  <strong>Shift+Tab</strong> を押して、このダイアログ タブの対話型コンポーネント間で移動します。</p>\n' +
   '\n' +
   '<p>タブ メニューをフォーカスしてから適切な<strong>矢印</strong>キーを押して表示可能なタブを循環して、\n' +
-  '  別のダイアログに切り替えます。</p>\n');
+  '  別のダイアログに切り替えます。</p>\n')

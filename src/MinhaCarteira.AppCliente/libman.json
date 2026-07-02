@@ -3,7 +3,7 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "admin-lte@3.2.0",
+      "library": "admin-lte@4.0.2",
       "destination": "wwwroot/lib/admin-lte/",
       "files": [
         "js/adminlte.min.js",
@@ -74,7 +74,6 @@
         "css/brands.min.css",
         "css/solid.min.css",
         "css/v5-font-face.min.css",
-        "webfonts/fa-solid-900.ttf",
         "webfonts/fa-solid-900.woff2",
         "webfonts/fa-regular-400.woff2"
       ]
@@ -102,7 +101,7 @@
     },
     {
       "provider": "jsdelivr",
-      "library": "netstack.js@2.1.4",
+      "library": "netstack.js@1.1.2",
       "destination": "wwwroot/lib/netstack.js/",
       "files": [
         "netstack.js"
