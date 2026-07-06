@@ -61,7 +61,7 @@
       ]
     },
     {
-      "library": "font-awesome@6.7.2",
+      "library": "font-awesome@7.0.1",
       "destination": "wwwroot/lib/font-awesome/",
       "files": [
         "js/all.js",
@@ -74,7 +74,6 @@
         "css/brands.min.css",
         "css/solid.min.css",
         "css/v5-font-face.min.css",
-        "webfonts/fa-solid-900.ttf",
         "webfonts/fa-solid-900.woff2",
         "webfonts/fa-regular-400.woff2"
       ]
