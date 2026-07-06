@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.de',
   '  <strong>UMSCHALT+TAB</strong> drücken.</p>\n' +
   '\n' +
   '<p>Wechseln Sie zu einer anderen Registerkarte des Dialogfelds, indem Sie den Fokus auf das Registerkartenmenü legen und dann die entsprechende <strong>Pfeiltaste</strong>\n' +
-  '  drücken, um durch die verfügbaren Registerkarten zu rotieren.</p>\n');
+  '  drücken, um durch die verfügbaren Registerkarten zu rotieren.</p>\n')

@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.he_IL',
   '  <strong>Shift+Tab</strong>.</p>\n' +
   '\n' +
   '<p>עבור לכרטיסיה אחרת בחלון על ידי העברת המיקוד לתפריט הכרטיסיות והקשה על <strong>החץ</strong>המתאים\n' +
-  '  כדי לעבור בין הכרטיסיות הזמינות.</p>\n');
+  '  כדי לעבור בין הכרטיסיות הזמינות.</p>\n')

@@ -74,7 +74,6 @@
         "css/brands.min.css",
         "css/solid.min.css",
         "css/v5-font-face.min.css",
-        "webfonts/fa-solid-900.ttf",
         "webfonts/fa-solid-900.woff2",
         "webfonts/fa-regular-400.woff2"
       ]
@@ -102,7 +101,7 @@
     },
     {
       "provider": "jsdelivr",
-      "library": "netstack.js@2.1.4",
+      "library": "netstack.js@1.1.2",
       "destination": "wwwroot/lib/netstack.js/",
       "files": [
         "netstack.js"
@@ -110,18 +109,18 @@
     },
     {
       "provider": "cdnjs",
-      "library": "datatables.net@2.3.4",
+      "library": "datatables.net@2.1.1",
       "destination": "wwwroot/lib/datatables.net/"
     },
     {
       "provider": "jsdelivr",
       "library": "jquery-plugin-printthis@1.0.1",
       "destination": "wwwroot/lib/printThis/",
-      "files": ["lib/jquery.printThis.js"]
+      "files": [ "lib/jquery.printThis.js" ]
     },
     {
       "provider": "cdnjs",
-      "library": "bootstrap-table@1.27.3",
+      "library": "bootstrap-table@1.23.5",
       "destination": "wwwroot/lib/bootstrap-table/",
       "files": [
         "bootstrap-table.css",

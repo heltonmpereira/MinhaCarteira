@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.ms',
   '  <strong>Shift+Tab</strong>.</p>\n' +
   '\n' +
   '<p>Tukar kepada tab dialog lain dengan memfokuskan menu tab, kemudian menekan kekunci <strong>Anak Panah</strong> yang bersesuaian\n' +
-  '  untuk berkitar menerusi tab yang tersedia.</p>\n');
+  '  untuk berkitar menerusi tab yang tersedia.</p>\n')
