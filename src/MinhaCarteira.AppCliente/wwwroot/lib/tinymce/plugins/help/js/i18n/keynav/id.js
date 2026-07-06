@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.id',
   '  <strong>Shift+Tab</strong>.</p>\n' +
   '\n' +
   '<p>Beralih ke tab dialog lain dengan mengarahkan fokus pada menu tab lalu tekan tombol <strong>Panah</strong>\n' +
-  '  yang sesuai untuk berpindah ke berbagai tab yang tersedia.</p>\n');
+  '  yang sesuai untuk berpindah ke berbagai tab yang tersedia.</p>\n')

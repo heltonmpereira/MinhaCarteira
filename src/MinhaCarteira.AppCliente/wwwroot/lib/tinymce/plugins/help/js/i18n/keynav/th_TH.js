@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.th_TH',
   '  <strong>Shift+Tab</strong></p>\n' +
   '\n' +
   '<p>สลับไปยังแท็บกล่องโต้ตอบอื่นโดยการเลือกโฟกัสที่เมนูแท็บ แล้วกดปุ่ม<strong>ลูกศร</strong>ที่เหมาะสม\n' +
-  '  เพื่อเลือกแท็บที่ใช้ได้</p>\n');
+  '  เพื่อเลือกแท็บที่ใช้ได้</p>\n')

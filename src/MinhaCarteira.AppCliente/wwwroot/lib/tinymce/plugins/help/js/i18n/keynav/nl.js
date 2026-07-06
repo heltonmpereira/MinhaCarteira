@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.nl',
   '  <strong>Shift+Tab</strong> te drukken.</p>\n' +
   '\n' +
   '<p>Je kunt overschakelen naar een ander tabblad van het dialoogvenster door de focus in te stellen op het tabbladmenu en vervolgens op de juiste <strong>pijltjestoets</strong>\n' +
-  '  te drukken om tussen de beschikbare tabbladen te wisselen.</p>\n');
+  '  te drukken om tussen de beschikbare tabbladen te wisselen.</p>\n')
