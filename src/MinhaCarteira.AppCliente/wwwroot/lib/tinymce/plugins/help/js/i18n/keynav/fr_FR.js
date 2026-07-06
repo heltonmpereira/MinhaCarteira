@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.fr_FR',
   '  <strong>Maj+Tabulation</strong>.</p>\n' +
   '\n' +
   "<p>Passez à un autre onglet de dialogue en ciblant le menu de l'onglet et en appuyant sur la <strong>Flèche</strong>\n" +
-  '  appropriée pour parcourir les onglets disponibles.</p>\n');
+  '  appropriée pour parcourir les onglets disponibles.</p>\n')

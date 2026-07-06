@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.fi',
   '  <strong>Shift+sarkainnäppäin</strong>.</p>\n' +
   '\n' +
   '<p>Voit siirtyä valintaikkunan toiseen välilehteen siirtämällä kohdistuksen välilehtivalikkoon ja painamalla sopivaa <strong>nuolinäppäintä</strong>\n' +
-  '  siirtyäksesi käytettävissä olevien välilehtien välillä syklissä.</p>\n');
+  '  siirtyäksesi käytettävissä olevien välilehtien välillä syklissä.</p>\n')

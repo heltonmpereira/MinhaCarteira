@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.it',
   '  <strong>MAIUSC+TAB</strong>.</p>\n' +
   '\n' +
   "<p>Per passare a un'altra scheda della finestra di dialogo, attivare il menu della scheda e premere il tasto <strong>freccia</strong>\n" +
-  '  appropriato per scorrere le schede disponibili.</p>\n');
+  '  appropriato per scorrere le schede disponibili.</p>\n')

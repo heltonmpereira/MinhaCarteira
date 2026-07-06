@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.sk',
   '  <strong>Shift+Tab</strong>.</p>\n' +
   '\n' +
   '<p>Ak chcete prepnúť na ďalšiu záložku dialógového okna, prejdite do ponuky záložiek a potom môžete stlačením príslušného klávesu so <strong>šípkou</strong>\n' +
-  '  prepínať medzi dostupnými záložkami.</p>\n');
+  '  prepínať medzi dostupnými záložkami.</p>\n')

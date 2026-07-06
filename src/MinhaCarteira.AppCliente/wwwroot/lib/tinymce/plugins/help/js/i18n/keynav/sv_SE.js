@@ -90,4 +90,4 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.sv_SE',
   '  <strong>Skift+Tabb</strong>.</p>\n' +
   '\n' +
   '<p>Växla till en annan dialogruta genom att fokusera på flikmenyn och sedan trycka på motsvarande <strong>piltangent</strong>\n' +
-  '  för att cirkulera mellan de tillgängliga flikarna.</p>\n');
+  '  för att cirkulera mellan de tillgängliga flikarna.</p>\n')
