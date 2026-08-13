@@ -123,6 +123,7 @@ public class AgendamentoServico(
         var itemDb = await base.Incluir(item).ConfigureAwait(false);
         item.Parcelas.Clear();
         await Repositorio.AtualizarAgendamento(item).ConfigureAwait(false);
+
         return itemDb;
     }
 
