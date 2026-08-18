@@ -8,13 +8,14 @@
     ViewData["Title"] = "Dashboard de Relatórios";
     // Serializa os dados para JSON para usar no JavaScript
     var dadosGastosJson = Model.EvolucaoGastos != null ? JsonConvert.SerializeObject(Model.EvolucaoGastos) : "null";
+    var dadosGastosMultiMesJson = Model.EvolucaoGastosMultiMes != null ? JsonConvert.SerializeObject(Model.EvolucaoGastosMultiMes) : "null";
 
     // Cria a lista de meses para o dropdown
     var meses = Enumerable.Range(1, 12).Select(m => new SelectListItem
     {
         Text = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m),
         Value = m.ToString(),
-        Selected = m == Model.Mes
+        Selected = Model.Meses != null && Model.Meses.Contains(m)
     }).ToList();
 }
 
@@ -25,6 +26,46 @@
         .dashboard-row { align-items: stretch; }
         .grafico-card-body { min-height: 600px; padding: 1rem; }
         .chart-wrapper { height: 500px; }
+
+        .multi-select-wrapper { position: relative; }
+        .multi-select-display {
+            display: flex; flex-wrap: wrap; gap: 4px; min-height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.35rem 0.5rem; border: 1px solid var(--bs-border-color, #ced4da);
+            border-radius: var(--bs-border-radius, 0.25rem); cursor: pointer;
+            background-color: var(--bs-body-bg, #fff); align-items: center;
+        }
+        .multi-select-display:hover { border-color: var(--bs-primary, #86b7fe); }
+        .multi-select-placeholder { color: var(--bs-secondary, #6c757d); padding: 0 0.25rem; }
+        .multi-select-chip {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 0.125rem 0.5rem; background-color: var(--bs-primary, #0d6efd);
+            color: #fff; border-radius: 999px; font-size: 0.85rem;
+        }
+        .multi-select-chip button {
+            background: transparent; border: none; color: #fff; padding: 0 2px;
+            cursor: pointer; font-size: 1rem; line-height: 1;
+        }
+        .multi-select-chip button:hover { opacity: 0.7; }
+        .multi-select-dropdown {
+            display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: var(--bs-body-bg, #fff); border: 1px solid var(--bs-border-color, #dee2e6);
+            border-radius: var(--bs-border-radius, 0.25rem); max-height: 280px; overflow-y: auto;
+            z-index: 1050; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .multi-select-dropdown.show { display: block; }
+        .multi-select-option {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 0.75rem; cursor: pointer; border-bottom: 1px solid var(--bs-border-color-subtle, #e9ecef);
+        }
+        .multi-select-option:last-child { border-bottom: none; }
+        .multi-select-option:hover { background-color: var(--bs-tertiary-bg, #f8f9fa); }
+        .multi-select-option input { margin: 0; cursor: pointer; }
+        .multi-select-option label { margin: 0; cursor: pointer; flex: 1; font-weight: 400; }
+        .multi-select-actions {
+            display: flex; justify-content: space-between; padding: 0.5rem 0.75rem;
+            border-top: 1px solid var(--bs-border-color-subtle, #e9ecef); gap: 0.5rem;
+        }
+        .multi-select-actions button { flex: 1; }
         
         /* Light theme variables */
         :root {
@@ -175,12 +216,30 @@
     <h4 class="px-3 mb-2 mb-sm-0">Dashboard de Relatórios</h4>
     <form id="filtroForm" class="col-12 col-sm-10" asp-action="Dashboard" method="get">
         <div class="row g-2">
-            <div class="col-6 col-sm-3">
+            <div class="col-6 col-sm-2">
                 <input name="ano" class="form-control" value="@Model.Ano" placeholder="Ano" autofocus>
             </div>
-            <div class="col-6 col-sm-3">
-                <select name="mes" class="form-select" asp-items="meses">
-                </select>
+            <div class="col-12 col-sm-4">
+                <div class="multi-select-wrapper" id="mesMultiSelectWrapper">
+                    <div class="multi-select-display" id="mesMultiSelectDisplay">
+                        <span class="multi-select-placeholder" id="mesMultiSelectPlaceholder">Selecione os meses...</span>
+                    </div>
+                    <div class="multi-select-dropdown" id="mesMultiSelectDropdown">
+                        @for (int m = 1; m <= 12; m++)
+                        {
+                            var nomeMes = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m);
+                            var selecionado = Model.Meses != null && Model.Meses.Contains(m);
+                            <div class="multi-select-option">
+                                <input type="checkbox" name="meses" value="@m" id="mes_@m" @(selecionado ? "checked" : "")>
+                                <label for="mes_@m">@nomeMes</label>
+                            </div>
+                        }
+                        <div class="multi-select-actions">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllMeses">Todos</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="clearAllMeses">Limpar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-12 col-sm-4">
                 <select name="contaBancariaId" class="form-select" asp-items="@(new SelectList(Model.ContasBancarias, nameof(ContaBancariaViewModel.Id), nameof(ContaBancariaViewModel.Nome), Model.ContaBancariaId))">
@@ -199,7 +258,7 @@
         <div class="col-12 col-md-8 mb-4 order-1 order-md-2">
             <div class="card h-100">
                 <div class="card-header">
-                    Comparativo de Gastos Acumulados (Mês Atual vs Mês Anterior)
+                    Comparativo de Gastos Acumulados (@(Model.Meses != null && Model.Meses.Count > 0 ? string.Join(", ", Model.Meses.OrderBy(m => m).Select(m => System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m))) : "Meses"))
                 </div>
                 <div class="card-body grafico-card-body">
                     <div class="chart-wrapper">
@@ -257,29 +316,58 @@
 
         Chart.register(verticalLinePlugin);
 
+        const PALETA_CORES = [
+            { border: 'rgb(59, 130, 246)', bg: 'rgba(59, 130, 246, 0.12)' },
+            { border: 'rgb(168, 85, 247)', bg: 'rgba(168, 85, 247, 0.12)' },
+            { border: 'rgb(249, 115, 22)', bg: 'rgba(249, 115, 22, 0.12)' },
+            { border: 'rgb(236, 72, 153)', bg: 'rgba(236, 72, 153, 0.12)' },
+            { border: 'rgb(20, 184, 166)', bg: 'rgba(20, 184, 166, 0.12)' },
+            { border: 'rgb(234, 179, 8)', bg: 'rgba(234, 179, 8, 0.12)' },
+            { border: 'rgb(99, 102, 241)', bg: 'rgba(99, 102, 241, 0.12)' },
+            { border: 'rgb(34, 197, 94)', bg: 'rgba(34, 197, 94, 0.12)' },
+            { border: 'rgb(239, 68, 68)', bg: 'rgba(239, 68, 68, 0.12)' },
+            { border: 'rgb(14, 165, 233)', bg: 'rgba(14, 165, 233, 0.12)' },
+            { border: 'rgb(168, 162, 158)', bg: 'rgba(168, 162, 158, 0.12)' },
+            { border: 'rgb(192, 132, 252)', bg: 'rgba(192, 132, 252, 0.12)' }
+        ];
+        const COR_CINZA = { border: 'rgb(107, 114, 128)', bg: 'rgba(107, 114, 128, 0.06)' };
+        const COR_VERDE = 'rgb(16, 185, 129)';
+        const COR_VERDE_FUNDO = 'rgba(16, 185, 129, 0.1)';
+        const COR_VERMELHO = 'rgb(248, 113, 113)';
+        const COR_VERMELHO_FUNDO = 'rgba(248, 113, 113, 0.1)';
+
         let dadosGastosGlobal;
+        let dadosGastosMultiMesGlobal;
+        let graficoGastosInstance;
+
         $(document).ready(function() {
             dadosGastosGlobal = @Html.Raw(dadosGastosJson);
-            
+            dadosGastosMultiMesGlobal = @Html.Raw(dadosGastosMultiMesJson);
+
+            inicializarMultiSelectMeses();
+
             if (dadosGastosGlobal) {
                 criarHeatmapGastos(dadosGastosGlobal);
-                criarGraficoGastos(dadosGastosGlobal);
             }
-            
-            // Listen for theme changes
+            if (dadosGastosMultiMesGlobal) {
+                criarGraficoGastosMultiMes(dadosGastosMultiMesGlobal);
+            }
+
             document.addEventListener('themeChanged', function() {
                 if (dadosGastosGlobal) {
                     criarHeatmapGastos(dadosGastosGlobal);
                 }
+                if (dadosGastosMultiMesGlobal && graficoGastosInstance) {
+                    graficoGastosInstance.destroy();
+                    criarGraficoGastosMultiMes(dadosGastosMultiMesGlobal);
+                }
             });
         });
 
-        // Helper function to get the current theme
         function isDarkTheme() {
             return document.documentElement.getAttribute('data-bs-theme') === 'dark';
         }
 
-        // Helper function to get color based on percentage (0-1) for expenses (transparent to red)
         function getColorGastos(porcentagem) {
             if (porcentagem === 0) {
                 return 'transparent';
@@ -290,10 +378,77 @@
             return `rgba(${r}, ${g}, ${b}, ${porcentagem})`;
         }
 
+        function inicializarMultiSelectMeses() {
+            const wrapper = document.getElementById('mesMultiSelectWrapper');
+            const display = document.getElementById('mesMultiSelectDisplay');
+            const dropdown = document.getElementById('mesMultiSelectDropdown');
+            const placeholder = document.getElementById('mesMultiSelectPlaceholder');
+            const checkboxes = dropdown ? dropdown.querySelectorAll('input[type="checkbox"][name="meses"]') : [];
+            const btnTodos = document.getElementById('selectAllMeses');
+            const btnLimpar = document.getElementById('clearAllMeses');
+
+            if (!wrapper || !display || !dropdown) return;
+
+            function atualizarChips() {
+                const selecionados = Array.from(checkboxes).filter(cb => cb.checked);
+                display.querySelectorAll('.multi-select-chip').forEach(el => el.remove());
+
+                if (selecionados.length === 0) {
+                    if (placeholder) placeholder.style.display = '';
+                } else {
+                    if (placeholder) placeholder.style.display = 'none';
+                    selecionados.forEach(cb => {
+                        const label = dropdown.querySelector(`label[for="${cb.id}"]`);
+                        const texto = label ? label.textContent : cb.value;
+                        const chip = document.createElement('span');
+                        chip.className = 'multi-select-chip';
+                        chip.innerHTML = `<span>${texto}</span><button type="button" aria-label="Remover ${texto}">&times;</button>`;
+                        chip.querySelector('button').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            cb.checked = false;
+                            atualizarChips();
+                        });
+                        display.insertBefore(chip, placeholder);
+                    });
+                }
+            }
+
+            display.addEventListener('click', (e) => {
+                if (e.target.closest('button')) return;
+                dropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!wrapper.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', atualizarChips);
+            });
+
+            if (btnTodos) {
+                btnTodos.addEventListener('click', () => {
+                    checkboxes.forEach(cb => cb.checked = true);
+                    atualizarChips();
+                });
+            }
+            if (btnLimpar) {
+                btnLimpar.addEventListener('click', () => {
+                    checkboxes.forEach(cb => cb.checked = false);
+                    atualizarChips();
+                });
+            }
+
+            atualizarChips();
+        }
+
         function criarHeatmapGastos(dados) {
             const container = document.getElementById('heatmapGastos');
             if (!container) return;
             if (!dados || !dados.Itens || dados.Itens.length === 0) {
+                container.innerHTML = '';
                 const p = document.createElement('p');
                 p.className = 'text-muted';
                 p.textContent = 'Sem dados para exibir';
@@ -301,7 +456,6 @@
                 return;
             }
 
-            // Calculate total, average, and highest expense
             const valores = dados.Itens.map(item => item.GastosMesAtual);
             const total = valores.reduce((a, b) => a + b, 0);
             const mediaDiaria = total / valores.length;
@@ -315,19 +469,13 @@
             });
 
             const maxVal = Math.max(...valores);
-
-            // Days of the week in Portuguese (short)
             const diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-
-            // Organize data: create 7 rows (days of week) and up to 5 columns (weeks)
-            const dias = Array(7).fill(null).map(() => Array(5).fill(null)); // [diaSemana][semana]
+            const dias = Array(7).fill(null).map(() => Array(5).fill(null));
 
             dados.Itens.forEach(item => {
                 const data = new Date(item.Data);
-                const diaSemana = data.getDay(); // 0 = Domingo, 6 = Sábado
+                const diaSemana = data.getDay();
                 const diaMes = data.getDate();
-                
-                // Calculate week index (0-4)
                 const primeiroDiaMes = new Date(data.getFullYear(), data.getMonth(), 1);
                 const diaSemanaPrimeiroDia = primeiroDiaMes.getDay();
                 const semanaIndex = Math.floor((diaMes + diaSemanaPrimeiroDia - 1) / 7);
@@ -340,15 +488,12 @@
                 }
             });
 
-            // Clear container
             container.innerHTML = '';
 
-            // Create main container
             const mainContainer = document.createElement('div');
             mainContainer.className = 'heatmap-gastos-container';
             container.appendChild(mainContainer);
 
-            // Create header
             const header = document.createElement('div');
             header.className = 'heatmap-gastos-header';
             mainContainer.appendChild(header);
@@ -373,15 +518,12 @@
 
             const verMais = document.createElement('div');
             verMais.className = 'heatmap-gastos-ver-mais';
-            // verMais.textContent = 'ver mais →';
             header.appendChild(verMais);
 
-            // Create table
             const table = document.createElement('table');
             table.className = 'heatmap-gastos-table';
             mainContainer.appendChild(table);
 
-            // Generate rows for each day of the week
             diasSemana.forEach((diaLabel, diaSemana) => {
                 const tr = document.createElement('tr');
                 table.appendChild(tr);
@@ -421,7 +563,6 @@
                 }
             });
 
-            // Add legend
             const legend = document.createElement('div');
             legend.className = 'heatmap-gastos-legend';
             mainContainer.appendChild(legend);
@@ -449,7 +590,6 @@
             maisSpan.textContent = 'Mais';
             legend.appendChild(maisSpan);
 
-            // Add footer with highest expense
             const footer = document.createElement('div');
             footer.className = 'heatmap-gastos-footer';
             mainContainer.appendChild(footer);
@@ -465,119 +605,106 @@
             footer.appendChild(maiorGastoValue);
         }
 
-        function criarGraficoGastos(dados) {
+        function criarGraficoGastosMultiMes(dados) {
             const ctx = document.getElementById('graficoGastos').getContext('2d');
-            const hoje = new Date();
-            
+            if (!ctx || !dados || !dados.Meses || dados.Meses.length === 0) return;
+            if (graficoGastosInstance) {
+                graficoGastosInstance.destroy();
+                graficoGastosInstance = null;
+            }
+
+            const meses = dados.Meses.slice().sort((a, b) => a.Ordem - b.Ordem);
+            const mesesCount = meses.length;
+            const mesMaisRecente = meses.find(m => m.EhMaisRecente) || meses[mesesCount - 1];
+            const mesReferencia = mesesCount >= 2 ? meses[mesesCount - 2] : null;
+
             const labels = dados.Itens.map(item => item.Dia);
-            let mesAtual = dados.Itens.map(item => item.GastosAcumuladosMesAtual);
-            const mesAnterior = dados.Itens.map(item => item.GastosAcumuladosMesAnterior);
-            
-            // Get gastos acumulados for ritmo de gastos
-            let diaAtualGastosAcumulados = null;
-            let diaAnteriorGastosAcumulados = null;
-            
-            // Check if we're viewing current month
-            if (dados.Ano === hoje.getFullYear() && dados.Mes === hoje.getMonth() + 1) {
-                const diaHoje = hoje.getDate();
-                mesAtual = mesAtual.map((valor, indice) => {
-                    const diaItem = labels[indice];
-                    if (diaItem === diaHoje) {
-                        diaAtualGastosAcumulados = dados.Itens[indice].GastosAcumuladosMesAtual;
-                        diaAnteriorGastosAcumulados = dados.Itens[indice].GastosAcumuladosMesAnterior;
-                    }
-                    return diaItem > diaHoje ? null : valor;
+
+            const datasets = meses.map((mesVM, idx) => {
+                const ehPrincipal = mesVM.Chave === mesMaisRecente.Chave;
+                const cor = ehPrincipal
+                    ? idx < PALETA_CORES.length ? PALETA_CORES[idx] : PALETA_CORES[PALETA_CORES.length - 1]
+                    : (idx < PALETA_CORES.length ? PALETA_CORES[idx] : COR_CINZA);
+                const dataArr = dados.Itens.map(item => {
+                    const v = item.ValoresPorMes.find(vm => vm.ChaveMes === mesVM.Chave);
+                    return v ? v.GastosAcumulados : null;
                 });
-            } else {
-                // For past months, find the latest item that has both values
-                if (dados.Itens.length > 0) {
-                    // First sort items by Dia descending
-                    const sortedItems = [...dados.Itens].sort((a, b) => b.Dia - a.Dia);
-                    // Find first item that has both values
-                    for (let item of sortedItems) {
-                        if (item.GastosAcumuladosMesAtual !== null && item.GastosAcumuladosMesAtual !== undefined &&
-                            item.GastosAcumuladosMesAnterior !== null && item.GastosAcumuladosMesAnterior !== undefined) {
-                            diaAtualGastosAcumulados = item.GastosAcumuladosMesAtual;
-                            diaAnteriorGastosAcumulados = item.GastosAcumuladosMesAnterior;
-                            break;
+
+                return {
+                    label: mesVM.Nome,
+                    chaveMes: mesVM.Chave,
+                    data: dataArr,
+                    borderColor: cor.border,
+                    backgroundColor: ehPrincipal ? cor.bg : COR_CINZA.bg,
+                    pointBackgroundColor: cor.border,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: cor.border,
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 2,
+                    borderWidth: ehPrincipal ? 3.5 : 2.5,
+                    tension: 0.3,
+                    fill: ehPrincipal,
+                    spanGaps: false,
+                    borderDash: ehPrincipal ? [] : [6, 4],
+                    order: ehPrincipal ? 0 : (idx + 1)
+                };
+            });
+
+            let valorPrincipalUltimoDia = null;
+            let valorReferenciaUltimoDia = null;
+            if (dados.Itens.length > 0) {
+                const itensReversos = dados.Itens.slice().reverse();
+                for (let item of itensReversos) {
+                    const vp = item.ValoresPorMes.find(v => v.ChaveMes === mesMaisRecente.Chave);
+                    if (vp && vp.GastosAcumulados !== null && vp.GastosAcumulados !== undefined) {
+                        valorPrincipalUltimoDia = vp.GastosAcumulados;
+                        if (mesReferencia) {
+                            const vr = item.ValoresPorMes.find(v => v.ChaveMes === mesReferencia.Chave);
+                            if (vr && vr.GastosAcumulados !== null && vr.GastosAcumulados !== undefined) {
+                                valorReferenciaUltimoDia = vr.GastosAcumulados;
+                            }
                         }
+                        break;
                     }
                 }
             }
 
-            const temComparacao = diaAtualGastosAcumulados !== null && diaAnteriorGastosAcumulados !== null && diaAnteriorGastosAcumulados !== 0;
-            const diferencaGeral = temComparacao ? diaAtualGastosAcumulados - diaAnteriorGastosAcumulados : 0;
-            const mesAtualEstaAbaixo = temComparacao && diferencaGeral < 0;
-            const mesAtualEstaAcima = temComparacao && diferencaGeral > 0;
+            const temComparacao = mesReferencia &&
+                valorPrincipalUltimoDia !== null &&
+                valorReferenciaUltimoDia !== null &&
+                valorReferenciaUltimoDia !== 0;
+            const diferencaGeral = temComparacao ? valorPrincipalUltimoDia - valorReferenciaUltimoDia : 0;
+            const principalAbaixo = temComparacao && diferencaGeral < 0;
+            const principalAcima = temComparacao && diferencaGeral > 0;
 
-            const corVerde = 'rgb(16, 185, 129)';
-            const corVerdeFundo = 'rgba(16, 185, 129, 0.1)';
-            const corVermelho = 'rgb(248, 113, 113)';
-            const corVermelhoFundo = 'rgba(248, 113, 113, 0.1)';
-
-            let corMesAtual, corMesAtualFundo, corTextoRitmo, classeRitmo, iconeRitmo, textoRitmo;
-            if (mesAtualEstaAbaixo) {
-                corMesAtual = corVerde;
-                corMesAtualFundo = corVerdeFundo;
+            let corDestaque, corDestaqueFundo, corTextoRitmo, iconeRitmo, textoRitmo;
+            if (principalAbaixo) {
+                corDestaque = COR_VERDE;
+                corDestaqueFundo = COR_VERDE_FUNDO;
                 corTextoRitmo = '#10b981';
-                classeRitmo = 'text-success';
                 iconeRitmo = '↘';
                 textoRitmo = 'abaixo';
-            } else if (mesAtualEstaAcima) {
-                corMesAtual = corVermelho;
-                corMesAtualFundo = corVermelhoFundo;
+            } else if (principalAcima) {
+                corDestaque = COR_VERMELHO;
+                corDestaqueFundo = COR_VERMELHO_FUNDO;
                 corTextoRitmo = '#f87171';
-                classeRitmo = 'text-danger';
                 iconeRitmo = '↗';
                 textoRitmo = 'acima';
             } else {
-                corMesAtual = 'rgb(59, 130, 246)';
-                corMesAtualFundo = 'rgba(59, 130, 246, 0.1)';
+                corDestaque = PALETA_CORES[0].border;
+                corDestaqueFundo = PALETA_CORES[0].bg;
                 corTextoRitmo = '#3b82f6';
-                classeRitmo = 'text-primary';
                 iconeRitmo = '↔';
                 textoRitmo = 'igual';
             }
-            const porcentagemGeral = temComparacao ? Math.abs((diferencaGeral / diaAnteriorGastosAcumulados) * 100) : 0;
+            const porcentagemGeral = temComparacao ? Math.abs((diferencaGeral / valorReferenciaUltimoDia) * 100) : 0;
 
-            new Chart(ctx, {
+            graficoGastosInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
-                    datasets: [
-                        {
-                            label: dados.NomeMesAtual,
-                            data: mesAtual,
-                            borderColor: corMesAtual,
-                            backgroundColor: corMesAtualFundo,
-                            pointBackgroundColor: corMesAtual,
-                            pointRadius: 0,
-                            pointHoverRadius: 6,
-                            pointHoverBackgroundColor: corMesAtual,
-                            pointHoverBorderColor: '#fff',
-                            pointHoverBorderWidth: 2,
-                            borderWidth: 3,
-                            tension: 0.3,
-                            fill: true,
-                            spanGaps: false
-                        },
-                        {
-                            label: dados.NomeMesAnterior,
-                            data: mesAnterior,
-                            borderColor: 'rgb(107, 114, 128)',
-                            backgroundColor: 'rgba(107, 114, 128, 0.05)',
-                            pointBackgroundColor: 'rgb(107, 114, 128)',
-                            pointRadius: 0,
-                            pointHoverRadius: 6,
-                            pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: 'rgb(107, 114, 128)',
-                            pointHoverBorderWidth: 2,
-                            borderWidth: 3,
-                            borderDash: [6, 4],
-                            tension: 0.3,
-                            fill: true
-                        }
-                    ]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
@@ -659,7 +786,6 @@
                                     return label + ': ' + valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                                 },
                                 labelColor: function(context) {
-                                    const bg = context.dataset.backgroundColor;
                                     const border = context.dataset.borderColor;
                                     return {
                                         backgroundColor: border,
@@ -671,39 +797,61 @@
                                 },
                                 afterBody: function(tooltipItems) {
                                     if (!tooltipItems || tooltipItems.length < 2) return '';
-                                    const valorAtual = tooltipItems[0].raw;
-                                    const valorAnterior = tooltipItems[1].raw;
+                                    const linhas = [];
+                                    const mapa = {};
+                                    tooltipItems.forEach(ti => {
+                                        const ds = ti.dataset;
+                                        const chave = ds.chaveMes || ds.label;
+                                        mapa[chave] = {
+                                            label: ds.label,
+                                            valor: ti.raw,
+                                            ordem: ds.order
+                                        };
+                                    });
 
-                                    if (valorAtual === null || valorAtual === undefined ||
-                                        valorAnterior === null || valorAnterior === undefined ||
-                                        valorAnterior === 0) {
-                                        return '';
+                                    const ordenado = Object.values(mapa).sort((a, b) => (a.ordem ?? 999) - (b.ordem ?? 999));
+                                    const principal = ordenado[ordenado.length - 1];
+
+                                    for (let i = 0; i < ordenado.length - 1; i++) {
+                                        const outro = ordenado[i];
+                                        if (principal.valor === null || principal.valor === undefined ||
+                                            outro.valor === null || outro.valor === undefined ||
+                                            outro.valor === 0) continue;
+
+                                        const diff = principal.valor - outro.valor;
+                                        const pct = (diff / outro.valor) * 100;
+                                        const aumento = diff > 0;
+                                        const sinal = aumento ? '+' : '';
+                                        const icone = aumento ? '↗' : '↘';
+                                        const texto = aumento ? 'Aumento' : 'Queda';
+                                        const diffStr = diff.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                        linhas.push(`${icone} vs ${outro.label}: ${texto} ${sinal}${diffStr} (${sinal}${pct.toFixed(0)}%)`);
                                     }
 
-                                    const diferenca = valorAtual - valorAnterior;
-                                    const porcentagem = (diferenca / valorAnterior) * 100;
-                                    const isAumento = diferenca > 0;
-                                    const sinal = isAumento ? '+' : '';
-                                    const icone = isAumento ? '↗' : '↘';
-                                    const diferencaStr = diferenca.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                                    const texto = isAumento ? 'Aumento' : 'Queda';
-
-                                    return [
-                                        '',
-                                        `${icone} ${texto} ${sinal}${diferencaStr} (${sinal}${porcentagem.toFixed(0)}%)`
-                                    ];
+                                    if (linhas.length > 0) {
+                                        return ['', ...linhas];
+                                    }
+                                    return '';
                                 }
                             },
                             footerBackgroundColor: function(tooltipItems) {
                                 if (!tooltipItems || tooltipItems.length < 2) return 'transparent';
-                                const valorAtual = tooltipItems[0].raw;
-                                const valorAnterior = tooltipItems[1].raw;
-                                if (valorAtual === null || valorAtual === undefined ||
-                                    valorAnterior === null || valorAnterior === undefined) {
+                                const mapa = {};
+                                tooltipItems.forEach(ti => {
+                                    const ds = ti.dataset;
+                                    const chave = ds.chaveMes || ds.label;
+                                    mapa[chave] = { valor: ti.raw, ordem: ds.order };
+                                });
+                                const ordenado = Object.values(mapa).sort((a, b) => (a.ordem ?? 999) - (b.ordem ?? 999));
+                                if (ordenado.length < 2) return 'transparent';
+                                const principal = ordenado[ordenado.length - 1];
+                                const ref = ordenado[ordenado.length - 2];
+                                if (principal.valor === null || principal.valor === undefined ||
+                                    ref.valor === null || ref.valor === undefined) {
                                     return 'transparent';
                                 }
-                                const diferenca = valorAtual - valorAnterior;
-                                return diferenca >= 0
+                                const diff = principal.valor - ref.valor;
+                                return diff >= 0
                                     ? 'rgba(220, 38, 38, 0.95)'
                                     : 'rgba(16, 185, 129, 0.95)';
                             }
@@ -744,28 +892,25 @@
                     }
                 }
             });
-            
-            // Add Ritmo de Gastos
-            const graficoCardBody = document.querySelector('#graficoGastos').closest('.card-body');
-            if (graficoCardBody && temComparacao) {
-                const existingRitmo = document.getElementById('ritmoGastos');
-                if (existingRitmo) {
-                    existingRitmo.remove();
-                }
 
+            const graficoCardBody = document.querySelector('#graficoGastos').closest('.card-body');
+            const existingRitmo = document.getElementById('ritmoGastos');
+            if (existingRitmo) existingRitmo.remove();
+
+            if (graficoCardBody && temComparacao) {
                 const ritmoDiv = document.createElement('div');
                 ritmoDiv.id = 'ritmoGastos';
                 ritmoDiv.style.cssText = `
                     margin-top: 1rem;
                     padding: 1rem 1.25rem;
                     border-radius: 12px;
-                    border-left: 5px solid ${corMesAtual};
-                    background-color: ${corMesAtualFundo};
+                    border-left: 5px solid ${corDestaque};
+                    background-color: ${corDestaqueFundo};
                 `;
 
-                const title = document.createElement('div');
-                title.style.cssText = 'font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--bs-gray-600); margin-bottom: 0.5rem;';
-                title.textContent = 'Ritmo de gastos';
+                const ritTitle = document.createElement('div');
+                ritTitle.style.cssText = 'font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--bs-gray-600); margin-bottom: 0.5rem;';
+                ritTitle.textContent = 'Ritmo de gastos';
 
                 const row1 = document.createElement('div');
                 row1.style.cssText = 'display: flex; align-items: baseline; gap: 0.5rem;';
@@ -791,7 +936,7 @@
                     gap: 0.25rem;
                     padding: 0.35rem 0.75rem;
                     border-radius: 999px;
-                    background-color: ${corMesAtualFundo};
+                    background-color: ${corDestaqueFundo};
                     color: ${corTextoRitmo};
                     font-weight: 700;
                     font-size: 0.95rem;
@@ -800,12 +945,12 @@
 
                 const vsText = document.createElement('span');
                 vsText.style.cssText = 'color: var(--bs-gray-600); font-size: 0.95rem;';
-                vsText.innerHTML = `vs ${diaAnteriorGastosAcumulados.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} mês anterior`;
+                vsText.innerHTML = `vs ${valorReferenciaUltimoDia.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} (${mesReferencia.Nome})`;
 
                 row2.appendChild(badge);
                 row2.appendChild(vsText);
 
-                ritmoDiv.appendChild(title);
+                ritmoDiv.appendChild(ritTitle);
                 ritmoDiv.appendChild(row1);
                 ritmoDiv.appendChild(row2);
 
