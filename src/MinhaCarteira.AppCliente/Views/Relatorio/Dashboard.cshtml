@@ -228,21 +228,27 @@
     <script nws-csp-add-nonce="true">
         const verticalLinePlugin = {
             id: 'verticalLine',
-            beforeDraw: function(chart, args, pluginOptions) {
+            afterDraw: function(chart, args, pluginOptions) {
                 const ctx = chart.ctx;
                 const xAxis = chart.scales.x;
                 const yAxis = chart.scales.y;
+                const tooltip = chart.tooltip;
 
-                if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
-                    const activePoint = chart.tooltip._active[0];
-                    const x = activePoint.element.x;
+                let x = null;
+                if (tooltip && tooltip._active && tooltip._active.length) {
+                    const activePoint = tooltip._active[0];
+                    x = activePoint.element.x;
+                } else if (chart.$lastHoverX !== undefined) {
+                    x = chart.$lastHoverX;
+                }
 
+                if (x !== null) {
                     ctx.save();
                     ctx.beginPath();
                     ctx.moveTo(x, yAxis.top);
                     ctx.lineTo(x, yAxis.bottom);
-                    ctx.lineWidth = 1;
-                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                    ctx.lineWidth = 1.5;
+                    ctx.strokeStyle = 'rgba(156, 163, 175, 0.5)';
                     ctx.stroke();
                     ctx.restore();
                 }
@@ -498,7 +504,42 @@
                     }
                 }
             }
-            
+
+            const temComparacao = diaAtualGastosAcumulados !== null && diaAnteriorGastosAcumulados !== null && diaAnteriorGastosAcumulados !== 0;
+            const diferencaGeral = temComparacao ? diaAtualGastosAcumulados - diaAnteriorGastosAcumulados : 0;
+            const mesAtualEstaAbaixo = temComparacao && diferencaGeral < 0;
+            const mesAtualEstaAcima = temComparacao && diferencaGeral > 0;
+
+            const corVerde = 'rgb(16, 185, 129)';
+            const corVerdeFundo = 'rgba(16, 185, 129, 0.1)';
+            const corVermelho = 'rgb(248, 113, 113)';
+            const corVermelhoFundo = 'rgba(248, 113, 113, 0.1)';
+
+            let corMesAtual, corMesAtualFundo, corTextoRitmo, classeRitmo, iconeRitmo, textoRitmo;
+            if (mesAtualEstaAbaixo) {
+                corMesAtual = corVerde;
+                corMesAtualFundo = corVerdeFundo;
+                corTextoRitmo = '#10b981';
+                classeRitmo = 'text-success';
+                iconeRitmo = '↘';
+                textoRitmo = 'abaixo';
+            } else if (mesAtualEstaAcima) {
+                corMesAtual = corVermelho;
+                corMesAtualFundo = corVermelhoFundo;
+                corTextoRitmo = '#f87171';
+                classeRitmo = 'text-danger';
+                iconeRitmo = '↗';
+                textoRitmo = 'acima';
+            } else {
+                corMesAtual = 'rgb(59, 130, 246)';
+                corMesAtualFundo = 'rgba(59, 130, 246, 0.1)';
+                corTextoRitmo = '#3b82f6';
+                classeRitmo = 'text-primary';
+                iconeRitmo = '↔';
+                textoRitmo = 'igual';
+            }
+            const porcentagemGeral = temComparacao ? Math.abs((diferencaGeral / diaAnteriorGastosAcumulados) * 100) : 0;
+
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -507,8 +548,15 @@
                         {
                             label: dados.NomeMesAtual,
                             data: mesAtual,
-                            borderColor: 'rgb(16, 185, 129)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderColor: corMesAtual,
+                            backgroundColor: corMesAtualFundo,
+                            pointBackgroundColor: corMesAtual,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: corMesAtual,
+                            pointHoverBorderColor: '#fff',
+                            pointHoverBorderWidth: 2,
+                            borderWidth: 3,
                             tension: 0.3,
                             fill: true,
                             spanGaps: false
@@ -517,7 +565,15 @@
                             label: dados.NomeMesAnterior,
                             data: mesAnterior,
                             borderColor: 'rgb(107, 114, 128)',
-                            backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                            backgroundColor: 'rgba(107, 114, 128, 0.05)',
+                            pointBackgroundColor: 'rgb(107, 114, 128)',
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(107, 114, 128)',
+                            pointHoverBorderWidth: 2,
+                            borderWidth: 3,
+                            borderDash: [6, 4],
                             tension: 0.3,
                             fill: true
                         }
@@ -526,23 +582,130 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    onHover: (event, elements, chart) => {
+                        const xAxis = chart.scales.x;
+                        const canvas = chart.canvas;
+                        const rect = canvas.getBoundingClientRect();
+                        const x = event.x - rect.left;
+                        if (x >= xAxis.left && x <= xAxis.right) {
+                            chart.$lastHoverX = x;
+                        } else {
+                            chart.$lastHoverX = undefined;
+                        }
+                    },
                     interaction: {
+                        mode: 'index',
+                        intersect: false,
+                        axis: 'x'
+                    },
+                    hover: {
                         mode: 'index',
                         intersect: false
                     },
                     plugins: {
                         legend: {
-                            position: 'top',
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'line',
+                                padding: 20,
+                                font: {
+                                    size: 14,
+                                    weight: '500'
+                                }
+                            }
                         },
                         tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(31, 41, 55, 0.98)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#e5e7eb',
+                            footerColor: '#ffffff',
+                            borderColor: 'rgba(75, 85, 99, 0.6)',
+                            borderWidth: 1,
+                            cornerRadius: 16,
+                            padding: {
+                                top: 16,
+                                bottom: 16,
+                                left: 20,
+                                right: 20
+                            },
+                            displayColors: true,
+                            boxPadding: 8,
+                            usePointStyle: true,
+                            titleFont: {
+                                size: 22,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 15
+                            },
+                            footerFont: {
+                                size: 15,
+                                weight: '600'
+                            },
                             callbacks: {
+                                title: function(tooltipItems) {
+                                    if (!tooltipItems || tooltipItems.length === 0) return '';
+                                    const dia = tooltipItems[0].label;
+                                    return 'Dia ' + dia;
+                                },
                                 label: function(context) {
                                     const valor = context.raw;
-                                    if (valor === null) {
-                                        return null;
+                                    const label = context.dataset.label || '';
+                                    if (valor === null || valor === undefined) {
+                                        return label + ': —';
                                     }
-                                    return context.dataset.label + ': ' + valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                    return label + ': ' + valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                },
+                                labelColor: function(context) {
+                                    const bg = context.dataset.backgroundColor;
+                                    const border = context.dataset.borderColor;
+                                    return {
+                                        backgroundColor: border,
+                                        borderColor: border,
+                                        borderWidth: 2,
+                                        borderRadius: 4,
+                                        pointStyle: 'circle'
+                                    };
+                                },
+                                afterBody: function(tooltipItems) {
+                                    if (!tooltipItems || tooltipItems.length < 2) return '';
+                                    const valorAtual = tooltipItems[0].raw;
+                                    const valorAnterior = tooltipItems[1].raw;
+
+                                    if (valorAtual === null || valorAtual === undefined ||
+                                        valorAnterior === null || valorAnterior === undefined ||
+                                        valorAnterior === 0) {
+                                        return '';
+                                    }
+
+                                    const diferenca = valorAtual - valorAnterior;
+                                    const porcentagem = (diferenca / valorAnterior) * 100;
+                                    const isAumento = diferenca > 0;
+                                    const sinal = isAumento ? '+' : '';
+                                    const icone = isAumento ? '↗' : '↘';
+                                    const diferencaStr = diferenca.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                    const texto = isAumento ? 'Aumento' : 'Queda';
+
+                                    return [
+                                        '',
+                                        `${icone} ${texto} ${sinal}${diferencaStr} (${sinal}${porcentagem.toFixed(0)}%)`
+                                    ];
                                 }
+                            },
+                            footerBackgroundColor: function(tooltipItems) {
+                                if (!tooltipItems || tooltipItems.length < 2) return 'transparent';
+                                const valorAtual = tooltipItems[0].raw;
+                                const valorAnterior = tooltipItems[1].raw;
+                                if (valorAtual === null || valorAtual === undefined ||
+                                    valorAnterior === null || valorAnterior === undefined) {
+                                    return 'transparent';
+                                }
+                                const diferenca = valorAtual - valorAnterior;
+                                return diferenca >= 0
+                                    ? 'rgba(220, 38, 38, 0.95)'
+                                    : 'rgba(16, 185, 129, 0.95)';
                             }
                         },
                         crosshair: false
@@ -550,10 +713,32 @@
                     scales: {
                         y: {
                             beginAtZero: true,
+                            grid: {
+                                color: isDarkTheme() ? 'rgba(75, 85, 99, 0.3)' : 'rgba(229, 231, 235, 0.8)'
+                            },
                             ticks: {
+                                font: {
+                                    size: 13,
+                                    weight: '500'
+                                },
+                                color: isDarkTheme() ? '#9ca3af' : '#4b5563',
+                                padding: 12,
                                 callback: function(value) {
                                     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                                 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 13,
+                                    weight: '500'
+                                },
+                                color: isDarkTheme() ? '#9ca3af' : '#4b5563',
+                                padding: 12
                             }
                         }
                     }
@@ -562,36 +747,68 @@
             
             // Add Ritmo de Gastos
             const graficoCardBody = document.querySelector('#graficoGastos').closest('.card-body');
-            if (graficoCardBody && diaAtualGastosAcumulados !== null && diaAnteriorGastosAcumulados !== null) {
-                // Remove existing ritmo section if present
+            if (graficoCardBody && temComparacao) {
                 const existingRitmo = document.getElementById('ritmoGastos');
                 if (existingRitmo) {
                     existingRitmo.remove();
                 }
-                
+
                 const ritmoDiv = document.createElement('div');
                 ritmoDiv.id = 'ritmoGastos';
-                ritmoDiv.className = 'mt-3 p-3 border rounded';
-                
-                const title = document.createElement('h6');
-                title.className = 'mb-2';
-                title.textContent = 'Ritmo de gastos';
-                
-                const difference = diaAtualGastosAcumulados - diaAnteriorGastosAcumulados;
-                const percentage = diaAnteriorGastosAcumulados !== 0 ? ((difference / diaAnteriorGastosAcumulados) * 100) : 0;
-                const isHigher = difference > 0;
-                
-                const info = document.createElement('div');
-                info.className = isHigher ? 'text-danger' : 'text-success';
-                info.innerHTML = `
-                    <strong>Diferença:</strong> ${difference.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}<br>
-                    <strong>Porcentagem:</strong> ${percentage.toFixed(2)}%
+                ritmoDiv.style.cssText = `
+                    margin-top: 1rem;
+                    padding: 1rem 1.25rem;
+                    border-radius: 12px;
+                    border-left: 5px solid ${corMesAtual};
+                    background-color: ${corMesAtualFundo};
                 `;
-                
+
+                const title = document.createElement('div');
+                title.style.cssText = 'font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--bs-gray-600); margin-bottom: 0.5rem;';
+                title.textContent = 'Ritmo de gastos';
+
+                const row1 = document.createElement('div');
+                row1.style.cssText = 'display: flex; align-items: baseline; gap: 0.5rem;';
+
+                const valorAtual = document.createElement('span');
+                valorAtual.style.cssText = 'font-size: 2.25rem; font-weight: 800; line-height: 1; color: var(--bs-body-color);';
+                valorAtual.textContent = Math.abs(diferencaGeral).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                const statusLabel = document.createElement('span');
+                statusLabel.style.cssText = `font-size: 1.25rem; font-weight: 500; color: ${corTextoRitmo};`;
+                statusLabel.textContent = textoRitmo;
+
+                row1.appendChild(valorAtual);
+                row1.appendChild(statusLabel);
+
+                const row2 = document.createElement('div');
+                row2.style.cssText = 'display: flex; align-items: center; gap: 1rem; margin-top: 0.75rem;';
+
+                const badge = document.createElement('span');
+                badge.style.cssText = `
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.25rem;
+                    padding: 0.35rem 0.75rem;
+                    border-radius: 999px;
+                    background-color: ${corMesAtualFundo};
+                    color: ${corTextoRitmo};
+                    font-weight: 700;
+                    font-size: 0.95rem;
+                `;
+                badge.textContent = `${iconeRitmo} ${diferencaGeral >= 0 ? '+' : ''}${porcentagemGeral.toFixed(1)}%`;
+
+                const vsText = document.createElement('span');
+                vsText.style.cssText = 'color: var(--bs-gray-600); font-size: 0.95rem;';
+                vsText.innerHTML = `vs ${diaAnteriorGastosAcumulados.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} mês anterior`;
+
+                row2.appendChild(badge);
+                row2.appendChild(vsText);
+
                 ritmoDiv.appendChild(title);
-                ritmoDiv.appendChild(info);
-                
-                // Insert after the chart canvas
+                ritmoDiv.appendChild(row1);
+                ritmoDiv.appendChild(row2);
+
                 graficoCardBody.appendChild(ritmoDiv);
             }
         }
