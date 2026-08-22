@@ -6,6 +6,7 @@ using MinhaCarteira.AppCliente.ViewModel.Relatorio;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoGastos;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldoPeriodo;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.FluxoCaixa;
+using MinhaCarteira.AppCliente.ViewModel.Relatorio.GastosPorCategoriaPeriodo;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -39,7 +40,7 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
 
         var mesesSelecionados = (meses != null && meses.Length > 0)
             ? meses.Where(m => m >= 1 && m <= 12).Distinct().OrderBy(m => m).ToList()
-            : new List<int> { dataAtual.Month };
+            : new List<int> { dataAtual.Month - 1, dataAtual.Month };
 
         if (mesesSelecionados.Count == 0)
             mesesSelecionados.Add(dataAtual.Month);
@@ -186,6 +187,21 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
         if (respostaEvolucaoSaldoPeriodo.BemSucedido)
         {
             model.EvolucaoSaldoPeriodo = respostaEvolucaoSaldoPeriodo.Dados;
+        }
+
+        // Carrega os gastos por categoria no período
+        var respostaGastosPorCategoria = await Servico.GastosPorCategoriaPeriodo(dataInicialSelecionada, dataFinalSelecionada, contaBancariaId);
+        if (respostaGastosPorCategoria.BemSucedido)
+        {
+            var gastos = respostaGastosPorCategoria.Dados;
+            if (gastos != null && gastos.Itens != null && gastos.TotalGastos > 0)
+            {
+                foreach (var item in gastos.Itens)
+                {
+                    item.Percentual = Math.Round((item.Valor / gastos.TotalGastos) * 100, 2);
+                }
+            }
+            model.GastosPorCategoriaPeriodo = gastos;
         }
 
         return View(model);

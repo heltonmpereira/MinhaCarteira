@@ -4,6 +4,7 @@ using MinhaCarteira.Definicao.Relatorio.EvolucaoGastos;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldo;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldoPeriodo;
 using MinhaCarteira.Definicao.Relatorio.FluxoCaixa;
+using MinhaCarteira.Definicao.Relatorio.GastosPorCategoriaPeriodo;
 using MinhaCarteira.Modelo.Data;
 using System;
 using System.Collections.Generic;
@@ -574,6 +575,51 @@ ORDER BY
 
             saldoAcumulado = saldoFinalDia;
         }
+
+        return result;
+    }
+
+    public async Task<GastosPorCategoriaPeriodo> GetGastosPorCategoriaPeriodo(DateTime dataInicial, DateTime dataFinal, Guid proprietarioId, Guid? contaBancariaId = null)
+    {
+        var result = new GastosPorCategoriaPeriodo
+        {
+            DataInicial = dataInicial,
+            DataFinal = dataFinal
+        };
+
+        var gastosQuery = CarteiraContexto.MovimentosBancarios
+            .Include(m => m.Categoria)
+            .ThenInclude(c => c.CategoriaPai)
+            .Where(m => !m.Deletado &&
+                       m.ProprietarioId == proprietarioId &&
+                       m.DataMovimento.Date >= dataInicial.Date &&
+                       m.DataMovimento.Date <= dataFinal.Date &&
+                       m.TipoMovimento == Definicao.Modelo.TipoMovimento.Debito &&
+                       (m.Categoria.IgnorarMovimentacoes == false ||
+                        m.CentroClassificacao.IgnorarMovimentacoes == false));
+
+        if (contaBancariaId.HasValue)
+        {
+            gastosQuery = gastosQuery.Where(m => m.ContaBancariaId == contaBancariaId.Value);
+        }
+
+        var gastos = await gastosQuery.ToListAsync();
+
+        var itensAgrupados = gastos
+            .GroupBy(m => new { m.CategoriaId, m.Categoria.Nome, CategoriaPaiNome = m.Categoria.CategoriaPai != null ? m.Categoria.CategoriaPai.Nome : null })
+            .Select(g => new GastosPorCategoriaPeriodoItem
+            {
+                CategoriaId = g.Key.CategoriaId,
+                CategoriaNome = g.Key.Nome,
+                CategoriaPaiNome = g.Key.CategoriaPaiNome,
+                Valor = g.Sum(m => m.Valor),
+                QuantidadeMovimentos = g.Count()
+            })
+            .OrderByDescending(i => i.Valor)
+            .ToList();
+
+        result.Itens = itensAgrupados;
+        result.TotalGastos = itensAgrupados.Sum(i => i.Valor);
 
         return result;
     }

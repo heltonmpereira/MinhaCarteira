@@ -3,6 +3,7 @@ using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoGastos;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldo;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldoPeriodo;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.FluxoCaixa;
+using MinhaCarteira.AppCliente.ViewModel.Relatorio.GastosPorCategoriaPeriodo;
 using Refit;
 using System;
 using System.Threading.Tasks;
@@ -22,4 +23,7 @@ public interface IRelatorioRefit
 
     [Get("/evolucao-saldo-periodo")]
     Task<RespostaServico<EvolucaoSaldoPeriodoViewModel>> EvolucaoSaldoPeriodo(DateTime dataInicial, DateTime dataFinal, Guid? contaBancariaId = null);
+
+    [Get("/gastos-por-categoria-periodo")]
+    Task<RespostaServico<GastosPorCategoriaPeriodoViewModel>> GastosPorCategoriaPeriodo(DateTime dataInicial, DateTime dataFinal, Guid? contaBancariaId = null);
 }
