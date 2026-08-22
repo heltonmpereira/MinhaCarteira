@@ -50,4 +50,12 @@ public class RelatorioController(IHttpContextAccessor httpContextAccessor, Relat
         
         return !retorno.BemSucedido ? BadRequest() : Ok(retorno);
     }
+
+    [HttpGet("gastos-por-categoria-periodo")]
+    public virtual async Task<IActionResult> GastosPorCategoriaPeriodo(DateTime dataInicial, DateTime dataFinal, Guid? contaBancariaId = null)
+    {
+        var retorno = await Servico.GastosPorCategoriaPeriodo(dataInicial, dataFinal, new System.Guid(IdUsuarioLogado), contaBancariaId);
+        
+        return !retorno.BemSucedido ? BadRequest() : Ok(retorno);
+    }
 }
