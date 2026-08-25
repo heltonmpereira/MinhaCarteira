@@ -1,9 +1,14 @@
+using System;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,12 +16,7 @@ using Microsoft.Extensions.Hosting;
 using MinhaCarteira.AppCliente.Helper;
 using MinhaCarteira.AppCliente.Refit.Middleware;
 using Newtonsoft.Json;
-using System;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using WebEssentials.AspNetCore.Pwa;
-using Microsoft.AspNetCore.HttpOverrides;
 
 namespace MinhaCarteira.AppCliente;
 
@@ -59,7 +59,7 @@ public class Startup
             options.KnownIPNetworks.Clear();
             options.KnownProxies.Clear();
         });
-        
+
         services
             .AddControllersWithViews(options =>
             {
@@ -71,6 +71,19 @@ public class Startup
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             })
             .AddRazorRuntimeCompilation();
+
+        services.AddHsts(options =>
+        {
+            options.Preload = true;
+            options.IncludeSubDomains = true;
+            options.MaxAge = TimeSpan.FromDays(60);
+        });
+
+        services.AddHttpsRedirection(options =>
+        {
+            options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+            options.HttpsPort = 443;
+        });
 
         services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
