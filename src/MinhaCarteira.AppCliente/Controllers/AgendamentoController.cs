@@ -114,13 +114,6 @@ public class AgendamentoController(
                 Visivel =  true
             }, new()
             {
-                NomePropriedade =  "EstahConciliada",
-                Operador = TipoOperadorBusca.Igual,
-                Valor =  true,
-                RelacaoOutrosFiltros =  TipoOperadorLogico.And,
-                Visivel =  true
-            }, new()
-            {
                 NomePropriedade =  "DataPagamento",
                 Operador = TipoOperadorBusca.MaiorOuIgual,
                 Valor =  inicioMes,

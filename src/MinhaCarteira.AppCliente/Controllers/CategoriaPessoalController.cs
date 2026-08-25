@@ -13,6 +13,9 @@ public class CategoriaPessoalController(ICategoriaRefit servico, IHttpContextAcc
     : BaseController<CategoriaViewModel, Guid, ICategoriaRefit>(servico, httpContextAccessor)
 {
     protected override string OrdenacaoPadrao { get; set; } = "Caminho";
+    protected override string COLUNA_NOME_OBTER_TODOS { get; set; } = "Caminho";
+    protected override string COLUNA_ICONE_OBTER_TODOS { get; set; } = "Icone.Conteudo";
+    protected override string COLUNA_ICONE_MIME_OBTER_TODOS { get; set; } = "Icone.MimeType";
 
     protected override CategoriaViewModel ExecutarAntesSalvar(CategoriaViewModel item)
     {

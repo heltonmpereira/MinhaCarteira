@@ -206,7 +206,7 @@ public abstract class BaseController<T, TPK, TSERVICO> : PadraoController, ICont
         var criterio = new FiltroBase
         {
             AdicionarIncludes = true,
-            ItensPorPagina = 10
+            ItensPorPagina = 20
         };
         criterio.AdicionarFiltro("Tela", new FiltroOpcao()
         {

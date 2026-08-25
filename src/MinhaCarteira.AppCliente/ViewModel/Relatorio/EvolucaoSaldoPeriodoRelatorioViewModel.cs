@@ -1,5 +1,6 @@
 using MinhaCarteira.AppCliente.ViewModel;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldoPeriodo;
+using MinhaCarteira.AppCliente.ViewModel.Relatorio.GastosPorCategoriaPeriodo;
 using System;
 using System.Collections.Generic;
 
@@ -12,4 +13,5 @@ public class EvolucaoSaldoPeriodoRelatorioViewModel
     public Guid? ContaBancariaId { get; set; }
     public IEnumerable<ContaBancariaViewModel> ContasBancarias { get; set; }
     public EvolucaoSaldoPeriodoViewModel EvolucaoSaldoPeriodo { get; set; }
+    public GastosPorCategoriaPeriodoViewModel GastosPorCategoriaPeriodo { get; set; }
 }

@@ -38,7 +38,8 @@ $(function () {
     configurarAutoComplete("#txtCentroClassificacaoAgendamento", "#Agendamento_CentroClassificacaoId", "/centroClassificacao/obterTodos");
 
     configurarAutoComplete("#txtCategoria", "#CategoriaId", "/admin/categoria/obterTodos");
-    configurarAutoComplete("#txtCategoriaPai", "#CategoriaPaiId", "/admin/categoria/obterTodos");
+    configurarAutoComplete("#txtCategoriaPai", "#CategoriaPaiId", "/categoriapessoal/obterTodos");
+    configurarAutoComplete("#txtCategoriaPaiAdmin", "#CategoriaPaiIdAdmin", "/admin/categoria/obterTodos");
     configurarAutoComplete("#txtCentroClassificacao", "#CentroClassificacaoId", "/centroClassificacao/obterTodos");
     configurarAutoComplete("#txtInstituicao", "#InstituicaoFinanceiraId", "/admin/instituicaoFinanceira/obterTodos");
     configurarAutoComplete("#txtContaBancaria", "#ContaBancariaId", "/contaBancaria/obterTodos");
