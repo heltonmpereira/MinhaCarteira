@@ -53,6 +53,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\f8d5832a-a9f8-43c9-8d67-a5380903ee52.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\manifest.Production.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
