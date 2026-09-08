@@ -1,15 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoGastos;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldo;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldoPeriodo;
 using MinhaCarteira.Definicao.Relatorio.FluxoCaixa;
 using MinhaCarteira.Definicao.Relatorio.GastosPorCategoriaPeriodo;
 using MinhaCarteira.Modelo.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Modelo.Relatorio;
 
@@ -295,11 +294,10 @@ ORDER BY
 
         // Obtém todos os movimentos bancários para o mês
         var movimentosQuery = CarteiraContexto.MovimentosBancarios
-            .Where(m => !m.Deletado &&
-                       m.Competencia == competenciaAtual && (
-                       m.Categoria.IgnorarMovimentacoes == false ||
-                       m.CentroClassificacao.IgnorarMovimentacoes == false) &&
-                       m.ProprietarioId == proprietarioId);
+            .Where(m => m.Competencia == competenciaAtual && 
+                        m.ProprietarioId == proprietarioId &&
+                        !m.Deletado &&
+                        !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
 
         if (contaBancariaId.HasValue)
         {
@@ -361,16 +359,16 @@ ORDER BY
         var gastosMesAtualQuery = CarteiraContexto.MovimentosBancarios
             .Include(m => m.Categoria)
             .Include(m => m.CentroClassificacao)
-            .Where(m => !m.Deletado &&
-                       m.ProprietarioId == proprietarioId &&
-                       m.Competencia == competenciaAtual && (
-                       m.Categoria.IgnorarMovimentacoes == false ||
-                       m.CentroClassificacao.IgnorarMovimentacoes == false) &&
-                       m.TipoMovimento == Definicao.Modelo.TipoMovimento.Debito);
+            .Where(m => m.ProprietarioId == proprietarioId &&
+                        m.Competencia == competenciaAtual &&
+                        m.TipoMovimento == Definicao.Modelo.TipoMovimento.Debito &&
+                        !m.Deletado &&
+                        !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
 
         if (contaBancariaId.HasValue)
         {
-            gastosMesAtualQuery = gastosMesAtualQuery.Where(m => m.ContaBancariaId == contaBancariaId.Value);
+            gastosMesAtualQuery = gastosMesAtualQuery
+                .Where(m => m.ContaBancariaId == contaBancariaId.Value);
         }
 
         var gastosMesAtual = await gastosMesAtualQuery.ToListAsync();
@@ -379,12 +377,11 @@ ORDER BY
         var gastosMesAnteriorQuery = CarteiraContexto.MovimentosBancarios
             .Include(m => m.Categoria)
             .Include(m => m.CentroClassificacao)
-            .Where(m => !m.Deletado &&
-                       m.ProprietarioId == proprietarioId &&
-                       m.Competencia == competenciaAnterior && (
-                       m.Categoria.IgnorarMovimentacoes == false ||
-                       m.CentroClassificacao.IgnorarMovimentacoes == false) &&
-                       m.TipoMovimento == Definicao.Modelo.TipoMovimento.Debito);
+            .Where(m => m.ProprietarioId == proprietarioId &&
+                        m.Competencia == competenciaAnterior &&
+                        m.TipoMovimento == Definicao.Modelo.TipoMovimento.Debito &&
+                        !m.Deletado &&
+                        !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
 
         if (contaBancariaId.HasValue)
         {
@@ -449,12 +446,12 @@ ORDER BY
         var contasQuery = CarteiraContexto.ContasBancarias
             .Include(c => c.Movimentos)
             .Where(c => !c.Deletado && c.ProprietarioId == proprietarioId);
-        
+
         if (contaBancariaId.HasValue)
         {
             contasQuery = contasQuery.Where(c => c.Id == contaBancariaId.Value);
         }
-        
+
         var contas = await contasQuery.ToListAsync();
 
         // Obtém TODAS as parcelas relevantes (para o gráfico/planejado)
@@ -502,7 +499,7 @@ ORDER BY
                 {
                     if (!saldoRealPorDia.ContainsKey(data))
                         saldoRealPorDia[data] = 0;
-                    
+
                     saldoRealPorDia[data] += saldoConta;
                 }
             }
@@ -519,7 +516,7 @@ ORDER BY
         {
             // Se não temos o dia anterior, calculamos o saldo inicial do primeiro dia
             saldoInicialTotal = contas.Sum(c => c.ValorSaldoInicial);
-            
+
             // Adiciona todos os movimentos do DataSaldoInicial até o dia anterior ao primeiroDia
             foreach (var conta in contas)
             {
@@ -527,7 +524,7 @@ ORDER BY
                     .Where(m => !m.Deletado &&
                                m.DataMovimento.Date > conta.DataSaldoInicial.Date &&
                                m.DataMovimento.Date < primeiroDia);
-                
+
                 saldoInicialTotal += movimentosAteDiaAnterior.Sum(m => m.ValorReal);
             }
         }
@@ -542,7 +539,7 @@ ORDER BY
             // Movimentos realizados no dia (apenas MovimentoBancario)
             var movimentosDoDia = contas.SelectMany(c => c.Movimentos)
                 .Where(m => !m.Deletado && m.DataMovimento.Date == data.Date);
-            
+
             decimal movimentosRealizadosDia = movimentosDoDia.Sum(m => m.ValorReal);
 
             // Movimentos planejados no dia (apenas parcelas, para o gráfico)
@@ -590,13 +587,12 @@ ORDER BY
         var gastosQuery = CarteiraContexto.MovimentosBancarios
             .Include(m => m.Categoria)
             .ThenInclude(c => c.CategoriaPai)
-            .Where(m => !m.Deletado &&
-                       m.ProprietarioId == proprietarioId &&
-                       m.DataMovimento.Date >= dataInicial.Date &&
-                       m.DataMovimento.Date <= dataFinal.Date &&
-                       m.TipoMovimento == Definicao.Modelo.TipoMovimento.Debito &&
-                       (m.Categoria.IgnorarMovimentacoes == false ||
-                        m.CentroClassificacao.IgnorarMovimentacoes == false));
+            .Where(m => m.ProprietarioId == proprietarioId &&
+                        m.DataMovimento.Date >= dataInicial.Date &&
+                        m.DataMovimento.Date <= dataFinal.Date &&
+                        m.TipoMovimento == Definicao.Modelo.TipoMovimento.Debito &&
+                        !m.Deletado &&
+                        !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
 
         if (contaBancariaId.HasValue)
         {
