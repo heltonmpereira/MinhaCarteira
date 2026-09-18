@@ -28,7 +28,7 @@
 		<PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
 		<PackageReference Include="Scriban" Version="7.2.6" />
 		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
 	</ItemGroup>
 

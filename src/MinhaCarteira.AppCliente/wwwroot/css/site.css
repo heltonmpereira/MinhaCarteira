@@ -299,3 +299,8 @@ table thead th {
 .first-col {
     left: 0px;
 }
+
+.login-box-lg {
+    flex: 0 0 auto;
+    width: 91.66666667%
+}
