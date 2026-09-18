@@ -1,21 +1,21 @@
 ﻿@model MinhaCarteira.AppCliente.ViewModel.ImportarArquivoViewModel
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
 <div class="col-sm-6">
     <div class="form-group">
         <label asp-for="DataCriacao" class="control-label"></label>
         <input asp-for="DataCriacao" class="form-control"/>
-        <span asp-validation-for="DataCriacao" class="text-danger"></span>
+        <span asp-validation-for="DataCriacao" class="@ViewBag.ColorTextError"></span>
     </div>
     <div class="form-group">
         <label asp-for="ContaBancariaId" class="control-label"></label>
         <input asp-for="ContaBancariaId" class="form-control"/>
-        <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+        <span asp-validation-for="ContaBancariaId" class="@ViewBag.ColorTextError"></span>
     </div>
     <div class="form-group">
         <label asp-for="ContaBancaria" class="control-label"></label>
         <input asp-for="ContaBancaria" class="form-control"/>
-        <span asp-validation-for="ContaBancaria" class="text-danger"></span>
+        <span asp-validation-for="ContaBancaria" class="@ViewBag.ColorTextError"></span>
     </div>
 
 </div>

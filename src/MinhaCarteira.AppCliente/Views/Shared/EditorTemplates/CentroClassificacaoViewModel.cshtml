@@ -1,6 +1,6 @@
 ﻿@model MinhaCarteira.AppCliente.ViewModel.CentroClassificacaoViewModel
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
 <input disabled type="hidden" class="form-control" asp-for="Id" />
 <input disabled type="hidden" class="form-control" asp-for="ProprietarioId" />
 
@@ -22,13 +22,13 @@
     <div class="mb-3 col-sm-8">
         <label asp-for="Nome" class="control-label"></label>
         <input asp-for="Nome" class="form-control" autofocus />
-        <span asp-validation-for="Nome" class="text-danger"></span>
+        <span asp-validation-for="Nome" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="mb-3 col-sm-4">
         <label asp-for="IdAuxiliar" class="control-label"></label>
         <input asp-for="IdAuxiliar" class="form-control" />
-        <span asp-validation-for="IdAuxiliar" class="text-danger"></span>
+        <span asp-validation-for="IdAuxiliar" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 

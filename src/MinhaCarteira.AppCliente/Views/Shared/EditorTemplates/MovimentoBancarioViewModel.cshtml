@@ -2,7 +2,7 @@
 @using MinhaCarteira.AppCliente.Models
 @model MinhaCarteira.AppCliente.ViewModel.MovimentoBancarioViewModel
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
 <input disabled type="hidden" class="form-control" asp-for="Id" />
 <input disabled type="hidden" class="form-control" asp-for="ProprietarioId" />
 
@@ -31,13 +31,13 @@
                 @TipoMovimento.Credito.GetDescription()
             </label>
         </div>
-        <span asp-validation-for="TipoMovimento" class="text-danger"></span>
+        <span asp-validation-for="TipoMovimento" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-sm-4 col-md-3">
         <label asp-for="Competencia" class="form-label"></label>
         <input asp-for="Competencia" class="form-control" />
-        <span asp-validation-for="Competencia" class="text-danger"></span>
+        <span asp-validation-for="Competencia" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 
@@ -45,7 +45,7 @@
     <div class="col-sm-3">
         <label asp-for="DataMovimento" class="form-label"></label>
         <input asp-for="DataMovimento" class="form-control" />
-        <span asp-validation-for="DataMovimento" class="text-danger"></span>
+        <span asp-validation-for="DataMovimento" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-sm-3">
@@ -54,13 +54,13 @@
             <span class="input-group-text" id="basic-addon1">R$</span>
             <input asp-for="Valor" class="form-control money" autofocus />
         </div>
-        <span asp-validation-for="Valor" class="text-danger"></span>
+        <span asp-validation-for="Valor" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-sm-6">
         <label asp-for="Descricao" class="form-label"></label>
         <input asp-for="Descricao" class="form-control" />
-        <span asp-validation-for="Descricao" class="text-danger"></span>
+        <span asp-validation-for="Descricao" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 
@@ -72,7 +72,7 @@
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input type="search" id="txtContaBancaria" asp-for="NomeContaBancaria" class="form-control" />
         </div>
-        <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+        <span asp-validation-for="ContaBancariaId" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-md-6">
@@ -82,7 +82,7 @@
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input type="search" id="txtPessoa" asp-for="NomePessoa" class="form-control" />
         </div>
-        <span asp-validation-for="PessoaId" class="text-danger"></span>
+        <span asp-validation-for="PessoaId" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 
@@ -94,7 +94,7 @@
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input type="search" id="txtCategoria" asp-for="CaminhoCategoria" class="form-control" />
         </div>
-        <span asp-validation-for="CategoriaId" class="text-danger"></span>
+        <span asp-validation-for="CategoriaId" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-md-6">
@@ -104,7 +104,7 @@
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input type="search" id="txtCentroClassificacao" asp-for="NomeCentroClassificacao" class="form-control" />
         </div>
-        <span asp-validation-for="CentroClassificacaoId" class="text-danger"></span>
+        <span asp-validation-for="CentroClassificacaoId" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 
@@ -139,7 +139,7 @@
                 <div class="d-inline-block">
                     <input type="checkbox" asp-for="@Model.MovimentoBancarioArquivos[i].Deletado" />
                     <label asp-for="@Model.MovimentoBancarioArquivos[i].Deletado">&nbsp;Remover</label>
-                    <span asp-validation-for="@Model.MovimentoBancarioArquivos[i].Arquivo.IconeForm" class="text-danger"></span>
+                    <span asp-validation-for="@Model.MovimentoBancarioArquivos[i].Arquivo.IconeForm" class="@ViewBag.ColorTextError"></span>
                 </div>
 
                 <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].Id" />
@@ -170,14 +170,14 @@
         <div id="arquivos-container" class="col-11 row">
             <!-- Aqui os campos de arquivos serão adicionados -->
         </div>
-        <span asp-validation-for="MovimentoBancarioArquivos" class="text-danger"></span>
+        <span asp-validation-for="MovimentoBancarioArquivos" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="row mb-3">
         <div class="col-md-12 mb-3">
             <label asp-for="Observacao" class="form-label"></label>
             <textarea asp-for="Observacao" class="form-control"></textarea>
-            <span asp-validation-for="Observacao" class="text-danger"></span>
+            <span asp-validation-for="Observacao" class="@ViewBag.ColorTextError"></span>
         </div>
     </div>
 

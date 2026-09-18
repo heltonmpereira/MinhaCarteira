@@ -8,20 +8,20 @@
     <h1>Redefinição de senha</h1>
 
     <hr />
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
     <input type="hidden" asp-for="Id" class="form-control" />
     <input type="hidden" asp-for="CodigoRedefinicaoSenha" class="form-control" />
 
     <div class="form-group">
         <label asp-for="Password" class="control-label"></label>
         <input asp-for="Password" class="form-control" autofocus />
-        <span asp-validation-for="Password" class="text-danger"></span>
+        <span asp-validation-for="Password" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="ConfirmarPassword" class="control-label"></label>
         <input asp-for="ConfirmarPassword" class="form-control" />
-        <span asp-validation-for="ConfirmarPassword" class="text-danger"></span>
+        <span asp-validation-for="ConfirmarPassword" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="form-group">

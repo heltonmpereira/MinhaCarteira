@@ -133,7 +133,7 @@
                         <input type="search" id="txtContaBancaria" asp-for="NomeContaBancaria" class="form-control d-block" autofocus />
                     </div>
                 </form>
-                <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+                <span asp-validation-for="ContaBancariaId" class="@ViewBag.ColorTextError"></span>
             </div>
 
             <div class="col text-center">

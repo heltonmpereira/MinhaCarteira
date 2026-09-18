@@ -13,18 +13,18 @@
     <h1>Redefinir senha</h1>
     <fieldset class="form-group">
         <legend class="col-form-label">Informe o e-mail utilizado no cadastro</legend>
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
 
         <div class="form-group">
             <label asp-for="Username" class="control-label"></label>
             <input asp-for="Username" class="form-control" autofocus />
-            <span asp-validation-for="Username" class="text-danger"></span>
+            <span asp-validation-for="Username" class="@ViewBag.ColorTextError"></span>
         </div>
 
         <div class="form-group">
             <label asp-for="Email" class="control-label"></label>
             <input asp-for="Email" class="form-control" autofocus />
-            <span asp-validation-for="Email" class="text-danger"></span>
+            <span asp-validation-for="Email" class="@ViewBag.ColorTextError"></span>
         </div>
 
         <div class="form-group">
