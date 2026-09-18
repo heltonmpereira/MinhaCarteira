@@ -5,6 +5,128 @@
     ViewData["Title"] = "Registrar";
     @section Scripts {
         @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+}
+
+
+<div class="login-box login-box-lg container pt-5 mb-5">
+    <div class="login-logo">
+        <a class="h1" asp-action="Index" asp-controller="Home">
+            <img class="brand-image ms-0" width="120" src="~/img/logoSistema.png" alt="Icone do sistema">
+            <br />
+            <span class="d-inline-block">
+                <span class="fw-lighter text-board">minha</span><span class="fw-bolder text-orange">carteira</span>
+            </span>
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body login-card-body">
+            <h3 class="text-center">Registro</h3>
+            <p class="login-box-msg p-0 mb-3">Preencha o formulário abaixo e obtenha acesso aos recursos do sistema.</p>
+
+            <form asp-action="Registrar" autocomplete="off">
+                <div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
+                
+                <fieldset class="form-group">
+                    <div class="row">
+                        <div class="form-group col-sm-12">
+                            <label asp-for="Nome" class="control-label"></label>
+                            <input asp-for="Nome" class="form-control" autofocus />
+                            <span asp-validation-for="Nome" class="@ViewBag.ColorTextError"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label asp-for="Administrador.Nome" class="control-label"></label>
+                        <input asp-for="Administrador.Nome" class="form-control" autofocus />
+                        <span asp-validation-for="Administrador.Nome" class="@ViewBag.ColorTextError"></span>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label asp-for="Administrador.Sobrenome" class="control-label"></label>
+                        <input asp-for="Administrador.Sobrenome" class="form-control" />
+                        <span asp-validation-for="Administrador.Sobrenome" class="@ViewBag.ColorTextError"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label asp-for="Administrador.Username" class="control-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Administrador.Username" class="form-control" autocomplete="off" />
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Administrador.Username" class="@ViewBag.ColorTextError"></span>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label asp-for="Administrador.Email" class="control-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Administrador.Email" class="form-control" />
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Administrador.Email" class="@ViewBag.ColorTextError"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label asp-for="Administrador.Password" class="control-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Administrador.Password" class="form-control" autocomplete="off" />
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Administrador.Password" class="@ViewBag.ColorTextError"></span>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label asp-for="Administrador.ConfirmarPassword" class="control-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Administrador.ConfirmarPassword" class="form-control" />
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Administrador.ConfirmarPassword" class="@ViewBag.ColorTextError"></span>
+                    </div>
+                </div>
+
+                <div class="form-group float-end">
+                    <a class="btn btn-default" asp-action="Index">Cancelar</a>
+                    <input type="submit" value="Registrar" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@*
+
+@using MinhaCarteira.AppCliente.ViewModel.Login;
+@model RegistrarOrganizacaoViewModel
+
+@{
+    ViewData["Title"] = "Registrar";
+    @section Scripts {
+        @{
     await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     }
@@ -18,7 +140,7 @@
                 <div class="form-group col-sm-12">
                     <label asp-for="Nome" class="control-label"></label>
                     <input asp-for="Nome" class="form-control" autofocus />
-                    <span asp-validation-for="Nome" class="text-danger"></span>
+                    <span asp-validation-for="Nome" class="@ViewBag.ColorTextError"></span>
                 </div>
             </div>
         </fieldset>
@@ -26,41 +148,41 @@
         <hr/>
         <fieldset class="form-group">
             <legend class="col-form-label">Dados do administrador</legend>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
             <div class="row">
                 <div class="form-group col-sm-6">
                     <label asp-for="Administrador.Nome" class="control-label"></label>
                     <input asp-for="Administrador.Nome" class="form-control" autofocus />
-                    <span asp-validation-for="Administrador.Nome" class="text-danger"></span>
+                    <span asp-validation-for="Administrador.Nome" class="@ViewBag.ColorTextError"></span>
                 </div>
                 <div class="form-group col-sm-6">
                     <label asp-for="Administrador.Sobrenome" class="control-label"></label>
                     <input asp-for="Administrador.Sobrenome" class="form-control" />
-                    <span asp-validation-for="Administrador.Sobrenome" class="text-danger"></span>
+                    <span asp-validation-for="Administrador.Sobrenome" class="@ViewBag.ColorTextError"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-sm-6">
                     <label asp-for="Administrador.Username" class="control-label"></label>
                     <input asp-for="Administrador.Username" class="form-control" autocomplete="off" />
-                    <span asp-validation-for="Administrador.Username" class="text-danger"></span>
+                    <span asp-validation-for="Administrador.Username" class="@ViewBag.ColorTextError"></span>
                 </div>
                 <div class="form-group col-sm-6">
                     <label asp-for="Administrador.Email" class="control-label"></label>
                     <input asp-for="Administrador.Email" class="form-control" />
-                    <span asp-validation-for="Administrador.Email" class="text-danger"></span>
+                    <span asp-validation-for="Administrador.Email" class="@ViewBag.ColorTextError"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-sm-6">
                     <label asp-for="Administrador.Password" class="control-label"></label>
                     <input asp-for="Administrador.Password" class="form-control" autocomplete="off" />
-                    <span asp-validation-for="Administrador.Password" class="text-danger"></span>
+                    <span asp-validation-for="Administrador.Password" class="@ViewBag.ColorTextError"></span>
                 </div>
                 <div class="form-group col-sm-6">
                     <label asp-for="Administrador.ConfirmarPassword" class="control-label"></label>
                     <input asp-for="Administrador.ConfirmarPassword" class="form-control" />
-                    <span asp-validation-for="Administrador.ConfirmarPassword" class="text-danger"></span>
+                    <span asp-validation-for="Administrador.ConfirmarPassword" class="@ViewBag.ColorTextError"></span>
                 </div>
             </div>
             <div class="form-group">
@@ -72,3 +194,4 @@
         </fieldset>
     </form>
 </div>
+*@

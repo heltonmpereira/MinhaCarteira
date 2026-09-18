@@ -1,7 +1,7 @@
 ﻿@using Dhani.Utilitarios.Filtro
 @model MinhaCarteira.AppCliente.ViewModel.DashboardMonitorViewModel
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
 <input type="hidden" class="form-control" asp-for="Id" />
 <input type="hidden" class="form-control" asp-for="ProprietarioId" />
 
@@ -9,13 +9,13 @@
     <div class="mb-3 col-sm-12 col-md-6">
         <label asp-for="Titulo" class="control-label"></label>
         <input asp-for="Titulo" class="form-control" autofocus />
-        <span asp-validation-for="Titulo" class="text-danger"></span>
+        <span asp-validation-for="Titulo" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="mb-3 col-sm-6 col-md-3">
         <label asp-for="CorFundo" class="control-label"></label>
         <input asp-for="CorFundo" class="form-control" autofocus />
-        <span asp-validation-for="CorFundo" class="text-danger"></span>
+        <span asp-validation-for="CorFundo" class="@ViewBag.ColorTextError"></span>
         <div class="form-text">
             <a href="https://adminlte.io/themes/v3/pages/widgets.html" target="_blank">Documentação</a>
             <code>bg-gradient-*</code>
@@ -29,7 +29,7 @@
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input type="search" id="txtAgendamentoDescricao" asp-for="AgendamentoDescricao" class="form-control" />
         </div>
-        <span asp-validation-for="AgendamentoId" class="text-danger"></span>
+        <span asp-validation-for="AgendamentoId" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 
@@ -94,7 +94,7 @@
             <div class="mb-3">
                 <label asp-for="CriterioBuscaMovimentosJson" class="control-label"></label>
                 <input asp-for="CriterioBuscaMovimentosJson" class="form-control" autofocus />
-                <span asp-validation-for="CriterioBuscaMovimentosJson" class="text-danger"></span>
+                <span asp-validation-for="CriterioBuscaMovimentosJson" class="@ViewBag.ColorTextError"></span>
             </div>
         </div>
     </div>

@@ -2,7 +2,7 @@
 @using MinhaCarteira.AppCliente.Models
 @model MinhaCarteira.AppCliente.ViewModel.AgendamentoViewModel
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
 <input type="hidden" class="form-control" asp-for="Id" />
 
 <div class="row mb-3 bg-body-secondary p-2 mx-auto">
@@ -34,7 +34,7 @@
                 @TipoMovimento.Credito.GetDescription()
             </label>
         </div>
-        <span asp-validation-for="Tipo" class="text-danger"></span>
+        <span asp-validation-for="Tipo" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-sm-6 col-md-5 col-xl-4 d-flex flex-column">
@@ -50,7 +50,7 @@
                 <label class="btn @(ViewBag.ClasseBotao)primary" for="tipoParcela@(c)">@c</label>
             }
         </div>
-        <span asp-validation-for="TipoParcelas" class="text-danger"></span>
+        <span asp-validation-for="TipoParcelas" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div id="tipoRecorrencia" class="d-none col-sm-6 col-md-4 col-xl-4 flex-column">
@@ -65,19 +65,19 @@
                 <label class="btn @(ViewBag.ClasseBotao)primary" for="tipoRecorrencia@(c)">@c</label>
             }
         </div>
-        <span asp-validation-for="TipoRecorrencia" class="text-danger"></span>
+        <span asp-validation-for="TipoRecorrencia" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div id="intervalo" class="d-none col-sm-3 col-md-6 col-xl-1">
         <label asp-for="Intervalo" class="form-label"></label>
         <input asp-for="Intervalo" class="form-control" />
-        <span asp-validation-for="Intervalo" class="text-danger"></span>
+        <span asp-validation-for="Intervalo" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div id="numeroParcelas" class="d-none col-sm-3 col-md-6 col-xl-1">
         <label asp-for="QuantidadeParcelas" class="form-label"></label>
         <input asp-for="QuantidadeParcelas" class="form-control" />
-        <span asp-validation-for="QuantidadeParcelas" class="text-danger"></span>
+        <span asp-validation-for="QuantidadeParcelas" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 
@@ -85,7 +85,7 @@
     <div class="col-md-3">
         <label asp-for="DataInicial" class="form-label"></label>
         <input asp-for="DataInicial" class="form-control" />
-        <span asp-validation-for="DataInicial" class="text-danger"></span>
+        <span asp-validation-for="DataInicial" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-md-3">
@@ -96,13 +96,13 @@
             </div>
             <input asp-for="Valor" class="form-control money" autofocus />
         </div>
-        <span asp-validation-for="Valor" class="text-danger"></span>
+        <span asp-validation-for="Valor" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-md-6">
         <label asp-for="Descricao" class="form-label"></label>
         <input asp-for="Descricao" class="form-control" />
-        <span asp-validation-for="Descricao" class="text-danger"></span>
+        <span asp-validation-for="Descricao" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 
@@ -114,7 +114,7 @@
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input type="search" id="txtContaBancaria" asp-for="NomeContaBancaria" class="form-control" />
         </div>
-        <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+        <span asp-validation-for="ContaBancariaId" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-sm-6">
@@ -124,7 +124,7 @@
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input type="search" id="txtPessoa" asp-for="NomePessoa" class="form-control" />
         </div>
-        <span asp-validation-for="PessoaId" class="text-danger"></span>
+        <span asp-validation-for="PessoaId" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 
@@ -136,7 +136,7 @@
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input type="search" id="txtCategoria" asp-for="CaminhoCategoria" class="form-control" />
         </div>
-        <span asp-validation-for="CategoriaId" class="text-danger"></span>
+        <span asp-validation-for="CategoriaId" class="@ViewBag.ColorTextError"></span>
     </div>
 
     <div class="col-sm-6">
@@ -146,7 +146,7 @@
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input type="search" id="txtCentroClassificacao" asp-for="NomeCentroClassificacao" class="form-control" />
         </div>
-        <span asp-validation-for="CentroClassificacaoId" class="text-danger"></span>
+        <span asp-validation-for="CentroClassificacaoId" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 
@@ -154,7 +154,7 @@
     <div class="col-md-12 mb-3">
         <label asp-for="Observacao" class="form-label"></label>
         <textarea asp-for="Observacao" class="form-control"></textarea>
-        <span asp-validation-for="Observacao" class="text-danger"></span>
+        <span asp-validation-for="Observacao" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 

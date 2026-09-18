@@ -4,7 +4,7 @@
     ViewData["Title"] = "CategoriaViewModel";
 }
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
 <input hidden asp-for="Icone.Conteudo" />
 <input hidden asp-for="Icone.Nome" />
 
@@ -14,13 +14,13 @@
             <div class="col-sm-6 mb-3">
                 <label asp-for="Id" class="form-label"></label>
                 <input asp-for="Id" class="form-control" disabled />
-                <span asp-validation-for="Id" class="text-danger"></span>
+                <span asp-validation-for="Id" class="@ViewBag.ColorTextError"></span>
             </div>
 
             <div class="col-sm-6 mb-3">
                 <label asp-for="IdAuxiliar" class="form-label"></label>
                 <input asp-for="IdAuxiliar" class="form-control" />
-                <span asp-validation-for="IdAuxiliar" class="text-danger"></span>
+                <span asp-validation-for="IdAuxiliar" class="@ViewBag.ColorTextError"></span>
             </div>
         </div>
 
@@ -28,7 +28,7 @@
             <div class="col-sm-6 mb-3">
                 <label asp-for="Nome" class="form-label"></label>
                 <input asp-for="Nome" class="form-control" autofocus />
-                <span asp-validation-for="Nome" class="text-danger"></span>
+                <span asp-validation-for="Nome" class="@ViewBag.ColorTextError"></span>
             </div>
 
             <div class="mb-3 col-sm-6">
@@ -40,7 +40,7 @@
                     </span>
                     <input type="search" id="txtCategoriaPaiAdmin" asp-for="NomeCategoriaPai" class="form-control" />
                 </div>
-                <span asp-validation-for="CategoriaPaiIdAdmin" class="text-danger"></span>
+                <span asp-validation-for="CategoriaPaiIdAdmin" class="@ViewBag.ColorTextError"></span>
             </div>
         </div>
     </div>
@@ -54,7 +54,7 @@
                  src="data:@Model.Icone?.MimeType;base64,@Model.Icone?.Conteudo"
                  asp-append-version="true" height="78" width="78"/>
         </div>
-        <span asp-validation-for="Icone.IconeForm" class="text-danger"></span>
+        <span asp-validation-for="Icone.IconeForm" class="@ViewBag.ColorTextError"></span>
     </div>
 </div>
 

@@ -46,6 +46,9 @@ public abstract class PadraoController : Controller
         ViewBag.Theme = Request.Cookies[Helper.Constante.NOME_COOKIE_THEMES] ?? "dark";
         ViewBag.ThemeInverse = ViewBag.Theme.Equals("light", StringComparison.CurrentCultureIgnoreCase)
             ? "dark" : "light";
+        ViewBag.ColorTextError = ViewBag.Theme.Equals("light", StringComparison.CurrentCultureIgnoreCase)
+            ? "text-danger" : "text-warning";
+
         CarregarInformacoesBrowser();
         base.OnActionExecuted(context);
     }

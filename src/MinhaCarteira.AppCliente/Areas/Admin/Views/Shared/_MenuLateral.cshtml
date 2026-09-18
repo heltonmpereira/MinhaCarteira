@@ -1,9 +1,10 @@
-<aside class="main-sidebar sidebar-dark-light elevation-1">
+<aside class="main-sidebar sidebar-dark-danger elevation-1">
     <a class="brand-link text-decoration-none ps-1 pt-3"
        asp-area="" asp-controller="Home" asp-action="Index" id="brandLink">
-        <img class="brand-image ms-0" src="~/img/logoSistema.png" alt="Icone do sistema">
-        <span class="brand-text" id="brandText">dhani projetos</span>
-    </a>
+        <img class="brand-image" src="~/img/logoSistema.png" alt="Icone do sistema">
+        <span class="brand-text" id="brandText">
+            <span class="fw-lighter text-light">minha</span><span class="fw-bolder text-danger">carteira</span>
+        </span>    </a>
 
     <div class="sidebar">
         <div class="user-panel my-2">
@@ -46,7 +47,8 @@
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="home" asp-action="index">
-                                    <i class="nav-icon fa fa-home-user"></i> <p>Página inicial</p>
+                                    <i class="nav-icon fa fa-home-user text-info"></i>
+                                    <p class="text-info">Página inicial</p>
                                 </a>
                             </li>
 
@@ -63,7 +65,8 @@
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Login" asp-action="Sair">
-                                        <i class="nav-icon fa fa-door-open"></i> <p>Sair</p>
+                                        <i class="nav-icon fa fa-door-open text-orange"></i>
+                                        <p class="text-orange">Sair</p>
                                     </a>
                                 </li>
                             }
@@ -71,7 +74,8 @@
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Login" asp-action="SairAcessoComo">
-                                        <i class="nav-icon fa fa-door-open"></i> <p>Sair do acesso como</p>
+                                        <i class="nav-icon fa fa-door-open text-orange"></i>
+                                        <p class="text-orange">Sair do acesso como</p>
                                     </a>
                                 </li>
                             }

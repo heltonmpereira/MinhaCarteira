@@ -12,7 +12,7 @@
 }
 
 <form id="formConciliar" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto" method="post">
-    <h3>Conciliação da parcela <span class="text-danger">@descricao</span></h3>
+    <h3>Conciliação da parcela <span class="@ViewBag.ColorTextError">@descricao</span></h3>
     <hr />
     <input asp-for="Parcela.Id" type="hidden" />
     <div class="row mb-3">
@@ -28,7 +28,7 @@
                     </span>
                     <input type="search" id="txtContaBancaria" asp-for="NomeContaBancaria" class="form-control" />
                 </div>
-                <span asp-validation-for="ContaBancariaId" class="text-danger"></span>
+                <span asp-validation-for="ContaBancariaId" class="@ViewBag.ColorTextError"></span>
             </div>
 
             <div class="col-sm-3">
@@ -40,13 +40,13 @@
                     </span>
                     <input type="search" id="txtCategoria" asp-for="CaminhoCategoria" class="form-control" />
                 </div>
-                <span asp-validation-for="CategoriaId" class="text-danger"></span>
+                <span asp-validation-for="CategoriaId" class="@ViewBag.ColorTextError"></span>
             </div>
 
             <div class="col-sm-6">
                 <label asp-for="Descricao" class="form-label"></label>
                 <input asp-for="Descricao" class="form-control" />
-                <span asp-validation-for="Descricao" class="text-danger"></span>
+                <span asp-validation-for="Descricao" class="@ViewBag.ColorTextError"></span>
             </div>
         </div>
 

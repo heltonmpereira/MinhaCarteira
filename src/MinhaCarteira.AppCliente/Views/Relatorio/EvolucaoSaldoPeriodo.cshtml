@@ -269,7 +269,7 @@
                                     gastosTableRows += `
                                         <tr>
                                             <td>${item.CaminhoCompleto || item.CategoriaNome}</td>
-                                            <td class="text-danger">${formatCurrency(item.Valor)}</td>
+                                            <td class="@ViewBag.ColorTextError">${formatCurrency(item.Valor)}</td>
                                             <td>${item.QuantidadeMovimentos}</td>
                                             <td>${item.Percentual.toFixed(2)}%</td>
                                         </tr>`;
@@ -573,7 +573,7 @@
                         <p><strong>Saldo Inicial Total:</strong> @Model.EvolucaoSaldoPeriodo.SaldoInicialTotal.ToString("C2")</p>
                         @if (Model.GastosPorCategoriaPeriodo != null && Model.GastosPorCategoriaPeriodo.TotalGastos > 0)
                         {
-                            <p><strong>Total de Gastos:</strong> <span class="text-danger">@Model.GastosPorCategoriaPeriodo.TotalGastos.ToString("C2")</span></p>
+                            <p><strong>Total de Gastos:</strong> <span class="@ViewBag.ColorTextError">@Model.GastosPorCategoriaPeriodo.TotalGastos.ToString("C2")</span></p>
                         }
                     </div>
                 </div>

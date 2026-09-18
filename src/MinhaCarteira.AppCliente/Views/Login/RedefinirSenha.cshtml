@@ -1,36 +1,66 @@
 ﻿@model MinhaCarteira.AppCliente.ViewModel.Login.SolicitarRedefinicaoSenhaViewModel
 
 @{
-    ViewData["Title"] = "RedefinirSenha";
+    ViewData["Title"] = "Redefinir Senha";
     @section Scripts {
         @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
     }
 }
 
-<form asp-action="RedefinirSenha" autocomplete="off" class="col-sm-8 col-md-6 col-xl-5 px-5 pt-4">
-    <h1>Redefinir senha</h1>
-    <fieldset class="form-group">
-        <legend class="col-form-label">Informe o e-mail utilizado no cadastro</legend>
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="login-box container pt-5 mb-5">
+    <div class="login-logo">
+        <a class="h1" asp-action="Index" asp-controller="Home">
+            <img class="brand-image ms-0" width="120" src="~/img/logoSistema.png" alt="Icone do sistema">
+            <br />
+            <span class="d-inline-block">
+                <span class="fw-lighter text-board">minha</span><span class="fw-bolder text-orange">carteira</span>
+            </span>
+        </a>
+    </div>
 
-        <div class="form-group">
-            <label asp-for="Username" class="control-label"></label>
-            <input asp-for="Username" class="form-control" autofocus />
-            <span asp-validation-for="Username" class="text-danger"></span>
-        </div>
+    <div class="card">
+        <div class="card-body login-card-body">
+            <h3 class="text-center">Esqueci a senha</h3>
+            <p class="login-box-msg p-0 mb-3">Esqueceu sua senha? Preencha o formulário abaixo e solicite uma nova senha.</p>
 
-        <div class="form-group">
-            <label asp-for="Email" class="control-label"></label>
-            <input asp-for="Email" class="form-control" autofocus />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
+            <form asp-action="RedefinirSenha">
+                <fieldset class="form-group">
+                    <div asp-validation-summary="ModelOnly" class="@ViewBag.ColorTextError"></div>
 
-        <div class="form-group">
-            <hr />
-            <input type="submit" value="Redefinir" class="btn btn-primary" />
-            <a class="btn btn-default" asp-action="Index">Cancelar</a>
+                    <div class="form-group">
+                        <label asp-for="Username" class="control-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Username" class="form-control" autocomplete="on" autofocus placeholder="Informe o usuário utilizado no cadastro" />
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Username" class="@ViewBag.ColorTextError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Email" class="form-control" autocomplete="on" placeholder="Informe o e-mail utilizado no cadastro" />
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Email" class="@ViewBag.ColorTextError"></span>
+                    </div>
+
+                    <div class="form-group float-end">
+                        <a class="btn btn-default" asp-action="Index">Cancelar</a>
+                        <input type="submit" value="Redefinir" class="btn btn-primary" />
+                    </div>
+                </fieldset>
+            </form>
         </div>
-    </fieldset>
-</form>
+    </div>
+</div>
