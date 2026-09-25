@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Modelo.Maps.Base;
 
@@ -11,12 +12,16 @@ public class AgendamentoParcelaMap : BaseMap<AgendamentoParcela, Guid>
     public override void Configure(EntityTypeBuilder<AgendamentoParcela> builder)
     {
         base.Configure(builder);
+        var positiveDecimalConverter = new ValueConverter<decimal?, decimal?>(
+            v => v.HasValue ? Math.Abs(v.Value) : v,
+            v => v.HasValue ? Math.Abs(v.Value) : v);
+
         //builder.Property(p => p.EstahPaga).HasDefaultValue(false);
         //builder.Property(p => p.EstahConciliada).HasDefaultValue(false);
         builder.Property(p => p.EstahPaga).HasComputedColumnSql("CAST(CASE WHEN \"DataPagamento\" IS NULL THEN 0 ELSE 1 END AS boolean)", stored: true);
         builder.Property(p => p.EstahConciliada).HasComputedColumnSql("CAST(CASE WHEN \"ConciliacaoBancariaAgendamentoParcelaId\" IS NULL THEN 0 ELSE 1 END AS boolean)", stored: true);
-        builder.Property(p => p.Valor).HasPrecision(18, 6);
-        builder.Property(p => p.ValorPago).HasPrecision(18, 6);
+        builder.Property(p => p.Valor).HasPrecision(18, 6).HasConversion(positiveDecimalConverter);
+        builder.Property(p => p.ValorPago).HasPrecision(18, 6).HasConversion(positiveDecimalConverter);
         builder.Property(p => p.Data).HasPrecision(0).HasColumnType("timestamp without time zone");
         builder.Property(p => p.DataPagamento).HasPrecision(0).HasColumnType("timestamp without time zone");
         builder.Property(p => p.NumeroParcela).HasDefaultValueSql("1");

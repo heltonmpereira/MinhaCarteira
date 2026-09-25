@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Modelo.Maps.Base;
-using System;
 
 namespace MinhaCarteira.Modelo.Maps;
 
@@ -12,13 +13,17 @@ public class AgendamentoMap : BaseMap<Agendamento, Guid>
     public override void Configure(EntityTypeBuilder<Agendamento> builder)
     {
         base.Configure(builder);
+        var positiveDecimalConverter = new ValueConverter<decimal?, decimal?>(
+            v => v.HasValue ? Math.Abs(v.Value) : v,
+            v => v.HasValue ? Math.Abs(v.Value) : v);
+
         builder.Property(p => p.DataInicial).HasColumnType("timestamp without time zone");
         builder.Property(p => p.DataCriacao).HasColumnType("timestamp without time zone");
         builder.Property(p => p.DataAlteracao).HasColumnType("timestamp without time zone");
 
         builder.Property(p => p.IdAuxiliar).HasMaxLength(200);
         builder.Property(p => p.Descricao).HasMaxLength(200);
-        builder.Property(p => p.Valor).HasPrecision(18, 6);
+        builder.Property(p => p.Valor).HasPrecision(18, 6).HasConversion(positiveDecimalConverter);
         builder.Property(p => p.Tipo).HasMaxLength(50)
             .HasConversion(
                 v => v.ToString(),
