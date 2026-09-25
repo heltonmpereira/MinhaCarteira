@@ -163,6 +163,9 @@
                             <a class="icon-link link-danger" asp-action="DeletarParcela" asp-route-id="@item.Id" title="Remover parcela">
                                 <i class="fa-solid fa-lg fa-trash-can"></i>&nbsp;
                             </a>
+                            <a class="icon-link link-danger" asp-action="Deletar" asp-route-id="@item.Agendamento.Id" title="Remover agendamento">
+                                <i class="fa-solid fa-lg fa-trash"></i>&nbsp;
+                            </a>
                             <a class="icon-link link-info" asp-action="Clonar" asp-route-id="@item.Agendamento.Id" title="Clonar">
                                 <i class="fa-solid fa-lg fa-clone"></i>&nbsp;
                             </a>
