@@ -11,6 +11,7 @@ $(function () {
         forced_root_block : '&nbsp;',
         selector: 'textarea',
         license_key: 'gpl',
+        invalid_styles: { 'table': 'width height', 'tr': 'width height', 'th': 'width height', 'td': 'width height text-align', 'col': 'width height text-align' },
         plugins: 'anchor autolink emoticons image link lists media searchreplace table visualblocks wordcount code',
         toolbar: 'code | undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | removeformat | ',
         tinycomments_mode: 'embedded',

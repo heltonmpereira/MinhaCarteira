@@ -1,4 +1,4 @@
-﻿using Dhani.Utilitarios.Filtro;
+using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppServer.Controllers.Base;
@@ -26,6 +26,19 @@ public class ContaBancariaController(IContaBancariaServico servico, IHttpContext
     public async Task<IActionResult> DecrementarPrioridade(Guid id) =>
         await Servico.RespostaServicoAsync<bool>(
             parameters: [id]);
+
+    [Route("reordenar")]
+    [HttpPost]
+    public async Task<IActionResult> Reordenar([FromBody] Guid[] idsOrdenados)
+    {
+        if (idsOrdenados == null || idsOrdenados.Length == 0 || string.IsNullOrWhiteSpace(IdUsuarioLogado))
+        {
+            return BadRequest();
+        }
+
+        var resultado = await ((IContaBancariaServico)Servico).Reordenar(idsOrdenados, new Guid(IdUsuarioLogado));
+        return resultado.BemSucedido ? NoContent() : BadRequest(resultado);
+    }
 
     [Route("reativar/{id:guid}")]
     [HttpPost]

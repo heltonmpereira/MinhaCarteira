@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
@@ -12,4 +12,5 @@ public interface IContaBancariaServico : IServico<ContaBancaria, Guid, IContaBan
     Task<IRespostaServico<bool>> Reativar(Guid id);
     Task<IRespostaServico<bool>> IncrementarPrioridade(Guid id);
     Task<IRespostaServico<bool>> DecrementarPrioridade(Guid id);
+    Task<IRespostaServico<bool>> Reordenar(Guid[] idsOrdenados, Guid proprietarioId);
 }

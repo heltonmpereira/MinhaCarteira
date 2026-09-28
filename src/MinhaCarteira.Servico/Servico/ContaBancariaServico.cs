@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using MinhaCarteira.Definicao.Entidade;
@@ -52,6 +52,21 @@ public class ContaBancariaServico(IContaBancariaRepositorio repositorio)
             Mensagem = itemDb
                 ? "Pririodade da conta bancária decrementada com sucesso."
                 : "Falha ao decrementar a prioridade da conta bancária."
+        };
+
+        return retorno;
+    }
+
+    public async Task<IRespostaServico<bool>> Reordenar(Guid[] idsOrdenados, Guid proprietarioId)
+    {
+        var itemDb = await Repositorio.Reordenar(idsOrdenados, proprietarioId);
+        var retorno = new RespostaServico<bool>(itemDb)
+        {
+            BemSucedido = itemDb,
+            StatusCode = HttpStatusCode.NoContent,
+            Mensagem = itemDb
+                ? "Ordem das contas bancárias atualizada com sucesso."
+                : "Falha ao atualizar a ordem das contas bancárias."
         };
 
         return retorno;

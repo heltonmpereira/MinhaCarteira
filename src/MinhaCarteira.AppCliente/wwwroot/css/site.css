@@ -304,3 +304,36 @@ table thead th {
     flex: 0 0 auto;
     width: 91.66666667%
 }
+
+
+
+.grip-handle {
+    cursor: grab;
+    user-select: none;
+    color: var(--bs-secondary);
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+}
+
+    .grip-handle:hover {
+        opacity: 1;
+        color: var(--bs-primary);
+    }
+
+tr.table-danger .grip-handle {
+    cursor: not-allowed;
+    opacity: 0.25;
+}
+
+tbody.ui-sortable tr.ui-sortable-helper {
+    display: table;
+    width: 100%;
+}
+
+.ui-sortable-placeholder {
+    visibility: visible !important;
+    background: rgba(13, 110, 253, 0.08) !important;
+    border-top: 2px dashed var(--bs-primary) !important;
+    display: table-row;
+    height: 56px;
+}

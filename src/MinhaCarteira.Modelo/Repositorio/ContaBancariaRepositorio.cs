@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Modelo.Data;
@@ -39,6 +39,42 @@ public class ContaBancariaRepositorio(IDbContext contexto)
         await Contexto.SaveChangesAsync();
 
         return await Task.FromResult(true);
+    }
+
+    public async Task<bool> Reordenar(Guid[] idsOrdenados, Guid proprietarioId)
+    {
+        if (idsOrdenados == null || idsOrdenados.Length == 0)
+            return false;
+
+        var contas = await Contexto.ContasBancarias
+            .Where(w => w.ProprietarioId == proprietarioId)
+            .ToListAsync();
+
+        if (!contas.Any())
+            return false;
+
+        var mapaOrdemAtual = contas.ToDictionary(k => k.Id, v => v.Ordem);
+        var proximaOrdem = contas.Max(m => m.Ordem) + 1;
+
+        for (int i = 0; i < idsOrdenados.Length; i++)
+        {
+            var conta = contas.FirstOrDefault(f => f.Id == idsOrdenados[i]);
+            if (conta == null) continue;
+
+            conta.Ordem = i + 1;
+            Contexto.Entry(conta).Property(p => p.Ordem).IsModified = true;
+            mapaOrdemAtual.Remove(idsOrdenados[i]);
+        }
+
+        foreach (var idRestante in mapaOrdemAtual.Keys.OrderBy(o => mapaOrdemAtual[o]))
+        {
+            var conta = contas.First(f => f.Id == idRestante);
+            conta.Ordem = proximaOrdem++;
+            Contexto.Entry(conta).Property(p => p.Ordem).IsModified = true;
+        }
+
+        await Contexto.SaveChangesAsync();
+        return true;
     }
 
     public async Task<bool> AtualizarSaldos()
