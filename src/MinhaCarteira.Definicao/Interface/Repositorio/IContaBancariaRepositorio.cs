@@ -9,5 +9,6 @@ public interface IContaBancariaRepositorio : IRepositorio<ContaBancaria, Guid>
 {
     Task<bool> Reativar(Guid id);
     Task<bool> AlterarOrdemContaBancaria(Guid id, int direcao);
+    Task<bool> Reordenar(Guid[] idsOrdenados, Guid proprietarioId);
     Task<bool> AtualizarSaldos();
 }

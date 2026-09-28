@@ -1,4 +1,4 @@
-﻿@using MinhaCarteira.AppCliente.Models.Interface;
+@using MinhaCarteira.AppCliente.Models.Interface;
 @using MinhaCarteira.AppCliente.ViewModel.Base;
 @using MinhaCarteira.AppCliente.ViewModel;
 @model ListaBaseViewModel<ContaBancariaViewModel>
@@ -23,9 +23,15 @@
     </li>
 }
 
+@section ScriptsHead {
+    <link rel="stylesheet" href="~/lib/jqueryui/themes/hot-sneaks/jquery-ui.css" asp-append-version="true" />
+}
+
 @section Scripts {
-    <script src="~/lib/dompurify/purify.min.js" asp-append-version="true"></script>
-    <script src="~/js/views/paginacao.js" asp-append-version="true"></script>
+    <script nws-csp-add-nonce="true" asp-append-version="true" src="~/lib/dompurify/purify.min.js"></script>
+    <script nws-csp-add-nonce="true" asp-append-version="true" src="~/lib/jqueryui/jquery-ui.min.js"></script>
+    <script nws-csp-add-nonce="true" asp-append-version="true" src="~/js/views/paginacao.js"></script>
+    <script nws-csp-add-nonce="true" asp-append-version="true" src="~/js/views/contaBancariaOrdenacao.js"></script>
 }
 
 
@@ -36,12 +42,17 @@
 else
 {
     var tableTheme = $"table-{ViewBag.Theme}";
+    var totalItensNaoDeletados = Model.Itens.Count(w => !w.Deletado);
+
+    @Html.AntiForgeryToken()
 
     <div class="table-responsive col-sm-11 px-sm-3 px-md-0 pt-4 mx-auto">
-        <table class="table table-striped table-hover table-valign-middle @tableTheme">
+        <table class="table table-sortable table-striped table-hover table-valign-middle @tableTheme">
             <thead class="table-primary">
                 <tr>
-                    @* <th width="48"></th> *@
+                    <th class="text-center" width="42" title="Clique e arraste para reordenar">
+                        <i class="fa-solid fa-grip-vertical fa-sm opacity-75"></i>
+                    </th>
                     <th>
                         <asp-cabecalho asp-for="Itens.FirstOrDefault().Nome" />
                     </th>
@@ -57,14 +68,19 @@ else
                     <th colspan="3">Ações</th>
                 </tr>
             </thead>
-            <tbody class="table-group-divider">
+            <tbody class="table-group-divider" data-reorder-url="@Url.Action("Reordenar", "ContaBancaria")">
                 @foreach (var item in Model.Itens)
                 {
                     var classDesabilitado = item.Deletado ? "table-secondary fst-italic table-danger" : "";
-                    var classBotaoSubir = item.Ordem == 1 ? "disabled" : "";
-                    var classBotaoDescer = item.Ordem == Model.Itens.Count ? "disabled" : "";
+                    var classBotaoSubir = item.Deletado || item.Ordem == 1 ? "disabled" : "";
+                    var classBotaoDescer = item.Deletado || item.Ordem == totalItensNaoDeletados ? "disabled" : "";
 
-                    <tr class="align-middle @classDesabilitado">
+                    <tr class="align-middle @classDesabilitado" data-id="@item.Id">
+                        <td class="text-center grip-handle-cell">
+                            <span class="grip-handle" title="@(item.Deletado ? "Conta deletada — não pode ser reordenada" : "Clique e arraste para mudar a ordem")">
+                                <i class="fa-solid fa-grip-vertical fa-lg"></i>
+                            </span>
+                        </td>
                         <td>
                             <div>
                                 @if (!string.IsNullOrWhiteSpace(item.InstituicaoFinanceira.Icone?.Conteudo))
@@ -90,10 +106,10 @@ else
 
                         <td class="p-2 align-content-center w150px">
                             <div class="btn-group" role="group" aria-label="Botões de ação">
-                                <a title="Ordenar" class="btn btn@(classBotao)-secondary btn-acao p-0 pt-1 pb-1 @classBotaoSubir" asp-action="IncrementarPrioridade" asp-route-id="@item.Id">
+                                <a title="Subir na ordem" class="btn btn@(classBotao)-secondary btn-acao p-0 pt-1 pb-1 @classBotaoSubir" asp-action="IncrementarPrioridade" asp-route-id="@item.Id">
                                     <i class="fa-solid fa-lg fa-arrow-up"></i>
                                 </a>
-                                <a title="Ordenar" class="btn btn@(classBotao)-secondary btn-acao p-0 pt-1 pb-1 @classBotaoDescer" asp-action="DecrementarPrioridade" asp-route-id="@item.Id">
+                                <a title="Descer na ordem" class="btn btn@(classBotao)-secondary btn-acao p-0 pt-1 pb-1 @classBotaoDescer" asp-action="DecrementarPrioridade" asp-route-id="@item.Id">
                                     <i class="fa-solid fa-lg fa-arrow-down"></i>
                                 </a>
 

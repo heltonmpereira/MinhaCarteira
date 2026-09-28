@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MinhaCarteira.AppCliente.Models;
 using MinhaCarteira.AppCliente.ViewModel;
@@ -28,6 +28,9 @@ public interface IContaBancariaRefit
 
     [Post("/decrementar-prioridade/{id}")]
     Task<RespostaServico<bool>> DecrementarPrioridade(Guid id);
+
+    [Post("/reordenar")]
+    Task<RespostaServico<bool>> Reordenar([Body] Guid[] idsOrdenados);
 
     [Post("/reativar/{id}")]
     Task<RespostaServico<bool>> Reativar(Guid id);
