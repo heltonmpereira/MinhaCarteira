@@ -77,15 +77,16 @@ public class ContaBancariaController : BaseController<ContaBancariaViewModel, Gu
         try
         {
             var retorno = await Servico.Reordenar(idsOrdenados);
-            //if (retorno == null)
-            //{
-            //    HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            //    return Json(new
-            //    {
-            //        sucesso = false,
-            //        mensagem = "Resposta nula da API."
-            //    });
-            //}
+            if (retorno == null)
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return Json(new
+                {
+                    sucesso = true,
+                    //mensagem = "Resposta nula da API."
+                    mensagem = "OK"
+                });
+            }
 
             HttpContext.Response.StatusCode = retorno.BemSucedido
                 ? StatusCodes.Status200OK
