@@ -5,7 +5,8 @@
         var $tbody = $('.table-sortable tbody');
         if (!$tbody.length) return;
 
-        var temMaisDeUmaPagina = $('.pagination').length && $('ul.pagination li.page-item').length > 3;
+        var $paginacao = $('.pagination');
+        var temMaisDeUmaPagina = $paginacao.length && $paginacao.find('li.page-item').length > 3;
 
         function obterIdsOrdenados() {
             return $tbody.find('tr[data-id]')
@@ -71,10 +72,10 @@
                 },
                 start: function (e, ui) {
                     ui.placeholder.height(ui.helper.outerHeight());
-                    ui.helper.addClass('shadow-sm bg-body-tertiary border');
+                    ui.helper.addClass('cb-dragging-row');
                 },
                 stop: function () {
-                    $(this).find('tr').removeClass('shadow-sm bg-body-tertiary border');
+                    $(this).find('tr').removeClass('cb-dragging-row shadow-sm bg-body-tertiary border');
                 },
                 update: function () {
                     var ids = obterIdsOrdenados();
@@ -84,8 +85,8 @@
                     var actionUrl = $tbody.data('reorder-url');
                     if (!actionUrl) return;
 
-                    var $tabela = $tbody.closest('.table-sortable');
-                    $tabela.css('opacity', '0.6');
+                    var $tabela = $(this).closest('.table-sortable');
+                    $tabela.addClass('cb-tabela-reordenavel');
 
                     $.ajax({
                         url: actionUrl,
@@ -94,10 +95,11 @@
                         dataType: 'json',
                         data: JSON.stringify(ids),
                         headers: {
+                            'XSRF-TOKEN': $('input[name="__RequestVerificationToken"]').first().val(),
                             'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').first().val()
                         },
                         success: function (resp) {
-                            $tabela.css('opacity', '1');
+                            $tabela.removeClass('cb-tabela-reordenavel');
                             var mensagem = resp && resp.mensagem
                                 ? resp.mensagem
                                 : (resp && resp.sucesso ? 'Ordem atualizada com sucesso.' : 'Falha ao atualizar a ordem.');
@@ -109,10 +111,17 @@
                             }
                         },
                         error: function (xhr) {
-                            $tabela.css('opacity', '1');
+                            $tabela.removeClass('cb-tabela-reordenavel');
                             var mensagem = 'Falha ao atualizar a ordem.';
                             try {
-                                if (xhr.status === 401 || xhr.status === 403) {
+                                if (xhr.status === 400) {
+                                    var detalhe = null;
+                                    try { detalhe = (xhr.responseJSON && (xhr.responseJSON.mensagemErro || xhr.responseJSON.errors || xhr.responseJSON.Message || xhr.responseText)) || null; } catch (_) { }
+                                    if (detalhe && typeof detalhe === 'object') detalhe = JSON.stringify(detalhe);
+                                    mensagem = detalhe
+                                        ? '400 — ' + (detalhe.length > 260 ? detalhe.substring(0, 260) + '…' : detalhe)
+                                        : '400 — Requisição inválida (Antiforgery ou formato JSON)';
+                                } else if (xhr.status === 401 || xhr.status === 403) {
                                     mensagem = 'Sessão expirada. Faça login novamente.';
                                 } else if (xhr.responseJSON && xhr.responseJSON.mensagem) {
                                     mensagem = xhr.responseJSON.mensagem;

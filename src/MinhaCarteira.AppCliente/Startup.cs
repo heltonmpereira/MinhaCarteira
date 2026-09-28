@@ -262,13 +262,31 @@ public class Startup
                     .CustomSources([.. secaoWebSec.GetValue<string>("ConnectSources").Split(",").Select(s => s.Trim())])
                     )
                 .StyleSources(s => s
+                    .Self()
                     .CustomSources([.. secaoWebSec.GetValue<string>("StyleSources").Split(",").Select(s => s.Trim())])
                     )
                 .ScriptSources(s => s
+                    .Self()
                     .CustomSources([.. secaoWebSec.GetValue<string>("ScriptSources").Split(",").Select(s => s.Trim())])
                     )
              );
         }
+
+        app.Use(async (context, next) =>
+        {
+            var cspHeader = context.Response.Headers["Content-Security-Policy"].FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(cspHeader) && !cspHeader.Contains("style-src-attr"))
+            {
+                var styleSrcAttr = "style-src-attr 'unsafe-inline'";
+                cspHeader = cspHeader.TrimEnd(';') + "; " + styleSrcAttr;
+                context.Response.Headers["Content-Security-Policy"] = cspHeader;
+            }
+            else if (string.IsNullOrWhiteSpace(cspHeader))
+            {
+                context.Response.Headers["Content-Security-Policy"] = "style-src-attr 'unsafe-inline'";
+            }
+            await next();
+        });
 
         var securitytxt = $"Contact: contato@dhanidias.com.br\r\nExpires: Mon, 01 Aug 2050 00:00 +0300";
         app.UseEndpoints(endpoints =>

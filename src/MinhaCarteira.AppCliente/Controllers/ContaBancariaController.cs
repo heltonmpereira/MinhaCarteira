@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -43,11 +44,53 @@ public class ContaBancariaController : BaseController<ContaBancariaViewModel, Gu
     }
 
     [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<JsonResult> Reordenar([FromBody] Guid[] idsOrdenados)
     {
+        if (!ModelState.IsValid)
+        {
+            HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+            var erros = ModelState
+                .SelectMany(s => s.Value.Errors.Select(e => new { Propriedade = s.Key, Erro = string.IsNullOrWhiteSpace(e.ErrorMessage) ? (e.Exception?.Message ?? "inválido") : e.ErrorMessage }))
+                .ToList();
+
+            return Json(new
+            {
+                sucesso = false,
+                mensagem = "Dados de entrada inválidos.",
+                mensagemErro = erros.Count > 0 ? erros : null,
+                idsRecebidos = idsOrdenados?.Length
+            });
+        }
+
+        if (idsOrdenados == null || idsOrdenados.Length == 0)
+        {
+            HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+            return Json(new
+            {
+                sucesso = false,
+                mensagem = "Nenhuma conta informada para reordenação.",
+                idsRecebidos = 0
+            });
+        }
+
         try
         {
             var retorno = await Servico.Reordenar(idsOrdenados);
+            //if (retorno == null)
+            //{
+            //    HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            //    return Json(new
+            //    {
+            //        sucesso = false,
+            //        mensagem = "Resposta nula da API."
+            //    });
+            //}
+
+            HttpContext.Response.StatusCode = retorno.BemSucedido
+                ? StatusCodes.Status200OK
+                : StatusCodes.Status400BadRequest;
+
             return Json(new
             {
                 sucesso = retorno.BemSucedido,
@@ -74,7 +117,8 @@ public class ContaBancariaController : BaseController<ContaBancariaViewModel, Gu
             {
                 sucesso = false,
                 mensagem = retornoApi?.Mensagem ?? "Falha ao reordenar as contas.",
-                mensagemErro = retornoApi?.MensagemErro ?? ex.Message
+                mensagemErro = retornoApi?.MensagemErro ?? ex.Message,
+                statusCodeApi = (int?)ex.StatusCode
             });
         }
         catch (Exception ex)
@@ -84,7 +128,8 @@ public class ContaBancariaController : BaseController<ContaBancariaViewModel, Gu
             {
                 sucesso = false,
                 mensagem = "Erro interno ao reordenar as contas.",
-                mensagemErro = ex.Message
+                mensagemErro = ex.Message,
+                stackTrace = ex.StackTrace
             });
         }
     }
