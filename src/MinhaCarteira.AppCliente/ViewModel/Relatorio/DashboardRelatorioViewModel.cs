@@ -2,6 +2,7 @@ using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoGastos;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldo;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MinhaCarteira.AppCliente.ViewModel.Relatorio;
 
@@ -11,6 +12,7 @@ public class DashboardRelatorioViewModel
     public int Mes { get; set; }
     public List<int> Meses { get; set; } = new();
     public Guid? ContaBancariaId { get; set; }
+    public List<Guid> ContasBancariasIds { get; set; } = new();
     public IEnumerable<ContaBancariaViewModel> ContasBancarias { get; set; }
     public EvolucaoSaldoViewModel EvolucaoSaldo { get; set; }
     public EvolucaoGastosViewModel EvolucaoGastos { get; set; }

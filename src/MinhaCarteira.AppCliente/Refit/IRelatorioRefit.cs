@@ -16,14 +16,14 @@ public interface IRelatorioRefit
     Task<RespostaServico<FluxoCaixaViewModel>> FluxoCaixa(int ano);
 
     [Get("/evolucao-saldo/{ano}/{mes}")]
-    Task<RespostaServico<EvolucaoSaldoViewModel>> EvolucaoSaldo(int ano, int mes, Guid? contaBancariaId = null);
+    Task<RespostaServico<EvolucaoSaldoViewModel>> EvolucaoSaldo(int ano, int mes, Guid? contaBancariaId = null, string txtContasBancariasIds = null);
 
     [Get("/evolucao-gastos/{ano}/{mes}")]
-    Task<RespostaServico<EvolucaoGastosViewModel>> EvolucaoGastos(int ano, int mes, Guid? contaBancariaId = null);
+    Task<RespostaServico<EvolucaoGastosViewModel>> EvolucaoGastos(int ano, int mes, Guid? contaBancariaId = null, string txtContasBancariasIds = null);
 
     [Get("/evolucao-saldo-periodo")]
-    Task<RespostaServico<EvolucaoSaldoPeriodoViewModel>> EvolucaoSaldoPeriodo(DateTime dataInicial, DateTime dataFinal, Guid? contaBancariaId = null);
+    Task<RespostaServico<EvolucaoSaldoPeriodoViewModel>> EvolucaoSaldoPeriodo(DateTime dataInicial, DateTime dataFinal, Guid? contaBancariaId = null, string txtContasBancariasIds = null);
 
     [Get("/gastos-por-categoria-periodo")]
-    Task<RespostaServico<GastosPorCategoriaPeriodoViewModel>> GastosPorCategoriaPeriodo(DateTime dataInicial, DateTime dataFinal, Guid? contaBancariaId = null);
+    Task<RespostaServico<GastosPorCategoriaPeriodoViewModel>> GastosPorCategoriaPeriodo(DateTime dataInicial, DateTime dataFinal, Guid? contaBancariaId = null, string txtContasBancariasIds = null);
 }
