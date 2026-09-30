@@ -33,7 +33,7 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
     }
 
     [HttpGet]
-    public async Task<IActionResult> Dashboard(int? ano = null, int[] meses = null, Guid? contaBancariaId = null)
+    public async Task<IActionResult> Dashboard(int? ano = null, int[] meses = null, Guid? contaBancariaId = null, Guid[] contasBancariasIds = null)
     {
         var dataAtual = DateTime.Now;
         var anoSelecionado = ano ?? dataAtual.Year;
@@ -45,12 +45,29 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
         if (mesesSelecionados.Count == 0)
             mesesSelecionados.Add(dataAtual.Month);
 
+        // Normaliza os filtros de conta: se contasBancariasIds vier vazio, usa contaBancariaId (retrocompatibilidade)
+        var contasSelecionadas = contasBancariasIds?
+            .Where(g => g != Guid.Empty)
+            .Distinct()
+            .ToList();
+        if ((contasSelecionadas == null || contasSelecionadas.Count == 0) && contaBancariaId.HasValue)
+        {
+            contasSelecionadas = new List<Guid> { contaBancariaId.Value };
+        }
+
+        var contasArray = contasSelecionadas != null && contasSelecionadas.Count > 0
+            ? contasSelecionadas.ToArray()
+            : null;
+        var contaUnicaCompat = contasArray != null && contasArray.Length == 1 ? contasArray[0] : contaBancariaId;
+        var txtContasIds = contasArray != null && contasArray.Length > 0 ? string.Join(',', contasArray) : null;
+
         var model = new DashboardRelatorioViewModel
         {
             Ano = anoSelecionado,
             Mes = mesesSelecionados.Last(),
             Meses = mesesSelecionados,
-            ContaBancariaId = contaBancariaId
+            ContaBancariaId = contaUnicaCompat,
+            ContasBancariasIds = contasSelecionadas ?? new List<Guid>()
         };
 
         // Carrega as contas bancárias
@@ -63,7 +80,7 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
         // Mês principal (último selecionado) para manter EvolucaoSaldo e EvolucaoGastos legados
         var mesPrincipal = model.Mes;
 
-        var respostaEvolucaoSaldo = await Servico.EvolucaoSaldo(anoSelecionado, mesPrincipal, contaBancariaId);
+        var respostaEvolucaoSaldo = await Servico.EvolucaoSaldo(anoSelecionado, mesPrincipal, contaUnicaCompat, txtContasIds);
         if (respostaEvolucaoSaldo.BemSucedido)
             model.EvolucaoSaldo = respostaEvolucaoSaldo.Dados;
 
@@ -74,7 +91,7 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
         int ordem = 0;
         foreach (var mes in mesesSelecionados)
         {
-            var resp = await Servico.EvolucaoGastos(anoSelecionado, mes, contaBancariaId);
+            var resp = await Servico.EvolucaoGastos(anoSelecionado, mes, contaUnicaCompat, txtContasIds);
             if (resp.BemSucedido && resp.Dados != null)
             {
                 evolucoesPorMes[mes] = resp.Dados;

@@ -270,6 +270,9 @@ ORDER BY
     }
 
     public async Task<EvolucaoSaldo> GetEvolucaoSaldo(int ano, int mes, Guid proprietarioId, Guid? contaBancariaId = null)
+        => await GetEvolucaoSaldo(ano, mes, proprietarioId, contaBancariaId.HasValue ? new[] { contaBancariaId.Value } : null);
+
+    public async Task<EvolucaoSaldo> GetEvolucaoSaldo(int ano, int mes, Guid proprietarioId, Guid[] contasBancariasIds)
     {
         var result = new EvolucaoSaldo { Ano = ano, Mes = mes };
         var dataMesAtual = new DateTime(ano, mes, 1);
@@ -285,9 +288,9 @@ ORDER BY
                         (p.DataPagamento ?? p.Data).Year == ano &&
                         (p.DataPagamento ?? p.Data).Month == mes);
 
-        if (contaBancariaId.HasValue)
+        if (contasBancariasIds != null && contasBancariasIds.Length > 0)
         {
-            parcelasQuery = parcelasQuery.Where(p => p.ContaBancariaId == contaBancariaId.Value);
+            parcelasQuery = parcelasQuery.Where(p => p.ContaBancariaId.HasValue && contasBancariasIds.Contains(p.ContaBancariaId.Value));
         }
 
         var parcelas = await parcelasQuery.ToListAsync();
@@ -299,9 +302,9 @@ ORDER BY
                         !m.Deletado &&
                         !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
 
-        if (contaBancariaId.HasValue)
+        if (contasBancariasIds != null && contasBancariasIds.Length > 0)
         {
-            movimentosQuery = movimentosQuery.Where(m => m.ContaBancariaId == contaBancariaId.Value);
+            movimentosQuery = movimentosQuery.Where(m => contasBancariasIds.Contains(m.ContaBancariaId));
         }
 
         var movimentos = await movimentosQuery.ToListAsync();
@@ -344,6 +347,9 @@ ORDER BY
     }
 
     public async Task<EvolucaoGastos> GetEvolucaoGastos(int ano, int mes, Guid proprietarioId, Guid? contaBancariaId = null)
+        => await GetEvolucaoGastos(ano, mes, proprietarioId, contaBancariaId.HasValue ? new[] { contaBancariaId.Value } : null);
+
+    public async Task<EvolucaoGastos> GetEvolucaoGastos(int ano, int mes, Guid proprietarioId, Guid[] contasBancariasIds)
     {
         var result = new EvolucaoGastos { Ano = ano, Mes = mes };
 
@@ -365,10 +371,10 @@ ORDER BY
                         !m.Deletado &&
                         !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
 
-        if (contaBancariaId.HasValue)
+        if (contasBancariasIds != null && contasBancariasIds.Length > 0)
         {
             gastosMesAtualQuery = gastosMesAtualQuery
-                .Where(m => m.ContaBancariaId == contaBancariaId.Value);
+                .Where(m => contasBancariasIds.Contains(m.ContaBancariaId));
         }
 
         var gastosMesAtual = await gastosMesAtualQuery.ToListAsync();
@@ -383,9 +389,9 @@ ORDER BY
                         !m.Deletado &&
                         !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
 
-        if (contaBancariaId.HasValue)
+        if (contasBancariasIds != null && contasBancariasIds.Length > 0)
         {
-            gastosMesAnteriorQuery = gastosMesAnteriorQuery.Where(m => m.ContaBancariaId == contaBancariaId.Value);
+            gastosMesAnteriorQuery = gastosMesAnteriorQuery.Where(m => contasBancariasIds.Contains(m.ContaBancariaId));
         }
 
         var gastosMesAnterior = await gastosMesAnteriorQuery.ToListAsync();
@@ -435,6 +441,9 @@ ORDER BY
     }
 
     public async Task<EvolucaoSaldoPeriodo> GetEvolucaoSaldoPeriodo(DateTime dataInicial, DateTime dataFinal, Guid proprietarioId, Guid? contaBancariaId = null)
+        => await GetEvolucaoSaldoPeriodo(dataInicial, dataFinal, proprietarioId, contaBancariaId.HasValue ? new[] { contaBancariaId.Value } : null);
+
+    public async Task<EvolucaoSaldoPeriodo> GetEvolucaoSaldoPeriodo(DateTime dataInicial, DateTime dataFinal, Guid proprietarioId, Guid[] contasBancariasIds)
     {
         var result = new EvolucaoSaldoPeriodo
         {
@@ -447,9 +456,9 @@ ORDER BY
             .Include(c => c.Movimentos)
             .Where(c => !c.Deletado && c.ProprietarioId == proprietarioId);
 
-        if (contaBancariaId.HasValue)
+        if (contasBancariasIds != null && contasBancariasIds.Length > 0)
         {
-            contasQuery = contasQuery.Where(c => c.Id == contaBancariaId.Value);
+            contasQuery = contasQuery.Where(c => contasBancariasIds.Contains(c.Id));
         }
 
         var contas = await contasQuery.ToListAsync();
@@ -577,6 +586,9 @@ ORDER BY
     }
 
     public async Task<GastosPorCategoriaPeriodo> GetGastosPorCategoriaPeriodo(DateTime dataInicial, DateTime dataFinal, Guid proprietarioId, Guid? contaBancariaId = null)
+        => await GetGastosPorCategoriaPeriodo(dataInicial, dataFinal, proprietarioId, contaBancariaId.HasValue ? new[] { contaBancariaId.Value } : null);
+
+    public async Task<GastosPorCategoriaPeriodo> GetGastosPorCategoriaPeriodo(DateTime dataInicial, DateTime dataFinal, Guid proprietarioId, Guid[] contasBancariasIds)
     {
         var result = new GastosPorCategoriaPeriodo
         {
@@ -594,9 +606,9 @@ ORDER BY
                         !m.Deletado &&
                         !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
 
-        if (contaBancariaId.HasValue)
+        if (contasBancariasIds != null && contasBancariasIds.Length > 0)
         {
-            gastosQuery = gastosQuery.Where(m => m.ContaBancariaId == contaBancariaId.Value);
+            gastosQuery = gastosQuery.Where(m => contasBancariasIds.Contains(m.ContaBancariaId));
         }
 
         var gastos = await gastosQuery.ToListAsync();

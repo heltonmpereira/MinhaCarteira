@@ -242,9 +242,30 @@
                 </div>
             </div>
             <div class="col-12 col-sm-4">
-                <select name="contaBancariaId" class="form-select" asp-items="@(new SelectList(Model.ContasBancarias, nameof(ContaBancariaViewModel.Id), nameof(ContaBancariaViewModel.Nome), Model.ContaBancariaId))">
-                    <option value="">Todas as contas</option>
-                </select>
+                <div class="multi-select-wrapper" id="contasMultiSelectWrapper">
+                    <div class="multi-select-display" id="contasMultiSelectDisplay">
+                        <span class="multi-select-placeholder" id="contasMultiSelectPlaceholder">Todas as contas</span>
+                    </div>
+                    <div class="multi-select-dropdown" id="contasMultiSelectDropdown">
+                        @if (Model.ContasBancarias != null)
+                        {
+                            foreach (var conta in Model.ContasBancarias)
+                            {
+                                var contaIdStr = conta.Id.ToString().ToLowerInvariant();
+                                var selecionado = Model.ContasBancariasIds != null && Model.ContasBancariasIds.Contains(conta.Id);
+                                var contaNome = conta.Nome;
+                                <div class="multi-select-option">
+                                    <input type="checkbox" name="contasBancariasIds" value="@contaIdStr" id="conta_@contaIdStr" @(selecionado ? "checked" : "")>
+                                    <label for="conta_@contaIdStr">@contaNome</label>
+                                </div>
+                            }
+                        }
+                        <div class="multi-select-actions">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllContas">Todas</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="clearAllContas">Nenhuma</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-12 col-sm-2">
                 <button type="submit" class="btn @(ViewBag.ClasseBotao)primary w-100">Atualizar</button>
@@ -345,6 +366,7 @@
             dadosGastosMultiMesGlobal = @Html.Raw(dadosGastosMultiMesJson);
 
             inicializarMultiSelectMeses();
+            inicializarMultiSelectContas();
 
             if (dadosGastosGlobal) {
                 criarHeatmapGastos(dadosGastosGlobal);
@@ -416,6 +438,74 @@
             display.addEventListener('click', (e) => {
                 if (e.target.closest('button')) return;
                 dropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!wrapper.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', atualizarChips);
+            });
+
+            if (btnTodos) {
+                btnTodos.addEventListener('click', () => {
+                    checkboxes.forEach(cb => cb.checked = true);
+                    atualizarChips();
+                });
+            }
+            if (btnLimpar) {
+                btnLimpar.addEventListener('click', () => {
+                    checkboxes.forEach(cb => cb.checked = false);
+                    atualizarChips();
+                });
+            }
+
+            atualizarChips();
+        }
+
+        function inicializarMultiSelectContas() {
+            const wrapper = document.getElementById('contasMultiSelectWrapper');
+            const display = document.getElementById('contasMultiSelectDisplay');
+            const dropdown = document.getElementById('contasMultiSelectDropdown');
+            const placeholder = document.getElementById('contasMultiSelectPlaceholder');
+            const checkboxes = dropdown ? dropdown.querySelectorAll('input[type="checkbox"][name="contasBancariasIds"]') : [];
+            const btnTodos = document.getElementById('selectAllContas');
+            const btnLimpar = document.getElementById('clearAllContas');
+
+            if (!wrapper || !display || !dropdown) return;
+
+            function atualizarChips() {
+                const selecionados = Array.from(checkboxes).filter(cb => cb.checked);
+                display.querySelectorAll('.multi-select-chip').forEach(el => el.remove());
+
+                if (selecionados.length === 0) {
+                    if (placeholder) placeholder.style.display = '';
+                } else {
+                    if (placeholder) placeholder.style.display = 'none';
+                    selecionados.forEach(cb => {
+                        const label = dropdown.querySelector(`label[for="${cb.id}"]`);
+                        const texto = label ? label.textContent : cb.value.substring(0, 8);
+                        const chip = document.createElement('span');
+                        chip.className = 'multi-select-chip';
+                        chip.innerHTML = `<span>${texto}</span><button type="button" aria-label="Remover ${texto}">&times;</button>`;
+                        chip.querySelector('button').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            cb.checked = false;
+                            atualizarChips();
+                        });
+                        display.insertBefore(chip, placeholder);
+                    });
+                }
+            }
+
+            display.addEventListener('click', (e) => {
+                if (e.target.closest('button')) return;
+                dropdown.classList.toggle('show');
+                const outroDropdown = document.getElementById('mesMultiSelectDropdown');
+                if (outroDropdown) outroDropdown.classList.remove('show');
             });
 
             document.addEventListener('click', (e) => {

@@ -79,7 +79,7 @@ public class ContaBancariaController : BaseController<ContaBancariaViewModel, Gu
             var retorno = await Servico.Reordenar(idsOrdenados);
             if (retorno == null)
             {
-                HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                HttpContext.Response.StatusCode = StatusCodes.Status200OK;
                 return Json(new
                 {
                     sucesso = true,
