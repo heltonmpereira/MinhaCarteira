@@ -73,7 +73,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
                 null,
                 "Login/Login",
                 null,
-                Guid.Empty // We don't have organizacaoId yet for failed attempts
+                null // We don't have organizacaoId yet for failed attempts
             );
             return new RespostaServico<UsuarioToken>(null, "Usuário não localizado")
             {
