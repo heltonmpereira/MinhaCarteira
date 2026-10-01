@@ -8,16 +8,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface IDashboardMonitorRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<DashboardMonitorViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<DashboardMonitorViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<DashboardMonitorViewModel>> Alterar(DashboardMonitorViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<DashboardMonitorViewModel>> Incluir(DashboardMonitorViewModel item);
 
     [Delete("/{id}")]

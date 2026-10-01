@@ -13,7 +13,7 @@ public interface ILoginRefit
     [Get("/{id}")]
     Task<RespostaServico<UsuarioViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<UsuarioViewModel>> Alterar(UsuarioViewModel item);
 
     [Post("/")]

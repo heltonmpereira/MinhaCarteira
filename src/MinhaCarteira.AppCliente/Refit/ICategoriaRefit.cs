@@ -8,16 +8,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface ICategoriaRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<CategoriaViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<CategoriaViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<CategoriaViewModel>> Alterar(CategoriaViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<CategoriaViewModel>> Incluir(CategoriaViewModel item);
 
     [Delete("/{id}")]

@@ -10,16 +10,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface IAgendamentoRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<AgendamentoViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<AgendamentoViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<AgendamentoViewModel>> Alterar(AgendamentoViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<AgendamentoViewModel>> Incluir(AgendamentoViewModel item);
 
     [Delete("/{id}")]

@@ -8,16 +8,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface ICentroClassificacaoRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<CentroClassificacaoViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<CentroClassificacaoViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<CentroClassificacaoViewModel>> Alterar(CentroClassificacaoViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<CentroClassificacaoViewModel>> Incluir(CentroClassificacaoViewModel item);
 
     [Delete("/{id}")]

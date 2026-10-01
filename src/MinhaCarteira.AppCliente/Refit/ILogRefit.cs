@@ -9,7 +9,7 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface ILogRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<LogViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
