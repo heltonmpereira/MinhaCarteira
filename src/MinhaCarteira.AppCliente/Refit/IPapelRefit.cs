@@ -8,16 +8,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface IPapelRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<PapelViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<PapelViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<PapelViewModel>> Alterar(PapelViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<PapelViewModel>> Incluir(PapelViewModel item);
 
     [Delete("/{id}")]

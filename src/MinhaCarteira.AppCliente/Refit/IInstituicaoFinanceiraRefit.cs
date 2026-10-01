@@ -8,16 +8,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface IInstituicaoFinanceiraRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<InstituicaoFinanceiraViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<InstituicaoFinanceiraViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<InstituicaoFinanceiraViewModel>> Alterar(InstituicaoFinanceiraViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<InstituicaoFinanceiraViewModel>> Incluir(InstituicaoFinanceiraViewModel item);
 
     [Delete("/{id}")]

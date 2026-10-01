@@ -9,7 +9,7 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface IAuditoriaRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<AuditoriaViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
