@@ -10,16 +10,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface IImportarArquivoRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<ImportarArquivoViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<ImportarArquivoViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<ImportarArquivoViewModel>> Alterar(ImportarArquivoViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<ImportarArquivoViewModel>> Incluir(ImportarArquivoViewModel item);
 
     [Delete("/{id}")]

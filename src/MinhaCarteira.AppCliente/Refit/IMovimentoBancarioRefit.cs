@@ -8,16 +8,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface IMovimentoBancarioRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<MovimentoBancarioViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<MovimentoBancarioViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<MovimentoBancarioViewModel>> Alterar(MovimentoBancarioViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<MovimentoBancarioViewModel>> Incluir(MovimentoBancarioViewModel item);
 
     [Delete("/{id}")]

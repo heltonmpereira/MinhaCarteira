@@ -8,16 +8,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface IUsuarioRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<UsuarioViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<UsuarioViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<UsuarioViewModel>> Alterar(UsuarioViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<UsuarioViewModel>> Incluir(UsuarioViewModel item);
 
     [Delete("/{id}")]

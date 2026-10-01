@@ -8,16 +8,16 @@ namespace MinhaCarteira.AppCliente.Refit;
 
 public interface IRegraImportacaoRefit
 {
-    [Get("")]
+    [Get("/")]
     Task<RespostaPaginadaServico<RegraImportacaoViewModel>> Navegar(string criterioJson, bool exibirRegistrosDeletados);
 
     [Get("/{id}")]
     Task<RespostaServico<RegraImportacaoViewModel>> ObterPorId(Guid id);
 
-    [Put("")]
+    [Put("/")]
     Task<RespostaServico<RegraImportacaoViewModel>> Alterar(RegraImportacaoViewModel item);
 
-    [Post("")]
+    [Post("/")]
     Task<RespostaServico<RegraImportacaoViewModel>> Incluir(RegraImportacaoViewModel item);
 
     [Delete("/{id}")]
