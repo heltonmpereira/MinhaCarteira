@@ -1,0 +1,29 @@
+@@media print {
+    .nav-tabs, .btn {
+        display: none !important;
+    }
+}
+.chart-container {
+    height: 400px;
+}
+.chart-pie-container {
+    height: 450px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.gastos-categoria-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+.gastos-categoria-chart {
+    flex: 1;
+    min-width: 300px;
+}
+.gastos-categoria-lista {
+    flex: 1;
+    min-width: 300px;
+}
+.progress-categoria {
+    height: 8px;
+}
