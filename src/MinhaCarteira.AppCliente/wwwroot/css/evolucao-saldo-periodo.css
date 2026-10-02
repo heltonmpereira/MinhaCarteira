@@ -27,3 +27,16 @@
 .progress-categoria {
     height: 8px;
 }
+
+.th-percentual {
+    width: 100px;
+}
+
+.th-progress {
+    width: 150px;
+}
+
+.progress-bar-width {
+    width: 0%;
+    min-width: 0;
+}

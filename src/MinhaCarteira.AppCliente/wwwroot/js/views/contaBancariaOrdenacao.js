@@ -28,7 +28,7 @@
             var titulo = sucesso ? 'Sucesso' : 'Erro';
 
             var html = '' +
-                '<div id="alerta-reordenacao" class="alert ' + classeAlerta + ' alert-dismissible fade show position-fixed bottom-0 end-0 me-3 botaoFechar" role="alert" style="z-index:9999;">' +
+                '<div id="alerta-reordenacao" class="alert ' + classeAlerta + ' alert-dismissible fade show position-fixed bottom-0 end-0 me-3 botaoFechar" role="alert">' +
                 '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
                 '   <h5 class="alert-heading">' +
                 '       <i class="fa ' + icone + ' fs-6"></i> ' +

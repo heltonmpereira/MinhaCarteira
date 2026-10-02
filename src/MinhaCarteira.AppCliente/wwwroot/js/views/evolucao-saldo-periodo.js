@@ -505,6 +505,13 @@ function inicializarEvolucaoSaldoPeriodo(ctx) {
     } = ctx;
 
     $(document).ready(function() {
+        document.querySelectorAll('.progress-bar-width[data-width]').forEach(function(el) {
+            var largura = parseFloat(el.dataset.width);
+            if (!isNaN(largura)) {
+                el.style.width = largura + '%';
+            }
+        });
+
         if (relatorioData && relatorioData.Itens && relatorioData.Itens.length > 0) {
             criarGraficoEvolucaoSaldoPeriodo(relatorioData);
         }
