@@ -12,359 +12,31 @@
 @section Css
 {
     <link asp-append-version="true" rel="stylesheet" href="~/lib/bootstrap-table/bootstrap-table.css">
-    <style nws-csp-add-nonce="true">
-        @@media print {
-            .nav-tabs, .btn {
-                display: none !important;
-            }
-        }
-        .chart-container {
-            height: 400px;
-        }
-        .chart-pie-container {
-            height: 450px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .gastos-categoria-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-        .gastos-categoria-chart {
-            flex: 1;
-            min-width: 300px;
-        }
-        .gastos-categoria-lista {
-            flex: 1;
-            min-width: 300px;
-        }
-        .progress-categoria {
-            height: 8px;
-        }
-    </style>
+    <link asp-append-version="true" rel="stylesheet" href="~/css/evolucao-saldo-periodo.css" nws-csp-add-nonce="true">
 }
 
 @section Scripts {
     @{
-        <script nws-csp-add-nonce="true" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script nws-csp-add-nonce="true" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
         <script asp-append-version="true" nws-csp-add-nonce="true" src="~/lib/printthis/lib/jquery.printthis.js"></script>
         <script asp-append-version="true" nws-csp-add-nonce="true" src="~/lib/bootstrap-table/bootstrap-table.js"></script>
+        <script asp-append-version="true" nws-csp-add-nonce="true" src="~/js/views/evolucao-saldo-periodo.js"></script>
         <script nws-csp-add-nonce="true" type="text/javascript">
             const relatorioData = @Html.Raw(JsonConvert.SerializeObject(Model.EvolucaoSaldoPeriodo));
+            window.relatorioData = relatorioData;
             const gastosPorCategoriaData = @Html.Raw(JsonConvert.SerializeObject(Model.GastosPorCategoriaPeriodo));
             const dataInicialFormatada = @Html.Raw(JsonConvert.SerializeObject(Model.DataInicial.ToString("dd/MM/yyyy")));
             const dataFinalFormatada = @Html.Raw(JsonConvert.SerializeObject(Model.DataFinal.ToString("dd/MM/yyyy")));
+            const evolucaoSaldoItensRaw = @Html.Raw(JsonConvert.SerializeObject(Model.EvolucaoSaldoPeriodo.Itens));
+            const gastosPorCategoriaItensRaw = @Html.Raw(JsonConvert.SerializeObject(Model.GastosPorCategoriaPeriodo?.Itens ?? new List<GastosPorCategoriaPeriodoItemViewModel>()));
 
-            const pieChartColors = [
-                '#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
-                '#06b6d4', '#ec4899', '#84cc16', '#f97316', '#6366f1',
-                '#14b8a6', '#eab308', '#dc2626', '#a855f7', '#0ea5e9',
-                '#f43f5e', '#22c55e', '#d97706', '#7c3aed', '#0891b2'
-            ];
-
-            function criarGraficoEvolucaoSaldoPeriodo(dados) {
-                const ctx = document.getElementById('graficoEvolucaoSaldoPeriodo').getContext('2d');
-
-                const labels = dados.Itens.map(item => new Date(item.Data).toLocaleDateString('pt-BR'));
-                const saldoFinal = dados.Itens.map(item => item.SaldoFinal);
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'Saldo',
-                                data: saldoFinal,
-                                borderColor: 'rgb(153, 102, 255)',
-                                backgroundColor: 'rgba(153, 102, 255, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const valor = context.raw;
-                                        return context.dataset.label + ': ' + valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: false,
-                                ticks: {
-                                    callback: function(value) {
-                                        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            function criarGraficoGastosPorCategoria(dados) {
-                const canvas = document.getElementById('graficoGastosPorCategoria');
-                if (!canvas || !dados || !dados.Itens || dados.Itens.length === 0) return;
-
-                const ctx = canvas.getContext('2d');
-                const labels = dados.Itens.map(item => item.CaminhoCompleto || item.CategoriaNome);
-                const valores = dados.Itens.map(item => item.Valor);
-                const backgroundColors = dados.Itens.map((_, i) => pieChartColors[i % pieChartColors.length]);
-
-                new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: valores,
-                            backgroundColor: backgroundColors,
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    boxWidth: 15,
-                                    padding: 15,
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const valor = context.raw;
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentual = ((valor / total) * 100).toFixed(2);
-                                        return context.label + ': ' +
-                                            valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) +
-                                            ' (' + percentual + '%)';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            $(document).ready(function() {
-                @if (Model.EvolucaoSaldoPeriodo != null && Model.EvolucaoSaldoPeriodo.Itens.Count > 0)
-                {
-                    @:criarGraficoEvolucaoSaldoPeriodo(@Html.Raw(JsonConvert.SerializeObject(Model.EvolucaoSaldoPeriodo)));
-                }
-
-                @if (Model.GastosPorCategoriaPeriodo != null && Model.GastosPorCategoriaPeriodo.Itens.Count > 0)
-                {
-                    @:criarGraficoGastosPorCategoria(@Html.Raw(JsonConvert.SerializeObject(Model.GastosPorCategoriaPeriodo)));
-                }
-
-                $('#btnImprimir').on('click', function() {
-                    $('#tabela-tab').tab('show');
-
-                    setTimeout(() => {
-                        $('#divConteudoImpressao').printThis({
-                            importCSS: true,
-                            importStyle: true,
-                            printContainer: true,
-                            pageTitle: 'Evolução do Saldo'
-                        });
-                    }, 100);
-                });
-
-                $('#btnExportarCSV').on('click', function() {
-                    let csv = 'Data,Saldo Inicial,Movimentos Realizados,Movimentos Planejados,Saldo Final\n';
-                    const dados = @Html.Raw(JsonConvert.SerializeObject(Model.EvolucaoSaldoPeriodo.Itens));
-                    dados.forEach(function(item) {
-                        const data = new Date(item.Data).toLocaleDateString('pt-BR');
-                        const linha = `${data},${item.SaldoInicial},${item.MovimentosRealizados},${item.MovimentosPlanejados},${item.SaldoFinal}`;
-                        csv += linha + '\n';
-                    });
-                    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'EvolucaoSaldo.csv';
-                    link.click();
-                    window.URL.revokeObjectURL(url);
-                });
-
-                $('#btnExportarGastosCSV').on('click', function() {
-                    let csv = 'Categoria,Categoria Pai,Valor,Quantidade Movimentos,Percentual\n';
-                    const dados = @Html.Raw(JsonConvert.SerializeObject(Model.GastosPorCategoriaPeriodo?.Itens ?? new List<GastosPorCategoriaPeriodoItemViewModel>()));
-                    dados.forEach(function(item) {
-                        const linha = `"${(item.CategoriaNome || '').replace(/"/g, '""')}","${(item.CategoriaPaiNome || '').replace(/"/g, '""')}",${item.Valor},${item.QuantidadeMovimentos},${item.Percentual}`;
-                        csv += linha + '\n';
-                    });
-                    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'GastosPorCategoria.csv';
-                    link.click();
-                    window.URL.revokeObjectURL(url);
-                });
-
-
-                $('#btnExportarHTML').on('click', function() {
-                    function formatCurrency(value) {
-                        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-                    }
-                    function formatDate(dateString) {
-                        const date = new Date(dateString);
-                        const day = String(date.getDate()).padStart(2, '0');
-                        const month = String(date.getMonth() + 1).padStart(2, '0');
-                        const year = date.getFullYear();
-                        return `${day}/${month}/${year}`;
-                    }
-                    
-                    $('#grafico-tab').tab('show');
-
-                    setTimeout(() => {
-                        const canvas = document.getElementById('graficoEvolucaoSaldoPeriodo');
-                        const chartImage = canvas ? canvas.toDataURL('image/png') : null;
-
-                        const canvasPie = document.getElementById('graficoGastosPorCategoria');
-                        const pieChartImage = canvasPie ? canvasPie.toDataURL('image/png') : null;
-                        
-                        let htmlContent = '';
-                        if (relatorioData && relatorioData.Itens && relatorioData.Itens.length > 0) {
-                            let chartHtml = '';
-                            if (chartImage) {
-                                chartHtml = `
-                                <h2 style="color: #1e293b; margin-bottom: 16px; margin-top: 32px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Gráfico de Evolução do Saldo</h2>
-                                <img src="${chartImage}" style="width: 100%; max-width: 100%; border-radius: 12px; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); margin-bottom: 24px;" />
-                                `;
-                            }
-
-                            let pieChartHtml = '';
-                            if (pieChartImage && gastosPorCategoriaData && gastosPorCategoriaData.Itens && gastosPorCategoriaData.Itens.length > 0) {
-                                pieChartHtml = `
-                                <h2 style="color: #1e293b; margin-bottom: 16px; margin-top: 32px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Gastos por Categoria</h2>
-                                <div style="margin-bottom: 24px; padding: 16px; background-color: #fef2f2; border-radius: 12px; border-left: 4px solid #ef4444;">
-                                    <p style="color: #1e293b; font-size: 1.1rem; font-weight: 500;">Total de Gastos no Período: <strong>${formatCurrency(gastosPorCategoriaData.TotalGastos)}</strong></p>
-                                </div>
-                                <img src="${pieChartImage}" style="max-width: 600px; width: 100%; border-radius: 12px; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); margin-bottom: 24px; display: block; margin-left: auto; margin-right: auto;" />
-                                `;
-
-                                let gastosTableRows = '';
-                                for (const item of gastosPorCategoriaData.Itens) {
-                                    gastosTableRows += `
-                                        <tr>
-                                            <td>${item.CaminhoCompleto || item.CategoriaNome}</td>
-                                            <td class="@ViewBag.ColorTextError">${formatCurrency(item.Valor)}</td>
-                                            <td>${item.QuantidadeMovimentos}</td>
-                                            <td>${item.Percentual.toFixed(2)}%</td>
-                                        </tr>`;
-                                }
-
-                                pieChartHtml += `
-                                <h3 style="color: #1e293b; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Detalhamento por Categoria</h3>
-                                <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);">
-                                    <thead style="background: linear-gradient(to right, #ef4444, #f97316);">
-                                        <tr>
-                                            <th style="color: white; padding: 16px; font-weight: 600; text-align: left;">Categoria</th>
-                                            <th style="color: white; padding: 16px; font-weight: 600; text-align: left;">Valor</th>
-                                            <th style="color: white; padding: 16px; font-weight: 600; text-align: left;">Qtd. Movimentos</th>
-                                            <th style="color: white; padding: 16px; font-weight: 600; text-align: left;">Percentual</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>${gastosTableRows}</tbody>
-                                </table>
-                                `;
-                            }
-                            
-                            let tableRows = '';
-                            for (const item of relatorioData.Itens) {
-                                const movRealizadosClass = item.MovimentosRealizados >= 0 ? 'text-success' : 'text-danger';
-                                const movPlanejadosClass = item.MovimentosPlanejados >= 0 ? 'text-success' : 'text-danger';
-                                
-                                tableRows += `
-                                    <tr>
-                                        <td>${formatDate(item.Data)}</td>
-                                        <td>${formatCurrency(item.SaldoInicial)}</td>
-                                        <td class="${movRealizadosClass}">${formatCurrency(item.MovimentosRealizados)}</td>
-                                        <td class="${movPlanejadosClass}">${formatCurrency(item.MovimentosPlanejados)}</td>
-                                        <td>${formatCurrency(item.SaldoFinal)}</td>
-                                    </tr>`;
-                            }
-                            
-                            htmlContent = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evolução do Saldo</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif; }
-        body { background-color: #f8fafc; padding: 24px; }
-        .container { max-width: 1200px; margin: 0 auto; background-color: white; border-radius: 16px; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); padding: 24px; }
-        h1 { color: #1e293b; margin-bottom: 24px; border-bottom: 2px solid #4f46e5; padding-bottom: 12px; }
-        .summary-card { background-color: #eef2ff; border-radius: 12px; padding: 16px; margin-bottom: 24px; border-left:4px solid #4f46e5; }
-        .summary-card p { color: #475569; font-size: 1.1rem; font-weight: 500; }
-        .summary-card strong { color: #1e293b; }
-        table { width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); }
-        thead { background: linear-gradient(to right, #4f46e5, #6366f1); }
-        th { color: white; padding: 16px; font-weight: 600; text-align: left; }
-        tbody tr { transition: background-color 0.2s ease; }
-        tbody tr:hover { background-color: #f8fafc; }
-        td { padding:16px; border-bottom: 1px solid #e2e8f0; color: #1e293b; }
-        .text-success { color: #10b981; font-weight: 500; }
-        .text-danger { color: #ef4444; font-weight: 500; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Evolução do Saldo - ${dataInicialFormatada} a ${dataFinalFormatada}</h1>
-        <div class="summary-card">
-            <p><strong>Saldo Inicial Total:</strong> ${formatCurrency(relatorioData.SaldoInicialTotal)}</p>
-        </div>
-        ${chartHtml}
-        <h2 style="color: #1e293b; margin-bottom: 16px; margin-top: 32px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Tabela de Saldos Diários</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Saldo Inicial</th>
-                    <th>Movimentos Realizados</th>
-                    <th>Movimentos Planejados</th>
-                    <th>Saldo Final</th>
-                </tr>
-            </thead>
-            <tbody>${tableRows}</tbody>
-        </table>
-        ${pieChartHtml}
-    </div>
-</body>
-</html>`;
-                        }
-                        
-                        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
-                        const url = window.URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = 'EvolucaoSaldo.html';
-                        link.click();
-                        window.URL.revokeObjectURL(url);
-                    }, 300);
-                });
+            inicializarEvolucaoSaldoPeriodo({
+                relatorioData: relatorioData,
+                gastosPorCategoriaData: gastosPorCategoriaData,
+                evolucaoSaldoItensRaw: evolucaoSaldoItensRaw,
+                gastosPorCategoriaItensRaw: gastosPorCategoriaItensRaw,
+                dataInicialFormatada: dataInicialFormatada,
+                dataFinalFormatada: dataFinalFormatada
             });
         </script>
     }
@@ -501,8 +173,8 @@
                                                         <th>Categoria</th>
                                                         <th class="text-end">Valor</th>
                                                         <th class="text-center">Qtd.</th>
-                                                        <th class="text-end" style="width: 100px;">%</th>
-                                                        <th style="width: 150px;"></th>
+                                                        <th class="text-end th-percentual">%</th>
+                                                        <th class="th-progress"></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -525,9 +197,9 @@
                                                             <td class="text-end">@item.Percentual.ToString("F2")%</td>
                                                             <td>
                                                                 <div class="progress progress-categoria">
-                                                                    <div class="progress-bar bg-danger" role="progressbar"
-                                                                         style="width: @item.Percentual.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)%"
-                                                                         aria-valuenow="@item.Percentual"
+                                                                    <div class="progress-bar bg-danger progress-bar-width" role="progressbar"
+                                                                     data-width="@item.Percentual.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
+                                                                     aria-valuenow="@item.Percentual"
                                                                          aria-valuemin="0"
                                                                          aria-valuemax="100"></div>
                                                                 </div>
