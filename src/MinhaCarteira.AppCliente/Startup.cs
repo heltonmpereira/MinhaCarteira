@@ -274,17 +274,28 @@ public class Startup
 
         app.Use(async (context, next) =>
         {
-            var cspHeader = context.Response.Headers["Content-Security-Policy"].FirstOrDefault();
-            if (!string.IsNullOrWhiteSpace(cspHeader) && !cspHeader.Contains("style-src-attr"))
+            context.Response.OnStarting(() =>
             {
-                var styleSrcAttr = "style-src-attr 'unsafe-inline'";
-                cspHeader = cspHeader.TrimEnd(';') + "; " + styleSrcAttr;
-                context.Response.Headers["Content-Security-Policy"] = cspHeader;
-            }
-            else if (string.IsNullOrWhiteSpace(cspHeader))
-            {
-                context.Response.Headers["Content-Security-Policy"] = "style-src-attr 'unsafe-inline'";
-            }
+                var headerCsp = context.Response.Headers["Content-Security-Policy"].FirstOrDefault();
+                var headerCspReportOnly = context.Response.Headers["Content-Security-Policy-Report-Only"].FirstOrDefault();
+
+                string AplicarStyleSrcAttr(string headerOriginal)
+                {
+                    if (string.IsNullOrWhiteSpace(headerOriginal)) return null;
+                    if (headerOriginal.Contains("style-src-attr")) return headerOriginal;
+                    return headerOriginal.TrimEnd(';') + "; style-src-attr 'unsafe-inline'";
+                }
+
+                var cspAjustado = AplicarStyleSrcAttr(headerCsp);
+                if (cspAjustado != null)
+                    context.Response.Headers["Content-Security-Policy"] = cspAjustado;
+
+                var cspRoAjustado = AplicarStyleSrcAttr(headerCspReportOnly);
+                if (cspRoAjustado != null)
+                    context.Response.Headers["Content-Security-Policy-Report-Only"] = cspRoAjustado;
+
+                return Task.CompletedTask;
+            });
             await next();
         });
 

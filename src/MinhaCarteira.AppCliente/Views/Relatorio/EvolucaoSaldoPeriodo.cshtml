@@ -173,8 +173,8 @@
                                                         <th>Categoria</th>
                                                         <th class="text-end">Valor</th>
                                                         <th class="text-center">Qtd.</th>
-                                                        <th class="text-end" style="width: 100px;">%</th>
-                                                        <th style="width: 150px;"></th>
+                                                        <th class="text-end th-percentual">%</th>
+                                                        <th class="th-progress"></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -197,9 +197,9 @@
                                                             <td class="text-end">@item.Percentual.ToString("F2")%</td>
                                                             <td>
                                                                 <div class="progress progress-categoria">
-                                                                    <div class="progress-bar bg-danger" role="progressbar"
-                                                                         style="width: @item.Percentual.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)%"
-                                                                         aria-valuenow="@item.Percentual"
+                                                                    <div class="progress-bar bg-danger progress-bar-width" role="progressbar"
+                                                                     data-width="@item.Percentual.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
+                                                                     aria-valuenow="@item.Percentual"
                                                                          aria-valuemin="0"
                                                                          aria-valuemax="100"></div>
                                                                 </div>
