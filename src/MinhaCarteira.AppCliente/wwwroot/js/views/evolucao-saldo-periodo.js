@@ -69,28 +69,28 @@ function criarGraficoEvolucaoSaldoPeriodo(dados) {
     }
 
     const labels = dados.Itens.map(item => new Date(item.Data).toLocaleDateString('pt-BR'));
-    const saldoInicialArr = dados.Itens.map(item => item.SaldoInicial);
+    // const saldoInicialArr = dados.Itens.map(item => item.SaldoInicial);
     const movimentosRealizadosArr = dados.Itens.map(item => item.MovimentosRealizados);
     const movimentosPlanejadosArr = dados.Itens.map(item => item.MovimentosPlanejados);
     const saldoFinalArr = dados.Itens.map(item => item.SaldoFinal);
 
     const datasets = [
-        {
-            label: 'Saldo Inicial',
-            data: saldoInicialArr,
-            borderColor: EVOLUCAO_SALDO_PALETA[1].border,
-            backgroundColor: EVOLUCAO_SALDO_PALETA[1].bg,
-            pointBackgroundColor: EVOLUCAO_SALDO_PALETA[1].border,
-            pointRadius: 0,
-            pointHoverRadius: 6,
-            pointHoverBackgroundColor: EVOLUCAO_SALDO_PALETA[1].border,
-            pointHoverBorderColor: '#fff',
-            pointHoverBorderWidth: 2,
-            borderWidth: 2.5,
-            tension: 0.3,
-            fill: false,
-            spanGaps: false
-        },
+        //{
+        //    label: 'Saldo Inicial',
+        //    data: saldoInicialArr,
+        //    borderColor: EVOLUCAO_SALDO_PALETA[1].border,
+        //    backgroundColor: EVOLUCAO_SALDO_PALETA[1].bg,
+        //    pointBackgroundColor: EVOLUCAO_SALDO_PALETA[1].border,
+        //    pointRadius: 0,
+        //    pointHoverRadius: 6,
+        //    pointHoverBackgroundColor: EVOLUCAO_SALDO_PALETA[1].border,
+        //    pointHoverBorderColor: '#fff',
+        //    pointHoverBorderWidth: 2,
+        //    borderWidth: 2.5,
+        //    tension: 0.3,
+        //    fill: false,
+        //    spanGaps: false
+        //},
         {
             label: 'Movimentos Realizados',
             data: movimentosRealizadosArr,
