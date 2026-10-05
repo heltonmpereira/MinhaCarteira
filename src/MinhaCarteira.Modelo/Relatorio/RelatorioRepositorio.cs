@@ -567,7 +567,7 @@ ORDER BY
             else
             {
                 // Para datas futuras, usa a lógica do gráfico/planejado
-                saldoFinalDia = saldoAcumulado + movimentosRealizadosDia + movimentosPlanejadosDia;
+                saldoFinalDia = saldoAcumulado + (movimentosRealizadosDia > 0 ? movimentosRealizadosDia : movimentosPlanejadosDia);
             }
 
             result.Itens.Add(new EvolucaoSaldoPeriodoDiario

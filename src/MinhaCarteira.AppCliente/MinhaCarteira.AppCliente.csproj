@@ -3,12 +3,6 @@
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-
-		<!--<PreserveCompilationContext>true</PreserveCompilationContext>
-    <MvcRazorCompileOnBuild>true</MvcRazorCompileOnBuild>
-    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>-->
-
-		<RazorCompileOnBuild>false</RazorCompileOnBuild>
 		<CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
 		<CopyRazorGenerateFilesToPublishDirectory>true</CopyRazorGenerateFilesToPublishDirectory>
 		<PreserveCompilationReferences>true</PreserveCompilationReferences>

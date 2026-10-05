@@ -66,12 +66,10 @@ public class Startup
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             })
-            .AddRazorRuntimeCompilation()
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            })
-            .AddRazorRuntimeCompilation();
+            });
 
         services.AddHsts(options =>
         {

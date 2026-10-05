@@ -1,17 +1,20 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppCliente.Controllers.Base;
 using MinhaCarteira.AppCliente.Filter;
+using MinhaCarteira.AppCliente.Helper;
 using MinhaCarteira.AppCliente.Refit;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoGastos;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldoPeriodo;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.FluxoCaixa;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.GastosPorCategoriaPeriodo;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MinhaCarteira.AppCliente.Controllers;
 
@@ -40,7 +43,7 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
 
         var mesesSelecionados = (meses != null && meses.Length > 0)
             ? meses.Where(m => m >= 1 && m <= 12).Distinct().OrderBy(m => m).ToList()
-            : new List<int> { dataAtual.Month - 1, dataAtual.Month };
+            : [dataAtual.Month - 1, dataAtual.Month];
 
         if (mesesSelecionados.Count == 0)
             mesesSelecionados.Add(dataAtual.Month);
@@ -50,6 +53,7 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
             .Where(g => g != Guid.Empty)
             .Distinct()
             .ToList();
+
         if ((contasSelecionadas == null || contasSelecionadas.Count == 0) && contaBancariaId.HasValue)
         {
             contasSelecionadas = new List<Guid> { contaBancariaId.Value };
@@ -71,7 +75,9 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
         };
 
         // Carrega as contas bancárias
-        var respostaContas = await ContaBancariaServico.Navegar(null, false);
+        var filtro = new FiltroBase { Ordenacao = "Ordem, DataCadastro" };
+        var json = JsonConvert.SerializeObject(filtro.OrganizarIdFiltros());
+        var respostaContas = await ContaBancariaServico.Navegar(json, false);
         if (respostaContas.BemSucedido)
         {
             model.ContasBancarias = respostaContas.Dados;
@@ -151,7 +157,7 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
                         // Para meses que não são o corrente OU dias que já passaram no mês corrente, mantém o valor
                         // Para dias futuros do mês atual, retorna null (como na lógica original)
                         var ehMesCorrente = ano == dataAtual.Year && mesVM.Mes == dataAtual.Month;
-                        if (ehMesCorrente && dia > dataAtual.Day)
+                        if (ehMesCorrente && dia > dataAtual.Day && dadoDia.GastosMesAtual == 0)
                             acumulado = null;
                     }
                 }
@@ -193,7 +199,9 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
         };
 
         // Carrega as contas bancárias
-        var respostaContas = await ContaBancariaServico.Navegar(null, false);
+        var filtro = new FiltroBase { Ordenacao = "Ordem, DataCadastro" };
+        var json = JsonConvert.SerializeObject(filtro.OrganizarIdFiltros());
+        var respostaContas = await ContaBancariaServico.Navegar(json, false);
         if (respostaContas.BemSucedido)
         {
             model.ContasBancarias = respostaContas.Dados;
