@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using MinhaCarteira.Definicao.Interface.Entidade;
+using MinhaCarteira.Definicao.Modelo;
 
 namespace MinhaCarteira.Definicao.Entidade;
 
@@ -19,6 +20,10 @@ public class AgendamentoParcela : IEntidade<Guid>
     public bool EstahConciliada { get; set; }
     public bool Deletado { get; set; }
     public bool DespesaOpcional { get; set; }
+    public decimal ValorReal =>
+        Agendamento.Tipo == TipoMovimento.Credito
+            ? (ValorPago ?? Valor)
+            : (ValorPago ?? Valor) * (-1);
 
     [NotMapped]
     public bool AlterarAPenasEstaParcela { get; set; } = false;
