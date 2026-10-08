@@ -297,7 +297,7 @@ ORDER BY
 
         // Obtém todos os movimentos bancários para o mês
         var movimentosQuery = CarteiraContexto.MovimentosBancarios
-            .Where(m => m.Competencia == competenciaAtual && 
+            .Where(m => m.Competencia == competenciaAtual &&
                         m.ProprietarioId == proprietarioId &&
                         !m.Deletado &&
                         !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
@@ -469,6 +469,8 @@ ORDER BY
             .Include(p => p.Agendamento)
             .Where(p => !p.Deletado &&
                         !p.Agendamento.Deletado &&
+                        (p.DataPagamento ?? p.Data).Date >= dataInicial.Date &&
+                        (p.DataPagamento ?? p.Data).Date <= dataFinal.Date &&
                         p.Agendamento.ProprietarioId == proprietarioId &&
                         (p.ContaBancariaId == null || contaIds.Contains(p.ContaBancariaId.Value)))
             .ToListAsync();
@@ -492,11 +494,12 @@ ORDER BY
 
             // Vamos percorrer do dataSaldoInicial até a dataFinal (ou hoje, o que for mais longe)
             DateTime dataMaxima = new DateTime[] { dataFinal.Date, hoje.Date }.Max();
-            for (DateTime data = dataSaldoInicial; data <= dataMaxima; data = data.AddDays(1))
+            var dataSaldo = dataSaldoInicial;
+            for (dataSaldo = dataSaldoInicial; dataSaldo <= dataMaxima; dataSaldo = dataSaldo.AddDays(1))
             {
                 // Adiciona os movimentos deste dia
                 var movimentosDoDia = todosMovimentosConta
-                    .Where(m => m.DataMovimento.Date == data.Date);
+                    .Where(m => m.DataMovimento.Date == dataSaldo.Date);
 
                 foreach (var mov in movimentosDoDia)
                 {
@@ -504,12 +507,12 @@ ORDER BY
                 }
 
                 // Se este dia estiver dentro do nosso período ou for <= hoje, registra
-                if ((data >= dataInicial.Date && data <= dataFinal.Date) || data <= hoje.Date)
+                if ((dataSaldo >= dataInicial.Date && dataSaldo <= dataFinal.Date) || dataSaldo <= hoje.Date)
                 {
-                    if (!saldoRealPorDia.ContainsKey(data))
-                        saldoRealPorDia[data] = 0;
+                    if (!saldoRealPorDia.ContainsKey(dataSaldo))
+                        saldoRealPorDia[dataSaldo] = 0;
 
-                    saldoRealPorDia[data] += saldoConta;
+                    saldoRealPorDia[dataSaldo] += saldoConta;
                 }
             }
         }
@@ -541,28 +544,28 @@ ORDER BY
 
         // Agora preenchemos o resultado com todos os dias
         decimal saldoAcumulado = saldoInicialTotal;
-        for (DateTime data = dataInicial.Date; data <= dataFinal.Date; data = data.AddDays(1))
+        var dataParcela = dataInicial;
+        for (dataParcela = dataInicial; dataParcela <= dataFinal; dataParcela = dataParcela.AddDays(1))
         {
             decimal saldoInicialDia = saldoAcumulado;
 
             // Movimentos realizados no dia (apenas MovimentoBancario)
             var movimentosDoDia = contas.SelectMany(c => c.Movimentos)
-                .Where(m => !m.Deletado && m.DataMovimento.Date == data.Date);
+                .Where(m => !m.Deletado && m.DataMovimento.Date == dataParcela.Date);
 
             decimal movimentosRealizadosDia = movimentosDoDia.Sum(m => m.ValorReal);
 
             // Movimentos planejados no dia (apenas parcelas, para o gráfico)
-            decimal movimentosPlanejadosDia = todasParcelas
-                .Where(p => (p.DataPagamento ?? p.Data).Date == data.Date)
-                .Sum(p => p.Agendamento.Tipo == Definicao.Modelo.TipoMovimento.Credito
-                    ? p.ValorPago ?? p.Valor
-                    : -p.ValorPago ?? -p.Valor);
+            var parcelas = todasParcelas
+                .Where(p => p.Data.Date == dataParcela.Date)
+                .ToList();
+            decimal movimentosPlanejadosDia = parcelas.Sum(s => s.ValorReal);
 
             // Saldo final do dia - SE a data for <= hoje, usa o saldo real que calculamos!
             decimal saldoFinalDia;
-            if (data.Date <= hoje.Date && saldoRealPorDia.ContainsKey(data.Date))
+            if (dataParcela.Date <= hoje.Date && saldoRealPorDia.ContainsKey(dataParcela.Date))
             {
-                saldoFinalDia = saldoRealPorDia[data.Date];
+                saldoFinalDia = saldoRealPorDia[dataParcela.Date];
             }
             else
             {
@@ -570,14 +573,15 @@ ORDER BY
                 saldoFinalDia = saldoAcumulado + (movimentosRealizadosDia > 0 ? movimentosRealizadosDia : movimentosPlanejadosDia);
             }
 
-            result.Itens.Add(new EvolucaoSaldoPeriodoDiario
+            var item = new EvolucaoSaldoPeriodoDiario
             {
-                Data = data,
+                Data = dataParcela,
                 SaldoInicial = saldoInicialDia,
                 MovimentosRealizados = movimentosRealizadosDia,
                 MovimentosPlanejados = movimentosPlanejadosDia,
                 SaldoFinal = saldoFinalDia
-            });
+            };
+            result.Itens.Add(item);
 
             saldoAcumulado = saldoFinalDia;
         }
