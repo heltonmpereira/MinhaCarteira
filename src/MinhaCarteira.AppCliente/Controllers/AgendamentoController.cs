@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
 using Dhani.Utilitarios.Helper;
 using Microsoft.AspNetCore.Http;
@@ -10,10 +14,6 @@ using MinhaCarteira.AppCliente.Refit;
 using MinhaCarteira.AppCliente.ViewModel;
 using MinhaCarteira.AppCliente.ViewModel.Base;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppCliente.Controllers;
 

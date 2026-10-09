@@ -1,6 +1,6 @@
-﻿using MinhaCarteira.AppCliente.Models.Interface;
+﻿using System;
+using MinhaCarteira.AppCliente.Models.Interface;
 using MinhaCarteira.AppCliente.ViewModel.Base;
-using System;
 
 namespace MinhaCarteira.AppCliente.ViewModel;
 

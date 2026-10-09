@@ -1,4 +1,5 @@
-﻿namespace MinhaCarteira.Servico.Model;
+﻿namespace MinhaCarteira.Definicao.Modelo.Extrato;
+
 public class RegistroOfx
 {
     public string TRNTYPE { get; set; }

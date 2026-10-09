@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using MinhaCarteira.AppCliente.Attribute;
 using MinhaCarteira.AppCliente.Models.Interface;
 using MinhaCarteira.AppCliente.ViewModel.Base;
-using System;
 
 namespace MinhaCarteira.AppCliente.ViewModel
 {

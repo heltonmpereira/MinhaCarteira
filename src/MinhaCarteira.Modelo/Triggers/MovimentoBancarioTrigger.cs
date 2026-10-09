@@ -1,9 +1,9 @@
-﻿using EntityFrameworkCore.Triggered;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using EntityFrameworkCore.Triggered;
 using Microsoft.EntityFrameworkCore;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Modelo.Data;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Modelo.Triggers;
 
@@ -21,7 +21,7 @@ public class MovimentoBancarioTrigger(IDbContext dbContext)
         var conta = await dbContext.ContasBancarias.FindAsync(context.Entity.ContaBancariaId, cancellationToken);
         if (conta == null || conta.DataSaldoInicial > context.Entity.DataMovimento) return;
 
-        if (itemDb == null) 
+        if (itemDb == null)
             return;
 
         conta.ValorSaldoAtual += itemDb.ValorReal * -1;

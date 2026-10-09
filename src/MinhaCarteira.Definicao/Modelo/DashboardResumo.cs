@@ -1,6 +1,6 @@
-﻿using MinhaCarteira.Definicao.Entidade;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using MinhaCarteira.Definicao.Entidade;
 
 namespace MinhaCarteira.Definicao.Modelo;
 

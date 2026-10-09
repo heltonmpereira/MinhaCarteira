@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Serilog;
-using Serilog.Core;
-using Serilog.Configuration;
-using Serilog.Events;
-using LogEntidade = MinhaCarteira.Definicao.Entidade.Log;
 using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Modelo.Data;
-using Microsoft.AspNetCore.Http;
-using System.Linq;
+using Serilog;
+using Serilog.Configuration;
+using Serilog.Core;
+using Serilog.Events;
+using LogEntidade = MinhaCarteira.Definicao.Entidade.Log;
 
 namespace MinhaCarteira.AppServer.Helper;
 
@@ -37,12 +36,12 @@ public class SerilogSink : ILogEventSink, IDisposable
         try
         {
             // Ignorar logs do próprio sistema de logging para evitar loops infinitos
-            var sourceContext = logEvent.Properties.TryGetValue("SourceContext", out var sourceCtx) 
-                ? sourceCtx.ToString().Trim('"') 
+            var sourceContext = logEvent.Properties.TryGetValue("SourceContext", out var sourceCtx)
+                ? sourceCtx.ToString().Trim('"')
                 : string.Empty;
 
-            if (sourceContext.Contains("Log", System.StringComparison.OrdinalIgnoreCase) || 
-                sourceContext.Contains("Auditoria", System.StringComparison.OrdinalIgnoreCase) || 
+            if (sourceContext.Contains("Log", System.StringComparison.OrdinalIgnoreCase) ||
+                sourceContext.Contains("Auditoria", System.StringComparison.OrdinalIgnoreCase) ||
                 sourceContext.Contains("Serilog", System.StringComparison.OrdinalIgnoreCase) ||
                 sourceContext.Contains("Microsoft.AspNetCore.DataProtection", System.StringComparison.OrdinalIgnoreCase) ||
                 sourceContext.Contains("Microsoft.EntityFrameworkCore", System.StringComparison.OrdinalIgnoreCase) ||

@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using MinhaCarteira.Definicao.Entidade;
-using MinhaCarteira.Definicao.Interface.Servico;
 using MinhaCarteira.Definicao.Interface.Repositorio;
+using MinhaCarteira.Definicao.Interface.Servico;
 
 namespace MinhaCarteira.Servico.Servico;
 

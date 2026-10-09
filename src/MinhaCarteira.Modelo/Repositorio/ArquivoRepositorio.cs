@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Helper;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Modelo.Data;
 using MinhaCarteira.Modelo.Repositorio.Base;
-using System;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Modelo.Repositorio
 {

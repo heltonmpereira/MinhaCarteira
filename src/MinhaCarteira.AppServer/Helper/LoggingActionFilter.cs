@@ -1,7 +1,7 @@
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppServer.Helper;
 
@@ -19,8 +19,8 @@ public class LoggingActionFilter : IAsyncActionFilter
         var controllerName = context.RouteData.Values["controller"]?.ToString();
 
         // Ignorar controllers de Log e Auditoria para evitar loops infinitos
-        if (controllerName == null || 
-            controllerName.Equals("Log", System.StringComparison.OrdinalIgnoreCase) || 
+        if (controllerName == null ||
+            controllerName.Equals("Log", System.StringComparison.OrdinalIgnoreCase) ||
             controllerName.Equals("Auditoria", System.StringComparison.OrdinalIgnoreCase))
         {
             await next();

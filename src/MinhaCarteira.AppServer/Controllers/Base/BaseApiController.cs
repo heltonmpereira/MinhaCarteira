@@ -1,4 +1,5 @@
 
+using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -7,17 +8,16 @@ using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.Definicao.Interface.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio.Base;
 using MinhaCarteira.Definicao.Interface.Servico.Base;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppServer.Controllers.Base;
 
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(TServico servico, IHttpContextAccessor httpContextAccessor) 
-    : PadraoApiController<TServico>(servico, httpContextAccessor) 
-    where TEntidade : class, IEntidade<TPK> 
-    where TRepositorio : IRepositorio<TEntidade, TPK> 
+public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(TServico servico, IHttpContextAccessor httpContextAccessor)
+    : PadraoApiController<TServico>(servico, httpContextAccessor)
+    where TEntidade : class, IEntidade<TPK>
+    where TRepositorio : IRepositorio<TEntidade, TPK>
     where TServico : IServico<TEntidade, TPK, TRepositorio>
 {
     [HttpGet]

@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Dhani.Utilitarios.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,8 +11,6 @@ using MinhaCarteira.Definicao.Interface.Servico;
 using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Definicao.Modelo.Usuario;
 using MinhaCarteira.Servico.Helper;
-using System;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppServer.Controllers;
 

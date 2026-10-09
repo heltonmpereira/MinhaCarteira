@@ -10,9 +10,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Keys\**" />
 	  <Compile Remove="Views\MovimentoBancario\DisplayTemplate\**" />
+	  <Content Remove="Keys\**" />
 	  <Content Remove="Views\MovimentoBancario\DisplayTemplate\**" />
+	  <EmbeddedResource Remove="Keys\**" />
 	  <EmbeddedResource Remove="Views\MovimentoBancario\DisplayTemplate\**" />
+	  <None Remove="Keys\**" />
 	  <None Remove="Views\MovimentoBancario\DisplayTemplate\**" />
 	</ItemGroup>
 
