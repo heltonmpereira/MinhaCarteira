@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using MinhaCarteira.Definicao.Interface.Servico.Resposta;
 using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoGastos;
@@ -6,8 +8,6 @@ using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldoPeriodo;
 using MinhaCarteira.Definicao.Relatorio.FluxoCaixa;
 using MinhaCarteira.Definicao.Relatorio.GastosPorCategoriaPeriodo;
 using MinhaCarteira.Modelo.Relatorio;
-using System;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Servico.Relatorio;
 

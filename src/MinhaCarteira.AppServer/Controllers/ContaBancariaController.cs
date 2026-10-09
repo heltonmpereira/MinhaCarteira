@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -6,8 +8,6 @@ using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Definicao.Interface.Servico;
-using System;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppServer.Controllers;
 

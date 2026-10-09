@@ -1,4 +1,8 @@
-﻿using Dhani.Utilitarios.Filtro;
+﻿using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Dhani.Utilitarios.Filtro;
 using Dhani.Utilitarios.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -9,10 +13,6 @@ using MinhaCarteira.AppCliente.ViewModel.Base;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Refit;
-using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppCliente.Helper;
 
@@ -62,7 +62,8 @@ public static class RefitHelper
                     TPK
                 >([json, exibirRegistrosDeletados], nomeMetodo);
             }
-            else {
+            else
+            {
                 itens = await controller.Servico.ExecutarServico<
                     IRespostaPaginadaServico<T>,
                     T,

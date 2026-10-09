@@ -1,3 +1,5 @@
+using System;
+using System.Net;
 using Dhani.Utilitarios.Filtro;
 using Dhani.Utilitarios.Helper;
 using Microsoft.AspNetCore.Authorization;
@@ -9,8 +11,6 @@ using MinhaCarteira.Definicao.Helper;
 using MinhaCarteira.Definicao.Interface.Servico.Resposta;
 using MinhaCarteira.Definicao.Modelo;
 using Newtonsoft.Json;
-using System;
-using System.Net;
 
 namespace MinhaCarteira.AppServer.Controllers.Base;
 

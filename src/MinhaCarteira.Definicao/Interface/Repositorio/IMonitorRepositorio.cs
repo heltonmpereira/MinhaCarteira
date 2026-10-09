@@ -1,6 +1,6 @@
-﻿using MinhaCarteira.Definicao.Entidade;
+﻿using System;
+using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio.Base;
-using System;
 
 namespace MinhaCarteira.Definicao.Interface.Repositorio;
 

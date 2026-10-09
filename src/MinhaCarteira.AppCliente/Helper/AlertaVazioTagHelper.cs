@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Html;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using MinhaCarteira.AppCliente.Models.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppCliente.Helper;
 
@@ -96,8 +96,8 @@ public class AlertaVazioTagHelper(IHtmlGenerator htmlGenerator) : TagHelper
             extraAttributeList.Add($"{attr.Name}=\"{attr.Value}\"");
         }
 
-        var conteudo = Criterio != null && 
-            Criterio.GruposFiltro != null && 
+        var conteudo = Criterio != null &&
+            Criterio.GruposFiltro != null &&
             Criterio.GruposFiltro.Any(a => !a.NomeGrupoKey.StartsWith("Padrao") && a.Filtros.Any(f => f.Visivel))
             ? await MontarTemplateFiltroVazioAsync()
             : await MontarTemplateVazioAsync();

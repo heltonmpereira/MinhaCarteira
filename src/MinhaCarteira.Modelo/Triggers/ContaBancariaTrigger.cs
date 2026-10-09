@@ -115,7 +115,7 @@ public class ContaBancariaTrigger : IAfterSaveTrigger<ContaBancaria>
                 .Entry(conta)
                 .Property(p => p.Ordem)
                 .IsModified = true;
-        
+
         foreach (var conta in contasSemOrdem)
             _dbContext
                 .Entry(conta)

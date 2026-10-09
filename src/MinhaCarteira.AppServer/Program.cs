@@ -4,9 +4,8 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 using MinhaCarteira.AppServer.Helper;
+using Serilog;
 
 namespace MinhaCarteira.AppServer;
 

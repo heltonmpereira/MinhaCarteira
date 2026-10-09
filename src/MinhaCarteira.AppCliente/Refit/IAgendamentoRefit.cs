@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
 using MinhaCarteira.AppCliente.Models;
 using MinhaCarteira.AppCliente.ViewModel;
-using MinhaCarteira.AppCliente.ViewModel.Base;
 using Refit;
 
 namespace MinhaCarteira.AppCliente.Refit;

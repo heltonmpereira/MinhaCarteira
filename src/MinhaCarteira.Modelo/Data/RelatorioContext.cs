@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using MinhaCarteira.Definicao.Relatorio.FluxoCaixa;
-using System.Reflection;
 
 namespace MinhaCarteira.Modelo.Data;
 
