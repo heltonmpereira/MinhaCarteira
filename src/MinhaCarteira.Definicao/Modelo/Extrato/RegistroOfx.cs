@@ -1,4 +1,4 @@
-﻿namespace MinhaCarteira.Servico.Model;
+﻿namespace MinhaCarteira.Definicao.Modelo.Extrato;
 
 public class RegistroOfx
 {
