@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.Modelo.Data;
 using Newtonsoft.Json;
@@ -56,19 +56,10 @@ public class Startup(IConfiguration configuration)
                 Description = "JWT Authorization header. Ex: 'Bearer {token}'. Header opcional X-Client-Request-Id para idempotência de POST/PUT/DELETE."
             });
 
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                        {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                        }
-                });
+            c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("bearer", document)] = []
+            });
         });
 
         var origins = Configuration.GetSection("CorsOrigins").Value.Split(',').Select(s => s.Trim()).ToArray();
