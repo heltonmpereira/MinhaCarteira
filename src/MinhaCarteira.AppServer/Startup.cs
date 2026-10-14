@@ -47,7 +47,7 @@ public class Startup(IConfiguration configuration)
                     Version = "v1"
                 });
 
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
