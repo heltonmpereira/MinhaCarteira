@@ -559,8 +559,8 @@ ORDER BY
             .Include(p => p.Agendamento)
             .Where(p => !p.Deletado &&
                         !p.Agendamento.Deletado &&
-                        p.Data.Date >= dataInicial.Date &&
-                        p.Data.Date <= dataFinal.Date &&
+                        (p.DataPagamento ?? p.Data).Date >= dataInicial.Date &&
+                        (p.DataPagamento ?? p.Data).Date <= dataFinal.Date &&
                         p.Agendamento.ProprietarioId == proprietarioId &&
                         (p.ContaBancariaId == null || contaIds.Contains(p.ContaBancariaId.Value)))
             .ToListAsync();
@@ -630,8 +630,10 @@ ORDER BY
                             p.DataPagamento == null &&
                             //p.Data.Date < primeiroDia &&
                             p.Data.Date < primeiroDia.Date &&
+                            p.Data.Date > hoje.Date &&
                             p.Agendamento.ProprietarioId == proprietarioId &&
                             (p.ContaBancariaId == null || contaIds.Contains(p.ContaBancariaId.Value)))
+                .OrderBy(o => o.Data)
                 .ToListAsync();
 
             saldoInicialTotal = saldoBase + previstosAntesInicio.Sum(p => p.ValorReal);
@@ -673,7 +675,7 @@ ORDER BY
 
             // Movimentos planejados no dia (apenas parcelas, para o gráfico)
             var parcelas = todasParcelas
-                .Where(p => p.Data.Date == dataParcela.Date)
+                .Where(p => p.DataPagamento == null && p.Data.Date == dataParcela.Date)
                 .ToList();
             decimal movimentosPlanejadosDia = parcelas.Sum(s => s.ValorReal);
 
