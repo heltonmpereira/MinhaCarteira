@@ -10,6 +10,7 @@ using MinhaCarteira.AppCliente.Filter;
 using MinhaCarteira.AppCliente.Helper;
 using MinhaCarteira.AppCliente.Refit;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio;
+using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoCreditos;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoGastos;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.FluxoCaixa;
 using Newtonsoft.Json;
@@ -123,6 +124,143 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
             evolucoesPorMes);
 
         return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DashboardCreditos(int? ano = null, int[] meses = null, Guid? contaBancariaId = null, Guid[] contasBancariasIds = null)
+    {
+        var dataAtual = DateTime.Now;
+        var anoSelecionado = ano ?? dataAtual.Year;
+
+        var mesesSelecionados = (meses != null && meses.Length > 0)
+            ? meses.Where(m => m >= 1 && m <= 12).Distinct().OrderBy(m => m).ToList()
+            : [dataAtual.Month - 1, dataAtual.Month];
+
+        if (mesesSelecionados.Count == 0)
+            mesesSelecionados.Add(dataAtual.Month);
+
+        var contasSelecionadas = contasBancariasIds?
+            .Where(g => g != Guid.Empty)
+            .Distinct()
+            .ToList();
+
+        if ((contasSelecionadas == null || contasSelecionadas.Count == 0) && contaBancariaId.HasValue)
+        {
+            contasSelecionadas = new List<Guid> { contaBancariaId.Value };
+        }
+
+        var contasArray = contasSelecionadas != null && contasSelecionadas.Count > 0
+            ? contasSelecionadas.ToArray()
+            : null;
+        var contaUnicaCompat = contasArray != null && contasArray.Length == 1 ? contasArray[0] : contaBancariaId;
+        var txtContasIds = contasArray != null && contasArray.Length > 0 ? string.Join(',', contasArray) : null;
+
+        var model = new DashboardCreditosRelatorioViewModel
+        {
+            Ano = anoSelecionado,
+            Mes = mesesSelecionados.Last(),
+            Meses = mesesSelecionados,
+            ContaBancariaId = contaUnicaCompat,
+            ContasBancariasIds = contasSelecionadas ?? new List<Guid>()
+        };
+
+        var filtro = new FiltroBase { Ordenacao = "Ordem, DataCadastro" };
+        var json = JsonConvert.SerializeObject(filtro.OrganizarIdFiltros());
+        var respostaContas = await ContaBancariaServico.Navegar(json, false);
+        if (respostaContas.BemSucedido)
+        {
+            model.ContasBancarias = respostaContas.Dados;
+        }
+
+        var mesPrincipal = model.Mes;
+
+        var evolucoesPorMes = new Dictionary<int, EvolucaoCreditosViewModel>();
+        var mesesVM = new List<EvolucaoCreditosMesViewModel>();
+        var cultura = CultureInfo.CurrentCulture;
+        int ordem = 0;
+        foreach (var mes in mesesSelecionados)
+        {
+            var resp = await Servico.EvolucaoCreditos(anoSelecionado, mes, contaUnicaCompat, txtContasIds);
+            if (resp.BemSucedido && resp.Dados != null)
+            {
+                evolucoesPorMes[mes] = resp.Dados;
+                mesesVM.Add(new EvolucaoCreditosMesViewModel
+                {
+                    Ano = anoSelecionado,
+                    Mes = mes,
+                    Chave = $"{anoSelecionado}-{mes:D2}",
+                    Nome = cultura.DateTimeFormat.GetMonthName(mes).ToUpperInvariant(),
+                    Ordem = ordem++,
+                    EhMaisRecente = mes == model.Mes
+                });
+            }
+        }
+
+        if (evolucoesPorMes.TryGetValue(mesPrincipal, out var principal))
+            model.EvolucaoCreditos = principal;
+
+        model.EvolucaoCreditosMultiMes = ConstruirModeloMultiMesCreditos(
+            anoSelecionado,
+            mesesSelecionados,
+            mesesVM,
+            evolucoesPorMes);
+
+        return View(model);
+    }
+
+    private static EvolucaoCreditosMultiMesViewModel ConstruirModeloMultiMesCreditos(
+        int ano,
+        List<int> mesesSelecionados,
+        List<EvolucaoCreditosMesViewModel> mesesVM,
+        Dictionary<int, EvolucaoCreditosViewModel> evolucoesPorMes)
+    {
+        var diasMax = mesesSelecionados.Max(m => DateTime.DaysInMonth(ano, m));
+        var itens = new List<EvolucaoCreditosMultiMesDiarioViewModel>(diasMax);
+        var dataAtual = DateTime.Now;
+
+        for (int dia = 1; dia <= diasMax; dia++)
+        {
+            var itemDia = new EvolucaoCreditosMultiMesDiarioViewModel { Dia = dia };
+            foreach (var mesVM in mesesVM)
+            {
+                var diasNoMes = DateTime.DaysInMonth(ano, mesVM.Mes);
+                decimal? acumulado = null;
+                decimal diario = 0;
+
+                if (dia <= diasNoMes && evolucoesPorMes.TryGetValue(mesVM.Mes, out var evolucao) && evolucao.Itens != null)
+                {
+                    var dadoDia = evolucao.Itens.FirstOrDefault(i => i.Dia == dia);
+                    if (dadoDia != null)
+                    {
+                        diario = dadoDia.CreditosMesAtual;
+                        acumulado = dadoDia.CreditosAcumuladosMesAtual;
+
+                        var ehMesCorrente = ano == dataAtual.Year && mesVM.Mes == dataAtual.Month;
+                        if (ehMesCorrente && dia > dataAtual.Day && dadoDia.CreditosMesAtual == 0)
+                            acumulado = null;
+                    }
+                }
+
+                itemDia.ValoresPorMes.Add(new EvolucaoCreditosValorMesViewModel
+                {
+                    ChaveMes = mesVM.Chave,
+                    Mes = mesVM.Mes,
+                    Ano = ano,
+                    NomeMes = mesVM.Nome,
+                    CreditosAcumulados = acumulado,
+                    CreditosDiarios = diario
+                });
+            }
+            itens.Add(itemDia);
+        }
+
+        return new EvolucaoCreditosMultiMesViewModel
+        {
+            Ano = ano,
+            MesesSelecionados = mesesSelecionados,
+            Meses = mesesVM,
+            Itens = itens
+        };
     }
 
     private static EvolucaoGastosMultiMesViewModel ConstruirModeloMultiMes(

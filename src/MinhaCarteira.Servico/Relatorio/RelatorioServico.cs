@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using MinhaCarteira.Definicao.Interface.Servico.Resposta;
 using MinhaCarteira.Definicao.Modelo;
+using MinhaCarteira.Definicao.Relatorio.EvolucaoCreditos;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoGastos;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldo;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldoPeriodo;
@@ -32,6 +33,12 @@ public class RelatorioServico(RelatorioRepositorio repositorio)
     {
         var resultado = await Repositorio.GetEvolucaoGastos(ano, mes, proprietarioId, contaBancariaId).ConfigureAwait(false);
         return new RespostaServico<EvolucaoGastos>(resultado);
+    }
+
+    public async Task<IRespostaServico<EvolucaoCreditos>> EvolucaoCreditos(int ano, int mes, Guid proprietarioId, Guid? contaBancariaId = null)
+    {
+        var resultado = await Repositorio.GetEvolucaoCreditos(ano, mes, proprietarioId, contaBancariaId).ConfigureAwait(false);
+        return new RespostaServico<EvolucaoCreditos>(resultado);
     }
 
     public async Task<IRespostaServico<EvolucaoSaldoPeriodo>> EvolucaoSaldoPeriodo(DateTime dataInicial, DateTime dataFinal, Guid proprietarioId, Guid? contaBancariaId = null)
