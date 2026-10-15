@@ -23,13 +23,13 @@
 }
 
 <nav class="navbar navbar-expand-sm navbar-@ViewBag.Theme sticky-top px-2 m-0">
-    <h4 class="px-3 mb-2 mb-sm-0">Dashboard de Créditos</h4>
     <form id="filtroForm" class="col-12 col-sm-10" asp-action="DashboardCreditos" method="get">
-        <div class="row g-2">
-            <div class="col-6 col-sm-2">
+        <div class="row mb-2">
+            <div class="col-12 col-sm-2">
                 <input name="ano" class="form-control" value="@Model.Ano" placeholder="Ano" autofocus>
             </div>
-            <div class="col-12 col-sm-4">
+
+            <div class="col-12 col-sm-8">
                 <div class="multi-select-wrapper" id="mesMultiSelectWrapper">
                     <div class="multi-select-display" id="mesMultiSelectDisplay">
                         <span class="multi-select-placeholder" id="mesMultiSelectPlaceholder">Selecione os meses...</span>
@@ -51,34 +51,36 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-sm-4">
-                <div class="multi-select-wrapper" id="contasMultiSelectWrapper">
-                    <div class="multi-select-display" id="contasMultiSelectDisplay">
-                        <span class="multi-select-placeholder" id="contasMultiSelectPlaceholder">Todas as contas</span>
-                    </div>
-                    <div class="multi-select-dropdown" id="contasMultiSelectDropdown">
-                        @if (Model.ContasBancarias != null)
-                        {
-                            foreach (var conta in Model.ContasBancarias)
-                            {
-                                var contaIdStr = conta.Id.ToString().ToLowerInvariant();
-                                var selecionado = Model.ContasBancariasIds != null && Model.ContasBancariasIds.Contains(conta.Id);
-                                var contaNome = conta.Nome;
-                                <div class="multi-select-option">
-                                    <input type="checkbox" name="contasBancariasIds" value="@contaIdStr" id="conta_@contaIdStr" @(selecionado ? "checked" : "")>
-                                    <label for="conta_@contaIdStr">@contaNome</label>
-                                </div>
-                            }
-                        }
-                        <div class="multi-select-actions">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllContas">Todas</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="clearAllContas">Nenhuma</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
             <div class="col-12 col-sm-2">
                 <button type="submit" class="btn @(ViewBag.ClasseBotao)primary w-100">Atualizar</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="multi-select-wrapper px-2" id="contasMultiSelectWrapper">
+                <div class="multi-select-display" id="contasMultiSelectDisplay">
+                    <span class="multi-select-placeholder" id="contasMultiSelectPlaceholder">Todas as contas</span>
+                </div>
+                <div class="multi-select-dropdown" id="contasMultiSelectDropdown">
+                    @if (Model.ContasBancarias != null)
+                    {
+                        foreach (var conta in Model.ContasBancarias)
+                        {
+                            var contaIdStr = conta.Id.ToString().ToLowerInvariant();
+                            var selecionado = Model.ContasBancariasIds != null && Model.ContasBancariasIds.Contains(conta.Id);
+                            var contaNome = conta.Nome;
+                            <div class="multi-select-option">
+                                <input type="checkbox" name="contasBancariasIds" value="@contaIdStr" id="conta_@contaIdStr" @(selecionado ? "checked" : "")>
+                                <label for="conta_@contaIdStr">@contaNome</label>
+                            </div>
+                        }
+                    }
+                    <div class="multi-select-actions">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllContas">Todas</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="clearAllContas">Nenhuma</button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
