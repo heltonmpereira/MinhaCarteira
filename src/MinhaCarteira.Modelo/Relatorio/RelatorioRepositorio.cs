@@ -559,8 +559,8 @@ ORDER BY
             .Include(p => p.Agendamento)
             .Where(p => !p.Deletado &&
                         !p.Agendamento.Deletado &&
-                        (p.DataPagamento ?? p.Data).Date >= dataInicial.Date &&
-                        (p.DataPagamento ?? p.Data).Date <= dataFinal.Date &&
+                        p.Data.Date >= dataInicial.Date &&
+                        p.Data.Date <= dataFinal.Date &&
                         p.Agendamento.ProprietarioId == proprietarioId &&
                         (p.ContaBancariaId == null || contaIds.Contains(p.ContaBancariaId.Value)))
             .ToListAsync();
@@ -610,7 +610,33 @@ ORDER BY
         // Agora, calculamos o saldo inicial total no dataInicial
         DateTime primeiroDia = dataInicial.Date;
         decimal saldoInicialTotal;
-        if (saldoRealPorDia.ContainsKey(primeiroDia.AddDays(-1)))
+
+        // Quando o período é totalmente futuro, o saldo inicial deve partir do
+        // saldo real atual (do último dia com movimento realizado) e ser acrescido
+        // dos agendamentos/gastos previstos (parcelas não pagas) até o início do período.
+        bool periodoFuturo = primeiroDia > hoje.Date;
+
+        if (periodoFuturo)
+        {
+            decimal saldoBase = saldoRealPorDia.ContainsKey(hoje.Date)
+                ? saldoRealPorDia[hoje.Date]
+                : contas.Sum(c => c.ValorSaldoInicial) +
+                  contas.SelectMany(c => c.Movimentos).Where(m => !m.Deletado).Sum(m => m.ValorReal);
+
+            var previstosAntesInicio = await CarteiraContexto.AgendamentoParcelas
+                .Include(p => p.Agendamento)
+                .Where(p => !p.Deletado &&
+                            !p.Agendamento.Deletado &&
+                            p.DataPagamento == null &&
+                            //p.Data.Date < primeiroDia &&
+                            p.Data.Date < primeiroDia.Date &&
+                            p.Agendamento.ProprietarioId == proprietarioId &&
+                            (p.ContaBancariaId == null || contaIds.Contains(p.ContaBancariaId.Value)))
+                .ToListAsync();
+
+            saldoInicialTotal = saldoBase + previstosAntesInicio.Sum(p => p.ValorReal);
+        }
+        else if (saldoRealPorDia.ContainsKey(primeiroDia.AddDays(-1)))
         {
             saldoInicialTotal = saldoRealPorDia[primeiroDia.AddDays(-1)];
         }
@@ -659,8 +685,13 @@ ORDER BY
             }
             else
             {
-                // Para datas futuras, usa a lógica do gráfico/planejado
-                saldoFinalDia = saldoAcumulado + (movimentosRealizadosDia > 0 ? movimentosRealizadosDia : movimentosPlanejadosDia);
+                // Para datas futuras, parte do saldo acumulado e evolui somando os
+                // movimentos realizados e os agendamentos/gastos previstos (parcelas não pagas) do dia.
+                decimal previstosDia = parcelas
+                    .Where(p => p.DataPagamento == null)
+                    .Sum(s => s.ValorReal);
+
+                saldoFinalDia = saldoAcumulado + movimentosRealizadosDia + previstosDia;
             }
 
             var item = new EvolucaoSaldoPeriodoDiario
