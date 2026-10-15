@@ -1,12 +1,12 @@
-﻿using Dhani.Utilitarios.Filtro;
-using Microsoft.Extensions.Configuration;
-using MinhaCarteira.Definicao.Entidade;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Dhani.Utilitarios.Filtro;
+using Microsoft.Extensions.Configuration;
+using MinhaCarteira.Definicao.Entidade;
 
 namespace MinhaCarteira.Definicao.Helper;
 

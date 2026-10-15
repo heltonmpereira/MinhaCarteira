@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using MinhaCarteira.AppCliente.Controllers.Base;
 using MinhaCarteira.AppCliente.Refit;
 using MinhaCarteira.AppCliente.ViewModel;
-using System;
 
 namespace MinhaCarteira.AppCliente.Controllers
 {

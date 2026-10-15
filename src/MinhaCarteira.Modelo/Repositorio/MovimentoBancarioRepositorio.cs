@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Helper;
@@ -6,10 +10,6 @@ using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Modelo.Data;
 using MinhaCarteira.Modelo.Repositorio.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Modelo.Repositorio;
 

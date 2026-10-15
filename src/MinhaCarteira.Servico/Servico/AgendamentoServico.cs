@@ -1,3 +1,7 @@
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using ChoETL;
 using Dates.Recurring;
 using Dates.Recurring.Type;
@@ -9,11 +13,6 @@ using MinhaCarteira.Definicao.Interface.Servico.Resposta;
 using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Servico.Helper;
 using MinhaCarteira.Servico.Servico.Base;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Servico.Servico;
 

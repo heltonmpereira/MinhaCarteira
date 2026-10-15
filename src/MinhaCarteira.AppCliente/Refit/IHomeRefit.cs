@@ -1,7 +1,7 @@
-﻿using MinhaCarteira.AppCliente.Models;
+﻿using System.Threading.Tasks;
+using MinhaCarteira.AppCliente.Models;
 using MinhaCarteira.AppCliente.ViewModel;
 using Refit;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppCliente.Refit;
 

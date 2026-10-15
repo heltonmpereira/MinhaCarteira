@@ -1,14 +1,13 @@
-﻿using Dhani.Utilitarios.Filtro;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dhani.Utilitarios.Filtro;
 using Dhani.Utilitarios.Helper;
 using Microsoft.EntityFrameworkCore;
 using MinhaCarteira.Definicao.Interface.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio.Base;
 using MinhaCarteira.Modelo.Data;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Modelo.Repositorio.Base;
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace MinhaCarteira.Definicao.Relatorio.EvolucaoSaldo;

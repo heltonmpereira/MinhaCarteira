@@ -1,8 +1,4 @@
-﻿using Dhani.Utilitarios.Filtro;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -10,6 +6,9 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dhani.Utilitarios.Filtro;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MinhaCarteira.AppCliente.Helper;
 
@@ -85,7 +84,7 @@ public static class Utils
 
         return description;
     }
-	
+
     public static ICriterio AdicionarFiltroProprietario(
         this ICriterio criterio,
         string idUsuarioLogado,

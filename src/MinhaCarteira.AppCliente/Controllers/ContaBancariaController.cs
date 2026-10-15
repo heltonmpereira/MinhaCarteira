@@ -9,7 +9,6 @@ using MinhaCarteira.AppCliente.Helper;
 using MinhaCarteira.AppCliente.Models;
 using MinhaCarteira.AppCliente.Refit;
 using MinhaCarteira.AppCliente.ViewModel;
-using Newtonsoft.Json;
 using Refit;
 
 

@@ -1,10 +1,10 @@
 using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Modelo.Data;
 using MinhaCarteira.Modelo.Repositorio.Base;
-using System.Linq;
 
 namespace MinhaCarteira.Modelo.Repositorio;
 

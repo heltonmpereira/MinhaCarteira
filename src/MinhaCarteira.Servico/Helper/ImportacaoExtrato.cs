@@ -1,10 +1,4 @@
-﻿using ChoETL;
-using Dhani.Utilitarios.Helper;
-using MinhaCarteira.Definicao.Entidade;
-using MinhaCarteira.Definicao.Modelo;
-using MinhaCarteira.Definicao.Modelo.Extrato;
-using Scriban;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -14,6 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ChoETL;
+using Dhani.Utilitarios.Helper;
+using MinhaCarteira.Definicao.Entidade;
+using MinhaCarteira.Definicao.Modelo;
+using MinhaCarteira.Definicao.Modelo.Extrato;
+using Scriban;
 
 namespace MinhaCarteira.Servico.Helper;
 

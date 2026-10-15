@@ -1,8 +1,8 @@
-﻿using MinhaCarteira.AppCliente.Models.Interface;
-using MinhaCarteira.AppCliente.ViewModel.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using MinhaCarteira.AppCliente.Models.Interface;
+using MinhaCarteira.AppCliente.ViewModel.Base;
 
 namespace MinhaCarteira.AppCliente.ViewModel;
 

@@ -1,6 +1,6 @@
-﻿using Dhani.Utilitarios.ViewModel;
+﻿using System;
+using Dhani.Utilitarios.ViewModel;
 using MinhaCarteira.AppCliente.Models.Interface;
-using System;
 
 namespace MinhaCarteira.AppCliente.ViewModel
 {

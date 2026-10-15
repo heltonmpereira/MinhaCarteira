@@ -1,14 +1,14 @@
-﻿using Dhani.Utilitarios.Filtro;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using Dhani.Utilitarios.Filtro;
 using Dhani.Utilitarios.Helper;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Servico;
 using MinhaCarteira.Definicao.Modelo;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Servico.Helper;
 

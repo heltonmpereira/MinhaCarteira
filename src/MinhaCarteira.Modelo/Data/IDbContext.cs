@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MinhaCarteira.Definicao.Entidade;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Modelo.Data;
 

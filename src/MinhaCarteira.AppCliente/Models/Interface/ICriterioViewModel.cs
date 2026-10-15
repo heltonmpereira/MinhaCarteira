@@ -1,6 +1,6 @@
-﻿using Dhani.Utilitarios.Filtro;
+﻿using System.Collections.Generic;
+using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
 
 namespace MinhaCarteira.AppCliente.Models.Interface;
 

@@ -1,10 +1,10 @@
-﻿using Dhani.Utilitarios.Filtro;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MinhaCarteira.AppCliente.Models.Interface;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MinhaCarteira.AppCliente.ViewModel.Base;
 

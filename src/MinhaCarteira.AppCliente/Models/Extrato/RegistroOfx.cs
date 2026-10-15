@@ -1,4 +1,5 @@
 ﻿namespace MinhaCarteira.AppCliente.Models.Extrato;
+
 public class RegistroOfx
 {
     public string TRNTYPE { get; set; }

@@ -1,4 +1,6 @@
-using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,14 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi;
 using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.Modelo.Data;
-using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
 
 namespace MinhaCarteira.AppServer;
 
@@ -48,7 +47,7 @@ public class Startup(IConfiguration configuration)
                     Version = "v1"
                 });
 
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
@@ -56,19 +55,10 @@ public class Startup(IConfiguration configuration)
                 Description = "JWT Authorization header. Ex: 'Bearer {token}'. Header opcional X-Client-Request-Id para idempotência de POST/PUT/DELETE."
             });
 
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                        {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                        }
-                });
+            c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("bearer", document)] = []
+            });
         });
 
         var origins = Configuration.GetSection("CorsOrigins").Value.Split(',').Select(s => s.Trim()).ToArray();

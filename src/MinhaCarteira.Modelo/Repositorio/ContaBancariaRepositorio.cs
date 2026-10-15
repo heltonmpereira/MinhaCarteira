@@ -1,11 +1,11 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Modelo.Data;
 using MinhaCarteira.Modelo.Repositorio.Base;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.Modelo.Repositorio;
 

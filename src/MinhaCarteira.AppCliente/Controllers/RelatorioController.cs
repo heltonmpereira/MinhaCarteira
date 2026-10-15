@@ -12,9 +12,7 @@ using MinhaCarteira.AppCliente.Refit;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoCreditos;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoGastos;
-using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldoPeriodo;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.FluxoCaixa;
-using MinhaCarteira.AppCliente.ViewModel.Relatorio.GastosPorCategoriaPeriodo;
 using Newtonsoft.Json;
 
 namespace MinhaCarteira.AppCliente.Controllers;

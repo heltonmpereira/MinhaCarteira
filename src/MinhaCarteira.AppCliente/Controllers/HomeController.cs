@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppCliente.Controllers.Base;
 using MinhaCarteira.AppCliente.Refit;
 using MinhaCarteira.AppCliente.ViewModel;
 using Refit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MinhaCarteira.AppCliente.Controllers;
 

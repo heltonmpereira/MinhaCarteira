@@ -1,7 +1,7 @@
-﻿using MinhaCarteira.Definicao.Interface.Entidade;
-using MinhaCarteira.Definicao.Modelo;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
+using MinhaCarteira.Definicao.Interface.Entidade;
+using MinhaCarteira.Definicao.Modelo;
 
 namespace MinhaCarteira.Definicao.Entidade;
 

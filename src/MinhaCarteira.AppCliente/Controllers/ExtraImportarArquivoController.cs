@@ -1,18 +1,18 @@
-﻿using Dhani.Utilitarios.Helper;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Dhani.Utilitarios.Helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppCliente.Controllers.Base;
 using MinhaCarteira.AppCliente.Filter;
 using MinhaCarteira.AppCliente.Helper;
+using MinhaCarteira.AppCliente.Models.Extrato;
 using MinhaCarteira.AppCliente.Models.Interface.Resposta;
 using MinhaCarteira.AppCliente.Refit;
 using MinhaCarteira.AppCliente.ViewModel;
-using MinhaCarteira.AppCliente.Models.Extrato;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace MinhaCarteira.AppCliente.Controllers;

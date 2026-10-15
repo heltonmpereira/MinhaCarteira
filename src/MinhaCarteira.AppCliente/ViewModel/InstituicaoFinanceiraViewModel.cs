@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
-using MinhaCarteira.AppCliente.Attribute;
 using MinhaCarteira.AppCliente.Models.Interface;
 using MinhaCarteira.AppCliente.ViewModel.Base;
 

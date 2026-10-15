@@ -31,8 +31,7 @@ public class RespostaServico<T> : IRespostaServico<T>
             dados is Exception erro
                 ? erro.Message
                 : string.Empty);
-        MensagemErro = dados is Exception || dados is Exception[]
-            ? ObterExceptionMaisProfunda()
+        MensagemErro = dados is Exception || dados is Exception[]? ObterExceptionMaisProfunda()
             : string.Empty;
         BemSucedido = dados is not Exception && dados is not Exception[];
     }

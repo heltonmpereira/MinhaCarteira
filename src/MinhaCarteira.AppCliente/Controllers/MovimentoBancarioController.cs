@@ -1,4 +1,9 @@
-﻿using Dhani.Utilitarios.Filtro;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppCliente.Controllers.Base;
@@ -9,11 +14,6 @@ using MinhaCarteira.AppCliente.Refit;
 using MinhaCarteira.AppCliente.ViewModel;
 using MinhaCarteira.AppCliente.ViewModel.Base;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using X.PagedList;
 
 namespace MinhaCarteira.AppCliente.Controllers;

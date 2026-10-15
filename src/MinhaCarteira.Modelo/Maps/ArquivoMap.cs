@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Modelo.Maps.Base;
-using System;
 
 namespace MinhaCarteira.Modelo.Maps
 {

@@ -9,8 +9,8 @@ public static class Criptografia
 
     public static string CriptografarTexto(this string texto)
     {
-        return texto == null 
-            ? throw new ArgumentNullException(nameof(texto)) 
+        return texto == null
+            ? throw new ArgumentNullException(nameof(texto))
             : _passwordHasher.HashPassword(new object(), texto);
     }
 

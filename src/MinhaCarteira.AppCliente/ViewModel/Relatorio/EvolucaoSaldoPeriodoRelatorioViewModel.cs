@@ -1,8 +1,7 @@
-using MinhaCarteira.AppCliente.ViewModel;
-using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldoPeriodo;
-using MinhaCarteira.AppCliente.ViewModel.Relatorio.GastosPorCategoriaPeriodo;
 using System;
 using System.Collections.Generic;
+using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldoPeriodo;
+using MinhaCarteira.AppCliente.ViewModel.Relatorio.GastosPorCategoriaPeriodo;
 
 namespace MinhaCarteira.AppCliente.ViewModel.Relatorio;
 

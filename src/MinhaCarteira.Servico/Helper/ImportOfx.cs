@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace MinhaCarteira.Servico.Helper;
+
 public static class ImportOfx
 {
     public static XElement ToXElement(IEnumerable<string> linhas)
