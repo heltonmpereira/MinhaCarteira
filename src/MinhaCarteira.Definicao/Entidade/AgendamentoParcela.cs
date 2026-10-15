@@ -22,8 +22,8 @@ public class AgendamentoParcela : IEntidade<Guid>
     public bool DespesaOpcional { get; set; }
     public decimal ValorReal =>
         Agendamento.Tipo == TipoMovimento.Credito
-            ? (ValorPago ?? Valor)
-            : (ValorPago ?? Valor) * (-1);
+            ? Valor
+            : Valor * (-1);
 
     [NotMapped]
     public bool AlterarAPenasEstaParcela { get; set; } = false;

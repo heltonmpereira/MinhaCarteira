@@ -1,4 +1,5 @@
 using MinhaCarteira.AppCliente.Models;
+using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoCreditos;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoGastos;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldo;
 using MinhaCarteira.AppCliente.ViewModel.Relatorio.EvolucaoSaldoPeriodo;
@@ -20,6 +21,9 @@ public interface IRelatorioRefit
 
     [Get("/evolucao-gastos/{ano}/{mes}")]
     Task<RespostaServico<EvolucaoGastosViewModel>> EvolucaoGastos(int ano, int mes, Guid? contaBancariaId = null, string txtContasBancariasIds = null);
+
+    [Get("/evolucao-creditos/{ano}/{mes}")]
+    Task<RespostaServico<EvolucaoCreditosViewModel>> EvolucaoCreditos(int ano, int mes, Guid? contaBancariaId = null, string txtContasBancariasIds = null);
 
     [Get("/evolucao-saldo-periodo")]
     Task<RespostaServico<EvolucaoSaldoPeriodoViewModel>> EvolucaoSaldoPeriodo(DateTime dataInicial, DateTime dataFinal, Guid? contaBancariaId = null, string txtContasBancariasIds = null);

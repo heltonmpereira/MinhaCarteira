@@ -1,0 +1,124 @@
+@using MinhaCarteira.AppCliente.ViewModel.Relatorio
+@using Newtonsoft.Json
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model DashboardCreditosRelatorioViewModel
+
+@{
+    ViewData["Title"] = "Dashboard de Créditos";
+    var dadosCreditosJson = Model.EvolucaoCreditos != null ? JsonConvert.SerializeObject(Model.EvolucaoCreditos) : "null";
+    var dadosCreditosMultiMesJson = Model.EvolucaoCreditosMultiMes != null ? JsonConvert.SerializeObject(Model.EvolucaoCreditosMultiMes) : "null";
+
+    var meses = Enumerable.Range(1, 12).Select(m => new SelectListItem
+    {
+        Text = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m),
+        Value = m.ToString(),
+        Selected = Model.Meses != null && Model.Meses.Contains(m)
+    }).ToList();
+}
+
+@section Css
+{
+    <link rel="stylesheet" href="~/lib/bootstrap-table/bootstrap-table.css">
+    <link rel="stylesheet" href="~/css/dashboard-creditos-relatorio.css" asp-append-version="true" nws-csp-add-nonce="true">
+}
+
+<nav class="navbar navbar-expand-sm navbar-@ViewBag.Theme sticky-top px-2 m-0">
+    <h4 class="px-3 mb-2 mb-sm-0">Dashboard de Créditos</h4>
+    <form id="filtroForm" class="col-12 col-sm-10" asp-action="DashboardCreditos" method="get">
+        <div class="row g-2">
+            <div class="col-6 col-sm-2">
+                <input name="ano" class="form-control" value="@Model.Ano" placeholder="Ano" autofocus>
+            </div>
+            <div class="col-12 col-sm-4">
+                <div class="multi-select-wrapper" id="mesMultiSelectWrapper">
+                    <div class="multi-select-display" id="mesMultiSelectDisplay">
+                        <span class="multi-select-placeholder" id="mesMultiSelectPlaceholder">Selecione os meses...</span>
+                    </div>
+                    <div class="multi-select-dropdown" id="mesMultiSelectDropdown">
+                        @for (int m = 1; m <= 12; m++)
+                        {
+                            var nomeMes = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m);
+                            var selecionado = Model.Meses != null && Model.Meses.Contains(m);
+                            <div class="multi-select-option">
+                                <input type="checkbox" name="meses" value="@m" id="mes_@m" @(selecionado ? "checked" : "")>
+                                <label for="mes_@m">@nomeMes</label>
+                            </div>
+                        }
+                        <div class="multi-select-actions">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllMeses">Todos</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="clearAllMeses">Limpar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-4">
+                <div class="multi-select-wrapper" id="contasMultiSelectWrapper">
+                    <div class="multi-select-display" id="contasMultiSelectDisplay">
+                        <span class="multi-select-placeholder" id="contasMultiSelectPlaceholder">Todas as contas</span>
+                    </div>
+                    <div class="multi-select-dropdown" id="contasMultiSelectDropdown">
+                        @if (Model.ContasBancarias != null)
+                        {
+                            foreach (var conta in Model.ContasBancarias)
+                            {
+                                var contaIdStr = conta.Id.ToString().ToLowerInvariant();
+                                var selecionado = Model.ContasBancariasIds != null && Model.ContasBancariasIds.Contains(conta.Id);
+                                var contaNome = conta.Nome;
+                                <div class="multi-select-option">
+                                    <input type="checkbox" name="contasBancariasIds" value="@contaIdStr" id="conta_@contaIdStr" @(selecionado ? "checked" : "")>
+                                    <label for="conta_@contaIdStr">@contaNome</label>
+                                </div>
+                            }
+                        }
+                        <div class="multi-select-actions">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllContas">Todas</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="clearAllContas">Nenhuma</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-2">
+                <button type="submit" class="btn @(ViewBag.ClasseBotao)primary w-100">Atualizar</button>
+            </div>
+        </div>
+    </form>
+</nav>
+
+<div class="container-fluid mt-4">
+    <div class="row dashboard-row">
+        <div class="col-12 col-md-8 mb-4 order-1 order-md-2">
+            <div class="card h-100">
+                <div class="card-header">
+                    Comparativo de Créditos Acumulados (@(Model.Meses != null && Model.Meses.Count > 0 ? string.Join(", ", Model.Meses.OrderBy(m => m).Select(m => System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m))) : "Meses"))
+                </div>
+                <div class="card-body grafico-card-body">
+                    <div class="chart-wrapper">
+                        <canvas id="graficoCreditos"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-4 order-2 order-md-1">
+            <div class="card h-100">
+                <div class="card-header">
+                    Mapa de Calor - Créditos
+                </div>
+                <div class="card-body">
+                    <div id="heatmapCreditos"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script nws-csp-add-nonce="true" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script nws-csp-add-nonce="true" src="~/js/views/dashboard-creditos-relatorio.js" asp-append-version="true"></script>
+    <script nws-csp-add-nonce="true">
+        const dashboardCreditos = @Html.Raw(dadosCreditosJson);
+        const dashboardCreditosMultiMes = @Html.Raw(dadosCreditosMultiMesJson);
+        inicializarDashboardCreditosRelatorio(dashboardCreditos, dashboardCreditosMultiMes);
+    </script>
+}

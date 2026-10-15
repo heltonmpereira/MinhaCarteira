@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MinhaCarteira.Definicao.Relatorio.EvolucaoCreditos;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoGastos;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldo;
 using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldoPeriodo;
@@ -434,6 +435,95 @@ ORDER BY
                 GastosMesAnterior = gastosDiaAnterior,
                 GastosAcumuladosMesAtual = dia <= diasNoMesAtual ? gastosAcumuladosMesAtual : null,
                 GastosAcumuladosMesAnterior = gastosAcumuladosMesAnterior
+            });
+        }
+
+        return result;
+    }
+
+    public async Task<EvolucaoCreditos> GetEvolucaoCreditos(int ano, int mes, Guid proprietarioId, Guid? contaBancariaId = null)
+        => await GetEvolucaoCreditos(ano, mes, proprietarioId, contaBancariaId.HasValue ? new[] { contaBancariaId.Value } : null);
+
+    public async Task<EvolucaoCreditos> GetEvolucaoCreditos(int ano, int mes, Guid proprietarioId, Guid[] contasBancariasIds)
+    {
+        var result = new EvolucaoCreditos { Ano = ano, Mes = mes };
+
+        var dataMesAtual = new DateTime(ano, mes, 1);
+        var dataMesAnterior = dataMesAtual.AddMonths(-1);
+        var competenciaAtual = dataMesAtual.ToString("yyyyMM");
+        var competenciaAnterior = dataMesAnterior.ToString("yyyyMM");
+
+        result.NomeMesAtual = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(mes);
+        result.NomeMesAnterior = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dataMesAnterior.Month);
+
+        var creditosMesAtualQuery = CarteiraContexto.MovimentosBancarios
+            .Include(m => m.Categoria)
+            .Include(m => m.CentroClassificacao)
+            .Where(m => m.ProprietarioId == proprietarioId &&
+                        m.Competencia == competenciaAtual &&
+                        m.TipoMovimento == Definicao.Modelo.TipoMovimento.Credito &&
+                        !m.Deletado &&
+                        !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
+
+        if (contasBancariasIds != null && contasBancariasIds.Length > 0)
+        {
+            creditosMesAtualQuery = creditosMesAtualQuery
+                .Where(m => contasBancariasIds.Contains(m.ContaBancariaId));
+        }
+
+        var creditosMesAtual = await creditosMesAtualQuery.ToListAsync();
+
+        var creditosMesAnteriorQuery = CarteiraContexto.MovimentosBancarios
+            .Include(m => m.Categoria)
+            .Include(m => m.CentroClassificacao)
+            .Where(m => m.ProprietarioId == proprietarioId &&
+                        m.Competencia == competenciaAnterior &&
+                        m.TipoMovimento == Definicao.Modelo.TipoMovimento.Credito &&
+                        !m.Deletado &&
+                        !(m.Categoria.IgnorarMovimentacoes || m.CentroClassificacao.IgnorarMovimentacoes));
+
+        if (contasBancariasIds != null && contasBancariasIds.Length > 0)
+        {
+            creditosMesAnteriorQuery = creditosMesAnteriorQuery.Where(m => contasBancariasIds.Contains(m.ContaBancariaId));
+        }
+
+        var creditosMesAnterior = await creditosMesAnteriorQuery.ToListAsync();
+
+        var diasNoMesAtual = DateTime.DaysInMonth(ano, mes);
+        var diasNoMesAnterior = DateTime.DaysInMonth(dataMesAnterior.Year, dataMesAnterior.Month);
+        var totalDias = Math.Max(diasNoMesAtual, diasNoMesAnterior);
+
+        var creditosAcumuladosMesAtual = 0m;
+        var creditosAcumuladosMesAnterior = 0m;
+
+        for (int dia = 1; dia <= totalDias; dia++)
+        {
+            decimal creditosDiaAtual = 0;
+            if (dia <= diasNoMesAtual)
+            {
+                creditosDiaAtual = creditosMesAtual
+                    .Where(m => m.DataMovimento.Day == dia)
+                    .Sum(m => m.Valor);
+                creditosAcumuladosMesAtual += creditosDiaAtual;
+            }
+
+            decimal creditosDiaAnterior = 0;
+            if (dia <= diasNoMesAnterior)
+            {
+                creditosDiaAnterior = creditosMesAnterior
+                    .Where(m => m.DataMovimento.Day == dia)
+                    .Sum(m => m.Valor);
+                creditosAcumuladosMesAnterior += creditosDiaAnterior;
+            }
+
+            result.Itens.Add(new EvolucaoCreditosDiario
+            {
+                Data = dia <= diasNoMesAtual ? new DateTime(ano, mes, dia) : new DateTime(dataMesAnterior.Year, dataMesAnterior.Month, dia),
+                Dia = dia,
+                CreditosMesAtual = creditosDiaAtual,
+                CreditosMesAnterior = creditosDiaAnterior,
+                CreditosAcumuladosMesAtual = dia <= diasNoMesAtual ? creditosAcumuladosMesAtual : null,
+                CreditosAcumuladosMesAnterior = creditosAcumuladosMesAnterior
             });
         }
 
