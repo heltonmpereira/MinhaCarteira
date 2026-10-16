@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,9 +19,14 @@ public class ImportarArquivoServico(
     IImportarArquivoRepositorio repositorio,
     IMovimentoBancarioServico movimentoBancarioServico,
     IRegraImportacaoServico regraImportacaoServico,
-    IContaBancariaServico contaBancariaServico)
+    IContaBancariaServico contaBancariaServico,
+    ICategoriaServico categoriaServico,
+    IPessoaServico pessoaServico,
+    ICentroClassificacaoServico centroClassificacaoServico)
     : BaseServico<ImportarArquivo, Guid, IImportarArquivoRepositorio>(repositorio), IImportarArquivoServico
 {
+    private const string NomeClassificacaoPadrao = "Não classificada";
+
     public async Task<IRespostaPaginadaServico<MovimentoBancario>> ProcessarArquivo(FileUploadModel model)
     {
         if (model.ContaBancariaId != Guid.Empty)
@@ -75,5 +80,131 @@ public class ImportarArquivoServico(
         var retorno = new RespostaServico<bool>(itensDb.Dados > 0);
         return retorno;
 
+    }
+
+    public async Task<IRespostaServico<MovimentoBancario>> ImportarNotificacao(NotificacaoModel model)
+    {
+        if (model == null || string.IsNullOrWhiteSpace(model.Texto))
+            return new RespostaServico<MovimentoBancario>(null, "O texto da notificação é obrigatório.")
+            {
+                BemSucedido = false
+            };
+
+        var contaDb = await contaBancariaServico.ObterPorId(model.ContaBancariaId);
+        if (contaDb.Dados == null)
+            return new RespostaServico<MovimentoBancario>(null, "Conta bancária não localizada.")
+            {
+                BemSucedido = false
+            };
+
+        var valor = NotificacaoBancariaParser.ExtrairValor(model.Texto);
+        if (valor <= 0)
+            return new RespostaServico<MovimentoBancario>(null, "Não foi possível identificar o valor na notificação.")
+            {
+                BemSucedido = false
+            };
+
+        var criterio = new FiltroBase { AdicionarIncludes = true, ItensPorPagina = 1 };
+        criterio.AdicionarFiltroProprietario(model.ProprietarioId.ToString());
+        var regras = await regraImportacaoServico.Navegar(criterio);
+
+        var agora = DateTime.Now;
+        var movimento = new MovimentoBancario
+        {
+            ProprietarioId = model.ProprietarioId,
+            ContaBancariaId = model.ContaBancariaId,
+            Descricao = NotificacaoBancariaParser.ExtrairDescricao(model.Texto),
+            TipoMovimento = NotificacaoBancariaParser.ExtrairTipo(model.Texto),
+            Valor = valor,
+            DataMovimento = agora,
+            Competencia = agora.ToString("yyyyMM")
+        };
+
+        var categoriaPadrao = await ObterCategoriaPadrao(model.ProprietarioId);
+        var pessoaPadrao = await ObterPessoaPadrao(model.ProprietarioId);
+        var centroClassificacaoPadrao = await ObterCentroClassificacaoPadrao(model.ProprietarioId);
+
+        var processados = RegraImportacaoProcessador.Processar(
+            [movimento],
+            regras.Dados,
+            pessoaPadrao,
+            categoriaPadrao,
+            centroClassificacaoPadrao);
+        movimento = processados.First();
+
+        var itensDb = await movimentoBancarioServico.Incluir(movimento);
+
+        return new RespostaServico<MovimentoBancario>(itensDb.Dados)
+        {
+            BemSucedido = itensDb.Dados != null,
+            Mensagem = itensDb.Dados != null
+                ? "Notificação importada com sucesso."
+                : "Falha ao importar a notificação."
+        };
+    }
+
+    private static ICriterio CriarCriterioClassificacaoPadrao(Guid proprietarioId)
+    {
+        var criterio = new FiltroBase { ItensPorPagina = 1 };
+        criterio.AdicionarFiltro("Nome", new FiltroOpcao
+        {
+            NomePropriedade = "Nome",
+            Operador = TipoOperadorBusca.Igual,
+            Valor = NomeClassificacaoPadrao
+        });
+        criterio.AdicionarFiltroProprietario(proprietarioId.ToString());
+
+        return criterio;
+    }
+
+    private async Task<Categoria> ObterCategoriaPadrao(Guid proprietarioId)
+    {
+        var resposta = await categoriaServico.Navegar(CriarCriterioClassificacaoPadrao(proprietarioId));
+        var categoria = resposta.Dados?.FirstOrDefault();
+        if (categoria != null)
+            return categoria;
+
+        var incluir = await categoriaServico.Incluir(new Categoria
+        {
+            Nome = NomeClassificacaoPadrao,
+            Caminho = NomeClassificacaoPadrao,
+            ProprietarioId = proprietarioId
+        });
+
+        return incluir.Dados;
+    }
+
+    private async Task<Pessoa> ObterPessoaPadrao(Guid proprietarioId)
+    {
+        var resposta = await pessoaServico.Navegar(CriarCriterioClassificacaoPadrao(proprietarioId));
+        var pessoa = resposta.Dados?.FirstOrDefault();
+        if (pessoa != null)
+            return pessoa;
+
+        var incluir = await pessoaServico.Incluir(new Pessoa
+        {
+            Nome = NomeClassificacaoPadrao,
+            ProprietarioId = proprietarioId
+        });
+
+        return incluir.Dados;
+    }
+
+    private async Task<CentroClassificacao> ObterCentroClassificacaoPadrao(Guid proprietarioId)
+    {
+        var resposta = await centroClassificacaoServico.Navegar(CriarCriterioClassificacaoPadrao(proprietarioId));
+        var centro = resposta.Dados?.FirstOrDefault();
+        if (centro != null)
+            return centro;
+
+        var incluir = await centroClassificacaoServico.Incluir(new CentroClassificacao
+        {
+            Nome = NomeClassificacaoPadrao,
+            EhReceita = true,
+            EhDespesa = true,
+            ProprietarioId = proprietarioId
+        });
+
+        return incluir.Dados;
     }
 }
