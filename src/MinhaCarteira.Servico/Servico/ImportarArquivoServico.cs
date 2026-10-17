@@ -28,6 +28,7 @@ public class ImportarArquivoServico(
     : BaseServico<ImportarArquivo, Guid, IImportarArquivoRepositorio>(repositorio), IImportarArquivoServico
 {
     private const string NomeClassificacaoPadrao = "Não classificada";
+    private const double LimiteSimilaridade = 0.5;
 
     public async Task<IRespostaPaginadaServico<MovimentoBancario>> ProcessarArquivo(FileUploadModel model)
     {
@@ -156,17 +157,22 @@ public class ImportarArquivoServico(
             Observacao = model.Texto
         };
 
+        // 1) Regras explícitas de importação têm precedência.
+        movimento = RegraImportacaoProcessador
+            .Processar([movimento], regras.Dados, null, null, null)
+            .First();
+
+        // 2) Reutiliza a classificação de um movimento similar (mesma descrição ou >= 80% de match).
+        await AplicarClassificacaoPorMovimentoSimilar(movimento);
+
+        // 3) Padrões apenas para o que permanecer sem classificação.
         var categoriaPadrao = await ObterCategoriaPadrao(model.ProprietarioId);
         var pessoaPadrao = await ObterPessoaPadrao(model.ProprietarioId);
         var centroClassificacaoPadrao = await ObterCentroClassificacaoPadrao(model.ProprietarioId);
 
-        var processados = RegraImportacaoProcessador.Processar(
-            [movimento],
-            regras.Dados,
-            pessoaPadrao,
-            categoriaPadrao,
-            centroClassificacaoPadrao);
-        movimento = processados.First();
+        movimento = RegraImportacaoProcessador
+            .Processar([movimento], Array.Empty<RegraImportacao>(), pessoaPadrao, categoriaPadrao, centroClassificacaoPadrao)
+            .First();
 
         var itensDb = await movimentoBancarioServico.Incluir(movimento);
 
@@ -190,6 +196,160 @@ public class ImportarArquivoServico(
                 ? "Notificação importada com sucesso."
                 : "Falha ao importar a notificação."
         };
+    }
+
+    /// <summary>
+    /// Reutiliza pessoa, categoria e centro de classificação de um movimento bancário já existente
+    /// cuja descrição seja a mesma ou tenha ao menos 80% de similaridade com a do movimento informado.
+    /// Só sobrescreve campos que ainda estejam sem classificação (após regras de importação).
+    /// </summary>
+    private async Task AplicarClassificacaoPorMovimentoSimilar(MovimentoBancario movimento)
+    {
+        if (movimento.PessoaId != Guid.Empty &&
+            movimento.CategoriaId != Guid.Empty &&
+            movimento.CentroClassificacaoId != Guid.Empty)
+            return;
+
+        var similar = await ObterMovimentoSimilar(movimento.ProprietarioId, movimento.Descricao);
+        if (similar == null)
+            return;
+
+        var aplicado = false;
+
+        if (movimento.PessoaId == Guid.Empty && similar.PessoaId != Guid.Empty)
+        {
+            movimento.PessoaId = similar.PessoaId;
+            movimento.Pessoa = similar.Pessoa;
+            aplicado = true;
+        }
+
+        if (movimento.CategoriaId == Guid.Empty && similar.CategoriaId != Guid.Empty)
+        {
+            movimento.CategoriaId = similar.CategoriaId;
+            movimento.Categoria = similar.Categoria;
+            aplicado = true;
+        }
+
+        if (movimento.CentroClassificacaoId == Guid.Empty && similar.CentroClassificacaoId != Guid.Empty)
+        {
+            movimento.CentroClassificacaoId = similar.CentroClassificacaoId;
+            movimento.CentroClassificacao = similar.CentroClassificacao;
+            aplicado = true;
+        }
+
+        if (aplicado)
+        {
+            logger.LogInformation(
+                "Classificação reutilizada de movimento similar. MovimentoSimilarId={MovimentoSimilarId} DescricaoSimilar={DescricaoSimilar} PessoaId={PessoaId} CategoriaId={CategoriaId} CentroClassificacaoId={CentroClassificacaoId}",
+                similar.Id, similar.Descricao, movimento.PessoaId, movimento.CategoriaId, movimento.CentroClassificacaoId);
+        }
+    }
+
+    /// <summary>
+    /// Localiza o movimento bancário do proprietário com descrição igual ou mais próxima (>= 80%)
+    /// da descrição informada.
+    /// </summary>
+    private async Task<MovimentoBancario> ObterMovimentoSimilar(Guid proprietarioId, string descricao)
+    {
+        var termoBusca = ObterTermoBusca(descricao);
+        if (string.IsNullOrWhiteSpace(termoBusca))
+            return null;
+
+        var criterio = new FiltroBase { AdicionarIncludes = true, ItensPorPagina = 50 };
+        criterio.AdicionarFiltro("Descricao", new FiltroOpcao
+        {
+            NomePropriedade = "Descricao",
+            Operador = TipoOperadorBusca.Contem,
+            Valor = termoBusca
+        });
+        criterio.AdicionarFiltroProprietario(proprietarioId.ToString());
+
+        var resposta = await movimentoBancarioServico.Navegar(criterio);
+        var candidatos = resposta.Dados;
+        if (candidatos == null || !candidatos.Any())
+            return null;
+
+        MovimentoBancario maisSimilar = null;
+        var maiorSimilaridade = 0d;
+
+        foreach (var candidato in candidatos)
+        {
+            var similaridade = CalcularSimilaridade(descricao, candidato.Descricao);
+            if (similaridade > maiorSimilaridade)
+            {
+                maiorSimilaridade = similaridade;
+                maisSimilar = candidato;
+            }
+        }
+
+        return maiorSimilaridade >= LimiteSimilaridade
+            ? maisSimilar
+            : null;
+    }
+
+    /// <summary>
+    /// Seleciona o token mais longo e significativo da descrição para restringir a busca no banco.
+    /// </summary>
+    private static string ObterTermoBusca(string descricao)
+    {
+        if (string.IsNullOrWhiteSpace(descricao))
+            return null;
+
+        return descricao
+            .Split([' ', ',', ';', '.', '-', '/', '*'], StringSplitOptions.RemoveEmptyEntries)
+            .Where(palavra => palavra.Length >= 3)
+            .OrderByDescending(palavra => palavra.Length)
+            .FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Similaridade (0 a 1) entre duas descrições, baseada na distância de Levenshtein.
+    /// </summary>
+    private static double CalcularSimilaridade(string textoA, string textoB)
+    {
+        if (string.IsNullOrWhiteSpace(textoA) || string.IsNullOrWhiteSpace(textoB))
+            return 0;
+
+        var a = NormalizarDescricao(textoA);
+        var b = NormalizarDescricao(textoB);
+
+        if (a.Length == 0 || b.Length == 0)
+            return 0;
+
+        if (a == b)
+            return 1;
+
+        var distancia = DistanciaLevenshtein(a, b);
+        return 1d - ((double)distancia / Math.Max(a.Length, b.Length));
+    }
+
+    private static string NormalizarDescricao(string texto) =>
+        string.Join(' ', texto.Trim().ToUpperInvariant()
+            .Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
+
+    private static int DistanciaLevenshtein(string a, string b)
+    {
+        var anterior = new int[b.Length + 1];
+        var atual = new int[b.Length + 1];
+
+        for (var j = 0; j <= b.Length; j++)
+            anterior[j] = j;
+
+        for (var i = 1; i <= a.Length; i++)
+        {
+            atual[0] = i;
+            for (var j = 1; j <= b.Length; j++)
+            {
+                var custo = a[i - 1] == b[j - 1] ? 0 : 1;
+                atual[j] = Math.Min(
+                    Math.Min(atual[j - 1] + 1, anterior[j] + 1),
+                    anterior[j - 1] + custo);
+            }
+
+            (anterior, atual) = (atual, anterior);
+        }
+
+        return anterior[b.Length];
     }
 
     private static ICriterio CriarCriterioClassificacaoPadrao(Guid proprietarioId)
