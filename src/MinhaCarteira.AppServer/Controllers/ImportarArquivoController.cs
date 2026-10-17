@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppServer.Controllers.Base;
@@ -8,6 +9,7 @@ using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Definicao.Interface.Servico;
+using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Definicao.Modelo.Extrato;
 
 namespace MinhaCarteira.AppServer.Controllers;
@@ -28,4 +30,10 @@ public class ImportarArquivoController(IImportarArquivoServico servico, IHttpCon
     public async Task<IActionResult> ImportarMovimentos(List<MovimentoBancario> itens) =>
         await Servico.RespostaServicoAsync<bool>(
             parameters: [itens]);
+
+    [AllowAnonymous]
+    [HttpPost("importar-notificacao")]
+    public async Task<IActionResult> ImportarNotificacao(NotificacaoModel model) =>
+        await Servico.RespostaServicoAsync<MovimentoBancario>(
+            parameters: [model]);
 }
