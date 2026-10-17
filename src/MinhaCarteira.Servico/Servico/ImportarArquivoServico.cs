@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
+using Microsoft.Extensions.Logging;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Helper;
 using MinhaCarteira.Definicao.Interface.Repositorio;
@@ -22,7 +23,8 @@ public class ImportarArquivoServico(
     IContaBancariaServico contaBancariaServico,
     ICategoriaServico categoriaServico,
     IPessoaServico pessoaServico,
-    ICentroClassificacaoServico centroClassificacaoServico)
+    ICentroClassificacaoServico centroClassificacaoServico,
+    ILogger<ImportarArquivoServico> logger)
     : BaseServico<ImportarArquivo, Guid, IImportarArquivoRepositorio>(repositorio), IImportarArquivoServico
 {
     private const string NomeClassificacaoPadrao = "Não classificada";
@@ -85,39 +87,73 @@ public class ImportarArquivoServico(
     public async Task<IRespostaServico<MovimentoBancario>> ImportarNotificacao(NotificacaoModel model)
     {
         if (model == null || string.IsNullOrWhiteSpace(model.Texto))
+        {
+            logger.LogWarning("Importação de notificação ignorada: texto não informado. ContaBancariaId={ContaBancariaId}", model?.ContaBancariaId);
             return new RespostaServico<MovimentoBancario>(null, "O texto da notificação é obrigatório.")
             {
                 BemSucedido = false
             };
+        }
+
+        logger.LogInformation(
+            "Notificação bancária recebida. ProprietarioId={ProprietarioId} ContaBancariaId={ContaBancariaId} Texto={Texto}",
+            model.ProprietarioId, model.ContaBancariaId, model.Texto);
 
         var contaDb = await contaBancariaServico.ObterPorId(model.ContaBancariaId);
         if (contaDb.Dados == null)
+        {
+            logger.LogWarning(
+                "Importação de notificação ignorada: conta bancária não localizada. ContaBancariaId={ContaBancariaId}",
+                model.ContaBancariaId);
             return new RespostaServico<MovimentoBancario>(null, "Conta bancária não localizada.")
             {
                 BemSucedido = false
             };
+        }
 
+        var tipoNotificacao = NotificacaoBancariaParser.Classificar(model.Texto);
         var valor = NotificacaoBancariaParser.ExtrairValor(model.Texto);
+        var descricao = NotificacaoBancariaParser.ExtrairDescricao(model.Texto);
+        var dataMovimento = NotificacaoBancariaParser.ExtrairDataHora(model.Texto);
+
+        logger.LogInformation(
+            "Notificação classificada. Tipo={TipoNotificacao} Valor={Valor} DataMovimento={DataMovimento} Descricao={Descricao}",
+            tipoNotificacao, valor, dataMovimento, descricao);
+
+        if (!NotificacaoBancariaParser.EhImportavel(tipoNotificacao))
+        {
+            logger.LogInformation(
+                "Notificação não importada (não representa compra/pagamento efetuado). Tipo={TipoNotificacao} Valor={Valor} DataMovimento={DataMovimento} Texto={Texto}",
+                tipoNotificacao, valor, dataMovimento, model.Texto);
+            return new RespostaServico<MovimentoBancario>(null, $"Notificação ignorada: {tipoNotificacao}.")
+            {
+                BemSucedido = false
+            };
+        }
+
         if (valor <= 0)
+        {
+            logger.LogWarning("Notificação não importada: valor não identificado. Texto={Texto}", model.Texto);
             return new RespostaServico<MovimentoBancario>(null, "Não foi possível identificar o valor na notificação.")
             {
                 BemSucedido = false
             };
+        }
 
         var criterio = new FiltroBase { AdicionarIncludes = true, ItensPorPagina = 1 };
         criterio.AdicionarFiltroProprietario(model.ProprietarioId.ToString());
         var regras = await regraImportacaoServico.Navegar(criterio);
 
-        var agora = DateTime.Now;
         var movimento = new MovimentoBancario
         {
             ProprietarioId = model.ProprietarioId,
             ContaBancariaId = model.ContaBancariaId,
-            Descricao = NotificacaoBancariaParser.ExtrairDescricao(model.Texto),
+            Descricao = descricao,
             TipoMovimento = NotificacaoBancariaParser.ExtrairTipo(model.Texto),
             Valor = valor,
-            DataMovimento = agora,
-            Competencia = agora.ToString("yyyyMM")
+            DataMovimento = dataMovimento,
+            Competencia = dataMovimento.ToString("yyyyMM"),
+            Observacao = model.Texto
         };
 
         var categoriaPadrao = await ObterCategoriaPadrao(model.ProprietarioId);
@@ -133,6 +169,19 @@ public class ImportarArquivoServico(
         movimento = processados.First();
 
         var itensDb = await movimentoBancarioServico.Incluir(movimento);
+
+        if (itensDb.Dados != null)
+        {
+            logger.LogInformation(
+                "Notificação importada com sucesso. MovimentoBancarioId={MovimentoBancarioId} Tipo={TipoNotificacao} Valor={Valor} DataMovimento={DataMovimento} Descricao={Descricao}",
+                itensDb.Dados.Id, tipoNotificacao, valor, dataMovimento, descricao);
+        }
+        else
+        {
+            logger.LogError(
+                "Falha ao importar notificação. Tipo={TipoNotificacao} Valor={Valor} DataMovimento={DataMovimento} Texto={Texto}",
+                tipoNotificacao, valor, dataMovimento, model.Texto);
+        }
 
         return new RespostaServico<MovimentoBancario>(itensDb.Dados)
         {
