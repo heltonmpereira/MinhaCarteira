@@ -675,7 +675,7 @@ ORDER BY
 
             // Movimentos planejados no dia (apenas parcelas, para o gráfico)
             var parcelas = todasParcelas
-                .Where(p => p.DataPagamento == null && p.Data.Date == dataParcela.Date)
+                .Where(p => p.Data.Date == dataParcela.Date)
                 .ToList();
             decimal movimentosPlanejadosDia = parcelas.Sum(s => s.ValorReal);
 
