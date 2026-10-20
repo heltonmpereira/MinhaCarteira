@@ -324,7 +324,7 @@ public class RelatorioController(IRelatorioRefit servico, IContaBancariaRefit co
     public async Task<IActionResult> EvolucaoSaldoPeriodo(DateTime? dataInicial = null, DateTime? dataFinal = null, Guid? contaBancariaId = null)
     {
         var dataAtual = DateTime.Now;
-        var dataInicialSelecionada = dataInicial ?? DateTime.Now;
+        var dataInicialSelecionada = dataInicial ?? new DateTime(dataAtual.Year, dataAtual.Month, 1);
         var dataFinalSelecionada = dataFinal ?? new DateTime(dataAtual.Year, dataAtual.Month, DateTime.DaysInMonth(dataAtual.Year, dataAtual.Month));
 
         var model = new EvolucaoSaldoPeriodoRelatorioViewModel
