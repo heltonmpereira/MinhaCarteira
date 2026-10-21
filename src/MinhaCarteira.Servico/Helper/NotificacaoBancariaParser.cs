@@ -88,7 +88,7 @@ public static class NotificacaoBancariaParser
     private static readonly string[] TermosCredito =
     [
         "receb", "credit", "credito", "entrada", "deposit", "estorno",
-        "reembolso", "resgate", "rendimento", "salario"
+        "reembolso", "resgate", "rendimento", "salario", "pix", "transferencia"
     ];
 
     /// <summary>
@@ -119,8 +119,10 @@ public static class NotificacaoBancariaParser
     /// <summary>
     /// Indica se a notificação deve gerar um movimento bancário.
     /// </summary>
-    public static bool EhImportavel(TipoNotificacaoBancaria tipo) =>
-        tipo is TipoNotificacaoBancaria.CompraAprovada or TipoNotificacaoBancaria.PagamentoRealizado;
+    public static bool EhImportavel(TipoNotificacaoBancaria tipo) => tipo is 
+            TipoNotificacaoBancaria.CompraAprovada 
+         or TipoNotificacaoBancaria.PagamentoRealizado 
+         or TipoNotificacaoBancaria.Desconhecida;
 
     /// <summary>
     /// Extrai o valor monetário informado no texto da notificação.
@@ -210,7 +212,7 @@ public static class NotificacaoBancariaParser
     public static string ExtrairDescricao(string texto)
     {
         if (string.IsNullOrWhiteSpace(texto))
-            return string.Empty;
+            return "***Não informado";
 
         var match = PadraoDescricaoCompra.Match(texto);
         if (match.Success)
