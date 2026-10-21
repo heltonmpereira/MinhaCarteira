@@ -671,12 +671,14 @@ ORDER BY
             var movimentosDoDia = contas.SelectMany(c => c.Movimentos)
                 .Where(m => !m.Deletado && m.DataMovimento.Date == dataParcela.Date);
 
-            decimal movimentosRealizadosDia = movimentosDoDia.Sum(m => m.ValorReal);
+            decimal? movimentosRealizadosDia = movimentosDoDia.Sum(m => m.ValorReal);
+            if (movimentosRealizadosDia == 0 && dataParcela.Date > DateTime.Now.Date)
+                movimentosRealizadosDia = null;
 
             // Movimentos planejados no dia (apenas parcelas, para o gráfico)
             var parcelas = todasParcelas
-                .Where(p => p.Data.Date == dataParcela.Date)
-                .ToList();
+            .Where(p => p.Data.Date == dataParcela.Date)
+            .ToList();
             decimal movimentosPlanejadosDia = parcelas.Sum(s => s.ValorReal);
 
             // Saldo final do dia - SE a data for <= hoje, usa o saldo real que calculamos!
@@ -693,7 +695,7 @@ ORDER BY
                     .Where(p => p.DataPagamento == null)
                     .Sum(s => s.ValorReal);
 
-                saldoFinalDia = saldoAcumulado + movimentosRealizadosDia + previstosDia;
+                saldoFinalDia = saldoAcumulado + (movimentosRealizadosDia ?? 0) + previstosDia;
             }
 
             var item = new EvolucaoSaldoPeriodoDiario

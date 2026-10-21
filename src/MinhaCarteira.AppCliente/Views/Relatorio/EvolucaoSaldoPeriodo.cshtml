@@ -129,7 +129,7 @@
                                                 <tr>
                                                     <td>@item.Data.ToString("dd/MM/yyyy")</td>
                                                     <td>@item.SaldoInicial.ToString("C2")</td>
-                                                    <td class="@(item.MovimentosRealizados >= 0 ? "text-success" : "text-danger")">@item.MovimentosRealizados.ToString("C2")</td>
+                                                    <td class="@(item.MovimentosRealizados >= 0 ? "text-success" : "text-danger")">@item.MovimentosRealizados?.ToString("C2")</td>
                                                     <td class="@(item.MovimentosPlanejados >= 0 ? "text-success" : "text-danger")">@item.MovimentosPlanejados.ToString("C2")</td>
                                                     <td>@item.SaldoFinal.ToString("C2")</td>
                                                 </tr>
