@@ -429,7 +429,9 @@ ORDER BY
 
             result.Itens.Add(new EvolucaoGastosDiario
             {
-                Data = dia <= diasNoMesAtual ? new DateTime(ano, mes, dia) : new DateTime(dataMesAnterior.Year, dataMesAnterior.Month, dia),
+                Data = dia <= diasNoMesAtual 
+                    ? new DateTime(ano, mes, dia) 
+                    : new DateTime(dataMesAnterior.Year, dataMesAnterior.Month, dia),
                 Dia = dia,
                 GastosMesAtual = gastosDiaAtual,
                 GastosMesAnterior = gastosDiaAnterior,

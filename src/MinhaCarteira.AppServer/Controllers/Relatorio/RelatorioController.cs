@@ -5,11 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.Definicao.Modelo;
-using MinhaCarteira.Definicao.Relatorio.EvolucaoCreditos;
-using MinhaCarteira.Definicao.Relatorio.EvolucaoGastos;
-using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldo;
-using MinhaCarteira.Definicao.Relatorio.EvolucaoSaldoPeriodo;
-using MinhaCarteira.Definicao.Relatorio.GastosPorCategoriaPeriodo;
 using MinhaCarteira.Servico.Relatorio;
 
 namespace MinhaCarteira.AppServer.Controllers.Relatorio;
@@ -42,21 +37,47 @@ public class RelatorioController(IHttpContextAccessor httpContextAccessor, Relat
     [HttpGet("fluxo-de-caixa/{ano:int}")]
     public virtual async Task<IActionResult> FluxoCaixa(int ano = 2024)
     {
-        var retorno = await Servico.FluxoCaixa(ano, new System.Guid(IdUsuarioLogado));
+        var retorno = await Servico.FluxoCaixa(ano, new Guid(IdUsuarioLogado));
 
         return !retorno.BemSucedido ? BadRequest() : Ok(retorno);
     }
 
+    [HttpGet("evolucao-saldo")]
+    public virtual async Task<IActionResult> EvolucaoSaldo(TipoMovimento tipo, int[] anos, int[] meses, string txtContasBancariasIds)
+    {
+        Guid[] contasBancariasIds = ConverterStringGuids(txtContasBancariasIds);
+        var retorno = await Servico.EvolucaoSaldo(
+            tipo,
+            anos,
+            meses,
+            new Guid(IdUsuarioLogado),
+            contasBancariasIds);
+
+        return !retorno.BemSucedido ? BadRequest() : Ok(retorno);
+
+        //if (contaBancariaId.HasValue && (contasBancariasIds == null || contasBancariasIds.Length == 0))
+        //    contasBancariasIds = [contaBancariaId.Value];
+
+
+
+        //var retorno = contasBancariasIds != null && contasBancariasIds.Length > 0
+        //    ? await Servico.Repositorio.GetEvolucaoSaldo(ano, mes, new Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
+        //    : await Servico.Repositorio.GetEvolucaoSaldo(ano, mes, new Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
+        //
+        //return !retorno.Equals(default) ? Ok(new RespostaServico<EvolucaoSaldo>(retorno)) : BadRequest();
+    }
+
+    /*
     [HttpGet("evolucao-saldo/{ano:int}/{mes:int}")]
     public virtual async Task<IActionResult> EvolucaoSaldo(int ano, int mes, Guid? contaBancariaId = null, string txtContasBancariasIds = null)
     {
         Guid[] contasBancariasIds = ConverterStringGuids(txtContasBancariasIds);
         if (contaBancariaId.HasValue && (contasBancariasIds == null || contasBancariasIds.Length == 0))
-            contasBancariasIds = new[] { contaBancariaId.Value };
+            contasBancariasIds = [contaBancariaId.Value];
 
         var retorno = contasBancariasIds != null && contasBancariasIds.Length > 0
-            ? await Servico.Repositorio.GetEvolucaoSaldo(ano, mes, new System.Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
-            : await Servico.Repositorio.GetEvolucaoSaldo(ano, mes, new System.Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
+            ? await Servico.Repositorio.GetEvolucaoSaldo(ano, mes, new Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
+            : await Servico.Repositorio.GetEvolucaoSaldo(ano, mes, new Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
 
         return !retorno.Equals(default) ? Ok(new RespostaServico<EvolucaoSaldo>(retorno)) : BadRequest();
     }
@@ -69,8 +90,8 @@ public class RelatorioController(IHttpContextAccessor httpContextAccessor, Relat
             contasBancariasIds = new[] { contaBancariaId.Value };
 
         var retorno = contasBancariasIds != null && contasBancariasIds.Length > 0
-            ? await Servico.Repositorio.GetEvolucaoGastos(ano, mes, new System.Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
-            : await Servico.Repositorio.GetEvolucaoGastos(ano, mes, new System.Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
+            ? await Servico.Repositorio.GetEvolucaoGastos(ano, mes, new Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
+            : await Servico.Repositorio.GetEvolucaoGastos(ano, mes, new Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
 
         return !retorno.Equals(default) ? Ok(new RespostaServico<EvolucaoGastos>(retorno)) : BadRequest();
     }
@@ -83,8 +104,8 @@ public class RelatorioController(IHttpContextAccessor httpContextAccessor, Relat
             contasBancariasIds = new[] { contaBancariaId.Value };
 
         var retorno = contasBancariasIds != null && contasBancariasIds.Length > 0
-            ? await Servico.Repositorio.GetEvolucaoCreditos(ano, mes, new System.Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
-            : await Servico.Repositorio.GetEvolucaoCreditos(ano, mes, new System.Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
+            ? await Servico.Repositorio.GetEvolucaoCreditos(ano, mes, new Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
+            : await Servico.Repositorio.GetEvolucaoCreditos(ano, mes, new Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
 
         return !retorno.Equals(default) ? Ok(new RespostaServico<EvolucaoCreditos>(retorno)) : BadRequest();
     }
@@ -97,8 +118,8 @@ public class RelatorioController(IHttpContextAccessor httpContextAccessor, Relat
             contasBancariasIds = new[] { contaBancariaId.Value };
 
         var retorno = contasBancariasIds != null && contasBancariasIds.Length > 0
-            ? await Servico.Repositorio.GetEvolucaoSaldoPeriodo(dataInicial, dataFinal, new System.Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
-            : await Servico.Repositorio.GetEvolucaoSaldoPeriodo(dataInicial, dataFinal, new System.Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
+            ? await Servico.Repositorio.GetEvolucaoSaldoPeriodo(dataInicial, dataFinal, new Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
+            : await Servico.Repositorio.GetEvolucaoSaldoPeriodo(dataInicial, dataFinal, new Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
 
         return !retorno.Equals(default) ? Ok(new RespostaServico<EvolucaoSaldoPeriodo>(retorno)) : BadRequest();
     }
@@ -111,9 +132,10 @@ public class RelatorioController(IHttpContextAccessor httpContextAccessor, Relat
             contasBancariasIds = new[] { contaBancariaId.Value };
 
         var retorno = contasBancariasIds != null && contasBancariasIds.Length > 0
-            ? await Servico.Repositorio.GetGastosPorCategoriaPeriodo(dataInicial, dataFinal, new System.Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
-            : await Servico.Repositorio.GetGastosPorCategoriaPeriodo(dataInicial, dataFinal, new System.Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
+            ? await Servico.Repositorio.GetGastosPorCategoriaPeriodo(dataInicial, dataFinal, new Guid(IdUsuarioLogado), contasBancariasIds).ConfigureAwait(false)
+            : await Servico.Repositorio.GetGastosPorCategoriaPeriodo(dataInicial, dataFinal, new Guid(IdUsuarioLogado), contaBancariaId).ConfigureAwait(false);
 
         return !retorno.Equals(default) ? Ok(new RespostaServico<GastosPorCategoriaPeriodo>(retorno)) : BadRequest();
     }
+    */
 }

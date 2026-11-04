@@ -23,6 +23,15 @@ public class RelatorioServico(RelatorioRepositorio repositorio)
         return new RespostaServico<FluxoCaixa>(itens.Item1);
     }
 
+    public async Task<IRespostaServico<EvolucaoSaldo>> EvolucaoSaldo(TipoMovimento tipo, int[] anos, int[] meses, Guid proprietarioId, Guid[] contasBancariasIds = null)
+    {
+
+        return null;
+        //var resultado = await Repositorio.GetEvolucaoSaldo(ano, mes, proprietarioId, contaBancariaId).ConfigureAwait(false);
+        //return new RespostaServico<EvolucaoSaldo>(resultado);
+    }
+
+    /*
     public async Task<IRespostaServico<EvolucaoSaldo>> EvolucaoSaldo(int ano, int mes, Guid proprietarioId, Guid? contaBancariaId = null)
     {
         var resultado = await Repositorio.GetEvolucaoSaldo(ano, mes, proprietarioId, contaBancariaId).ConfigureAwait(false);
@@ -52,4 +61,5 @@ public class RelatorioServico(RelatorioRepositorio repositorio)
         var resultado = await Repositorio.GetGastosPorCategoriaPeriodo(dataInicial, dataFinal, proprietarioId, contaBancariaId).ConfigureAwait(false);
         return new RespostaServico<GastosPorCategoriaPeriodo>(resultado);
     }
+    */
 }
