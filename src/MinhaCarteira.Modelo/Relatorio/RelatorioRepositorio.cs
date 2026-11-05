@@ -347,6 +347,24 @@ ORDER BY
         return result;
     }
 
+    /// <summary>
+    /// Determina o dia do mês em que o movimento deve ser contabilizado no gráfico.
+    /// Movimentos ocorridos antes do primeiro dia da competência são agrupados no dia 1
+    /// e os ocorridos após o último dia são agrupados no último dia do mês.
+    /// </summary>
+    private static int CalcularDiaEfetivo(DateTime dataMovimento, DateTime primeiroDiaMes, int diasNoMes)
+    {
+        var data = dataMovimento.Date;
+
+        if (data < primeiroDiaMes.Date)
+            return 1;
+
+        if (data > primeiroDiaMes.Date.AddDays(diasNoMes - 1))
+            return diasNoMes;
+
+        return data.Day;
+    }
+
     public async Task<EvolucaoGastos> GetEvolucaoGastos(int ano, int mes, Guid proprietarioId, Guid? contaBancariaId = null)
         => await GetEvolucaoGastos(ano, mes, proprietarioId, contaBancariaId.HasValue ? new[] { contaBancariaId.Value } : null);
 
@@ -402,6 +420,16 @@ ORDER BY
         var diasNoMesAnterior = DateTime.DaysInMonth(dataMesAnterior.Year, dataMesAnterior.Month);
         var totalDias = Math.Max(diasNoMesAtual, diasNoMesAnterior);
 
+        // Agrupa os valores por dia efetivo, deslocando movimentos ocorridos fora
+        // do mês de competência para o primeiro ou o último dia do mês.
+        var gastosPorDiaMesAtual = gastosMesAtual
+            .GroupBy(m => CalcularDiaEfetivo(m.DataMovimento, dataMesAtual, diasNoMesAtual))
+            .ToDictionary(g => g.Key, g => g.Sum(m => m.Valor));
+
+        var gastosPorDiaMesAnterior = gastosMesAnterior
+            .GroupBy(m => CalcularDiaEfetivo(m.DataMovimento, dataMesAnterior, diasNoMesAnterior))
+            .ToDictionary(g => g.Key, g => g.Sum(m => m.Valor));
+
         var gastosAcumuladosMesAtual = 0m;
         var gastosAcumuladosMesAnterior = 0m;
 
@@ -411,9 +439,7 @@ ORDER BY
             decimal gastosDiaAtual = 0;
             if (dia <= diasNoMesAtual)
             {
-                gastosDiaAtual = gastosMesAtual
-                    .Where(m => m.DataMovimento.Day == dia)
-                    .Sum(m => m.Valor);
+                gastosPorDiaMesAtual.TryGetValue(dia, out gastosDiaAtual);
                 gastosAcumuladosMesAtual += gastosDiaAtual;
             }
 
@@ -421,9 +447,7 @@ ORDER BY
             decimal gastosDiaAnterior = 0;
             if (dia <= diasNoMesAnterior)
             {
-                gastosDiaAnterior = gastosMesAnterior
-                    .Where(m => m.DataMovimento.Day == dia)
-                    .Sum(m => m.Valor);
+                gastosPorDiaMesAnterior.TryGetValue(dia, out gastosDiaAnterior);
                 gastosAcumuladosMesAnterior += gastosDiaAnterior;
             }
 
@@ -493,6 +517,16 @@ ORDER BY
         var diasNoMesAnterior = DateTime.DaysInMonth(dataMesAnterior.Year, dataMesAnterior.Month);
         var totalDias = Math.Max(diasNoMesAtual, diasNoMesAnterior);
 
+        // Agrupa os valores por dia efetivo, deslocando movimentos ocorridos fora
+        // do mês de competência para o primeiro ou o último dia do mês.
+        var creditosPorDiaMesAtual = creditosMesAtual
+            .GroupBy(m => CalcularDiaEfetivo(m.DataMovimento, dataMesAtual, diasNoMesAtual))
+            .ToDictionary(g => g.Key, g => g.Sum(m => m.Valor));
+
+        var creditosPorDiaMesAnterior = creditosMesAnterior
+            .GroupBy(m => CalcularDiaEfetivo(m.DataMovimento, dataMesAnterior, diasNoMesAnterior))
+            .ToDictionary(g => g.Key, g => g.Sum(m => m.Valor));
+
         var creditosAcumuladosMesAtual = 0m;
         var creditosAcumuladosMesAnterior = 0m;
 
@@ -501,18 +535,14 @@ ORDER BY
             decimal creditosDiaAtual = 0;
             if (dia <= diasNoMesAtual)
             {
-                creditosDiaAtual = creditosMesAtual
-                    .Where(m => m.DataMovimento.Day == dia)
-                    .Sum(m => m.Valor);
+                creditosPorDiaMesAtual.TryGetValue(dia, out creditosDiaAtual);
                 creditosAcumuladosMesAtual += creditosDiaAtual;
             }
 
             decimal creditosDiaAnterior = 0;
             if (dia <= diasNoMesAnterior)
             {
-                creditosDiaAnterior = creditosMesAnterior
-                    .Where(m => m.DataMovimento.Day == dia)
-                    .Sum(m => m.Valor);
+                creditosPorDiaMesAnterior.TryGetValue(dia, out creditosDiaAnterior);
                 creditosAcumuladosMesAnterior += creditosDiaAnterior;
             }
 
