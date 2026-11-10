@@ -24,11 +24,12 @@ public class ListaBaseViewModel<T> : IListaBaseViewModel
     public ListaBaseViewModel(IList<T> itens, ICriterio filtro, int qtdItens)
         : this()
     {
-        var pagina = filtro.Pagina > 0 ? filtro.Pagina : 1;
+        var pagina = filtro != null && filtro.Pagina > 0 ? filtro.Pagina : 1;
+        var tamanhoPagina = filtro != null && filtro.ItensPorPagina > 0 ? filtro.ItensPorPagina: 20;
         Itens = new StaticPagedList<T>(
             subset: itens,
             pageNumber: pagina,
-            pageSize: filtro.ItensPorPagina,
+            pageSize: tamanhoPagina,
             totalItemCount: qtdItens);
     }
     public ListaBaseViewModel(IRespostaPaginadaServico<T> resposta)

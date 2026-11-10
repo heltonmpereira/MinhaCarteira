@@ -152,38 +152,34 @@
                 <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].Arquivo.Conteudo" />
                 <input type="hidden" class="form-control" asp-for="MovimentoBancarioArquivos[i].Arquivo.Extensao" />
             </div>
-            @*             <div class="list-group-item list-group-item-action">
-                <div class="d-flex flex-column">
-                </div>
-            </div>
- *@        }
-        </div>
-    }
+        }
+    </div>
+}
 
-    <div class="row mb-3">
-        <div class="col-auto">
-            <button id="btnAdicionarArquivo" type="button" class="btn btn-primary" title="Adicionar arquivo">
-                <i class="fa-solid fa-lg fa-file-circle-plus"></i>&nbsp;
-            </button>
-        </div>
-
-        <div id="arquivos-container" class="col-11 row">
-            <!-- Aqui os campos de arquivos serão adicionados -->
-        </div>
-        <span asp-validation-for="MovimentoBancarioArquivos" class="@ViewBag.ColorTextError"></span>
+<div class="row mb-3">
+    <div class="col-auto">
+        <button id="btnAdicionarArquivo" type="button" class="btn btn-primary" title="Adicionar arquivo">
+            <i class="fa-solid fa-lg fa-file-circle-plus"></i>&nbsp;
+        </button>
     </div>
 
-    <div class="row mb-3">
-        <div class="col-md-12 mb-3">
-            <label asp-for="Observacao" class="form-label"></label>
-            <textarea asp-for="Observacao" class="form-control"></textarea>
-            <span asp-validation-for="Observacao" class="@ViewBag.ColorTextError"></span>
-        </div>
+    <div id="arquivos-container" class="col-11 row">
+        <!-- Aqui os campos de arquivos serão adicionados -->
     </div>
+    <span asp-validation-for="MovimentoBancarioArquivos" class="@ViewBag.ColorTextError"></span>
+</div>
 
-    <hr />
-    <div class="mb-3">
-        <input asp-accessando-como type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" />
-
-        <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+<div class="row mb-3">
+    <div class="col-md-12 mb-3">
+        <label asp-for="Observacao" class="form-label"></label>
+        <textarea asp-for="Observacao" class="form-control"></textarea>
+        <span asp-validation-for="Observacao" class="@ViewBag.ColorTextError"></span>
     </div>
+</div>
+
+<hr />
+<div class="mb-3">
+    <input asp-accessando-como type="submit" value="Salvar" class="btn @(ViewBag.ClasseBotao)primary" />
+
+    <a class="btn @(ViewBag.ClasseBotao)secondary" asp-action="Index">Cancelar</a>
+</div>

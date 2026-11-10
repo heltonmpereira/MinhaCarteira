@@ -86,7 +86,7 @@
                     </td>
 
                     <td class="align-top p-0">
-                        <a asp-action="AlterarParcela" asp-route-id="@item.Id" class="text-@corDescricao d-block p-0 pt-3">
+                        <a asp-action="AlterarParcela" asp-controller="Agendamento" asp-route-id="@item.Id" class="text-@corDescricao d-block p-0 pt-3">
                             <span class="modernWay1">
                                 @Html.DisplayFor(modelItem => item.Agendamento.Descricao)
                                 @if (item.Agendamento.TipoParcelas == TipoParcelas.Parcelada)

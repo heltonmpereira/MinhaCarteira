@@ -110,7 +110,7 @@
                     </td>
 
                     <td class="align-middle p-0">
-                        <a asp-action="AlterarParcela" asp-route-id="@item.Id" class="text-@corDescricao d-block p-0 py-2">
+                        <a asp-action="AlterarParcela" asp-controller="Agendamento" asp-route-id="@item.Id" class="text-@corDescricao d-block p-0 py-2">
                             <span>
                                 @Html.DisplayFor(modelItem => item.Agendamento.Descricao)
                                 @if (item.Agendamento.TipoParcelas == TipoParcelas.Parcelada)

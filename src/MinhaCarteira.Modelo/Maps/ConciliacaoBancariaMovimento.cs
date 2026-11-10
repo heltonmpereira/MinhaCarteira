@@ -14,7 +14,7 @@ public class ConciliacaoBancariaMovimentoMap : BaseMap<ConciliacaoBancariaMovime
 
         builder
             .HasOne(o => o.MovimentoBancario)
-            .WithOne(m => m.ConciliacaoBancaria)
+            .WithOne(m => m.ConciliacaoBancariaMovimento)
             .HasForeignKey<MovimentoBancario>()
             .OnDelete(DeleteBehavior.SetNull);
     }

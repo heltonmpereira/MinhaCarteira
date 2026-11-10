@@ -95,7 +95,7 @@
                     </td>
 
                     <td class="align-top p-0">
-                        <a asp-action="Alterar" asp-route-id="@item.Id" class="text-@ViewBag.ThemeInverse d-block p-0 pt-3">
+                        <a asp-action="Alterar" asp-controller="MovimentoBancario" asp-route-id="@item.Id" class="text-@ViewBag.ThemeInverse d-block p-0 pt-3">
                             <span class="modernWay1">
                                 @Html.DisplayFor(modelItem => item.Descricao)
                             </span>

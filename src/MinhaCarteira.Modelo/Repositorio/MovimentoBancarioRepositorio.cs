@@ -29,7 +29,25 @@ public class MovimentoBancarioRepositorio(IDbContext contexto, IConfiguration _c
             .Include(i => i.TransferenciaBancaria.Origem.ContaBancaria)
             .Include(i => i.TransferenciaBancaria.Destino.ContaBancaria)
             .Include(i => i.MovimentoBancarioArquivos)
-                .ThenInclude(ti => ti.Arquivo);
+                .ThenInclude(ti => ti.Arquivo)
+            .Include(i => i.ConciliacaoBancariaMovimento)
+                .ThenInclude(ti => ti.ConciliacaoBancaria)
+                    .ThenInclude(ti => ti.AgendamentoParcelas)
+                        .ThenInclude(ti => ti.AgendamentoParcela)
+                            .ThenInclude(ti => ti.Pessoa)
+            .Include(i => i.ConciliacaoBancariaMovimento)
+                .ThenInclude(ti => ti.ConciliacaoBancaria)
+                    .ThenInclude(ti => ti.AgendamentoParcelas)
+                        .ThenInclude(ti => ti.AgendamentoParcela)
+                            .ThenInclude(ti => ti.Agendamento)
+                                .ThenInclude(ti => ti.CentroClassificacao)
+            .Include(i => i.ConciliacaoBancariaMovimento)
+                .ThenInclude(ti => ti.ConciliacaoBancaria)
+                    .ThenInclude(ti => ti.AgendamentoParcelas)
+                        .ThenInclude(ti => ti.AgendamentoParcela)
+                            .ThenInclude(ti => ti.Agendamento)
+                                .ThenInclude(ti => ti.Categoria)
+                                    .ThenInclude(ti => ti.Icone);
 
     }
 

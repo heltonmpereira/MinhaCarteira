@@ -33,7 +33,9 @@ public class AgendamentoParcelaRepositorio(IDbContext contexto)
             .Include(i => i.ConciliacaoBancariaAgendamentoParcela)
                 .ThenInclude(ti => ti.ConciliacaoBancaria)
                     .ThenInclude(ti => ti.Movimentos)
-                        .ThenInclude(ti => ti.MovimentoBancario);
+                        .ThenInclude(ti => ti.MovimentoBancario)
+                            .ThenInclude(ti => ti.Categoria)
+                                .ThenInclude(ti => ti.Icone);
     }
 
     public async Task<bool> ConciliarParcelasAPartirDashboardMonitor()

@@ -1,4 +1,6 @@
-﻿@model MinhaCarteira.AppCliente.ViewModel.AgendamentoParcelaViewModel
+﻿@using MinhaCarteira.AppCliente.ViewModel
+@using MinhaCarteira.AppCliente.ViewModel.Base
+@model MinhaCarteira.AppCliente.ViewModel.AgendamentoParcelaViewModel
 
 @{
     ViewData["Title"] = "Agendamento";
@@ -19,6 +21,11 @@
             </script>
         }
     }
+
+    var isMobile = ((BrowserViewModel)ViewBag.BrowserInfo).IsMobile;
+    var templateMovimentoBancario = isMobile
+        ? "MovimentoBancarioTabelaExtratoMovel"
+        : "MovimentoBancarioTabelaExtrato";
 }
 
 <form asp-action="AlterarParcela" method="post" class="col-11 px-sm-3 px-md-0 pt-4 mx-auto">
@@ -43,3 +50,31 @@
 
     @Html.EditorForModel()
 </form>
+
+                
+@if (Model.ConciliacaoBancariaAgendamentoParcela != null)
+{
+    var movimentos = Model.ConciliacaoBancariaAgendamentoParcela
+        .ConciliacaoBancaria
+        .Movimentos
+        .Select(s => s.MovimentoBancario)
+        .ToList();
+
+    var pagina = new X.PagedList.StaticPagedList<MovimentoBancarioViewModel>(
+        movimentos, 1, movimentos.Count, movimentos.Count);
+
+    var lista = new ListaMovimentoBancarioViewModel
+    {
+        Itens = pagina
+    };
+
+    <div class="row bg-body-secondary p-2 col-sm-11 px-sm-3 mx-auto ">
+        <span class="form-label col-12 text-success">
+            <i class="fa fa-handshake"></i>
+            Conciliado em @Model.ConciliacaoBancariaAgendamentoParcela.ConciliacaoBancaria.DataCadastro.ToString("dd/MM/yyyy HH:mm")
+        </span>
+
+    </div>
+
+    @Html.DisplayFor(model => lista, templateMovimentoBancario)
+}
