@@ -56,4 +56,18 @@ public class MovimentoBancarioServico(IMovimentoBancarioRepositorio repositorio,
         return retorno;
     }
 
+    public async Task<IRespostaServico<int>> RemoverTransferenciaBancaria(Guid movimentoId, Guid transferenciaId)
+    {
+        var resposta = await Repositorio.RemoverTransferenciaBancaria(transferenciaId);
+
+        var retorno = new RespostaServico<int>
+        {
+            BemSucedido = resposta > 0,
+            Mensagem = resposta > 0
+                ? "Transferencia bancária removida com sucesso"
+                : "Falha ao remover transferencia bancaria."
+        };
+
+        return retorno;
+    }
 }

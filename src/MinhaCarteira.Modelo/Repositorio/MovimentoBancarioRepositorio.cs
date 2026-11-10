@@ -222,4 +222,33 @@ public class MovimentoBancarioRepositorio(IDbContext contexto, IConfiguration _c
 
         return retorno;
     }
+
+    public async Task<int> RemoverTransferenciaBancaria(Guid transferenciaId)
+    {
+        var transfDB = await Contexto
+            .TransferenciasBancarias
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Id == transferenciaId);
+
+        var movOrigem = await Contexto
+            .MovimentosBancarios
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Id == transfDB.MovimentoOrigemId);
+
+        var movDestino = await Contexto
+            .MovimentosBancarios
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Id == transfDB.MovimentoDestinoId);
+
+        movOrigem.TransferenciaBancariaId = null;
+        movDestino.TransferenciaBancariaId = null;
+
+        Contexto.MovimentosBancarios.Update(movOrigem);
+        Contexto.MovimentosBancarios.Update(movDestino);
+        Contexto.TransferenciasBancarias.Remove(transfDB);
+
+        var linhasAfetadas = await Contexto.SaveChangesAsync();
+
+        return linhasAfetadas;
+    }
 }

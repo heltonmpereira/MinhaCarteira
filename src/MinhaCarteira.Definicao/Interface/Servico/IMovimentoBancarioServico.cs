@@ -14,4 +14,5 @@ public interface IMovimentoBancarioServico : IServico<MovimentoBancario, Guid, I
     Task<IRespostaServico<int>> IncluirRange(List<MovimentoBancario> item);
     Task<IRespostaServico<bool>> Transferir(MovimentoBancarioTransferencia item);
     Task<IRespostaServico<int>> ConciliarMovimento(Guid proprietarioId, Guid idMovimento, string idParcelas);
+    Task<IRespostaServico<int>> RemoverTransferenciaBancaria(Guid movimentoId, Guid transferenciaId);
 }

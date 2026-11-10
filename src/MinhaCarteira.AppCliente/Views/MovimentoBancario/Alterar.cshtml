@@ -56,7 +56,8 @@
         </div>
 
         <div class="col-4 align-content-center text-end p-3">
-            <a id="btnRemover" class="btn @(ViewBag.ClasseBotao)danger d-inline-block py-3 px-2" asp-action="RemoverTransferenciaBancaria">
+            <a id="btnRemover" class="btn @(ViewBag.ClasseBotao)danger d-inline-block py-3 px-2" 
+                asp-action="RemoverTransferenciaBancaria" asp-route-movimentoId="@Model.Id" asp-route-transferenciaId="@Model.TransferenciaBancariaId">
                 <i class="fa fa-trash"></i>
                 <span class="d-md-inline">Remover</span>
             </a>
