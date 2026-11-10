@@ -95,6 +95,7 @@ public class MovimentoBancarioViewModel : BaseViewModel, IEntidade<Guid>
     //public MovimentoBancarioTransferenciaViewModel TransferenciaBancaria { get; set; }
 
     public Guid? ConciliacaoBancariaMovimentoId { get; set; }
+    public ConciliacaoBancariaMovimentoViewModel ConciliacaoBancariaMovimento { get; set; }
 
     public Guid ProprietarioId { get; set; }
 

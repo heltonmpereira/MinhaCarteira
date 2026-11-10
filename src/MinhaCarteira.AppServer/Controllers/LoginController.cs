@@ -80,23 +80,6 @@ public class LoginController(ILoginServico servico, IHttpContextAccessor httpCon
             parameters: [id, true]);
 
         return ConfrontarUsuarioLogadoEProprietario<Usuario>(resposta);
-        //if (resposta is OkObjectResult retornoOk)
-        //{
-        //    var resp = retornoOk.Value as IRespostaServico<Usuario>;
-        //    if (resp.Dados.Id != new Guid(IdUsuarioLogado))
-        //    {
-        //        var retorno = new RespostaServico<Usuario>(null, "Falha ao validar informações do usuário")
-        //        {
-        //            BemSucedido = false,
-        //            StatusCode = HttpStatusCode.BadRequest,
-        //            MensagemErro = "Falha ao validar informações do usuário"
-        //        };
-
-        //        return BadRequest(retorno);
-        //    }
-        //}
-
-        //return resposta;
     }
 
     [HttpPut]

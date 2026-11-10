@@ -48,7 +48,7 @@ public class MovimentoBancario : IEntidade<Guid>
     public ImportarArquivo ImportarArquivo { get; set; }
 
     public Guid? ConciliacaoBancariaMovimentoId { get; set; }
-    public ConciliacaoBancariaMovimento ConciliacaoBancaria { get; set; }
+    public ConciliacaoBancariaMovimento ConciliacaoBancariaMovimento { get; set; }
 
     public bool Deletado { get; set; }
 

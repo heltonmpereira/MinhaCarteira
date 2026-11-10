@@ -116,6 +116,14 @@ function gravarEstadoMenu(valor) {
     document.cookie = "__cokSideBar=" + valor + ";secure;samesite=strict;path=/;expires=" + daysToExpire;
 }
 
+let btnRemover = document.getElementById('btnRemover');
+if (btnRemover !== null) {
+    btnRemover.addEventListener('click', (e) => {
+        if (!confirm('Você tem certeza que deseja remover este registro?'))
+            e.preventDefault();
+    });
+}
+
 $(document).on('shown.lte.pushmenu', function (configMenu) {
     //console.log("sidebar-open");
     gravarEstadoMenu("sidebar-open");

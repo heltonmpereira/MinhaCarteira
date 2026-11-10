@@ -28,4 +28,7 @@ public interface IMovimentoBancarioRefit
 
     [Post("/conciliar-movimento")]
     Task<RespostaServico<int>> ConciliarMovimento(Guid idMovimento, string idParcelas);
+
+    [Post("/remover-transferencia-bancaria")]
+    Task<RespostaServico<int>> RemoverTransferenciaBancaria(Guid movimentoId, Guid transferenciaId);
 }

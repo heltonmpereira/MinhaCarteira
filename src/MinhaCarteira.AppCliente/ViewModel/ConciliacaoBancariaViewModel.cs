@@ -7,6 +7,7 @@ public class ConciliacaoBancariaViewModel
 {
     public Guid Id { get; set; }
     public DateTime DataCadastro { get; set; }
+    public bool Deletado { get; set; }
 
     public Guid ProprietarioId { get; set; }
     public UsuarioViewModel Proprietario { get; set; }

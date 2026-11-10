@@ -10,4 +10,5 @@ public interface IMovimentoBancarioRepositorio : IRepositorio<MovimentoBancario,
 {
     Task<TransferenciaBancaria> CadastrarTransferencia(TransferenciaBancaria item);
     Task<int> IncluirRange(List<MovimentoBancario> itens);
+    Task<int> RemoverTransferenciaBancaria(Guid transferenciaId);
 }

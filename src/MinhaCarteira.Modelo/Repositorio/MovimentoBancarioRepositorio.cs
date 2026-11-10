@@ -29,7 +29,25 @@ public class MovimentoBancarioRepositorio(IDbContext contexto, IConfiguration _c
             .Include(i => i.TransferenciaBancaria.Origem.ContaBancaria)
             .Include(i => i.TransferenciaBancaria.Destino.ContaBancaria)
             .Include(i => i.MovimentoBancarioArquivos)
-                .ThenInclude(ti => ti.Arquivo);
+                .ThenInclude(ti => ti.Arquivo)
+            .Include(i => i.ConciliacaoBancariaMovimento)
+                .ThenInclude(ti => ti.ConciliacaoBancaria)
+                    .ThenInclude(ti => ti.AgendamentoParcelas)
+                        .ThenInclude(ti => ti.AgendamentoParcela)
+                            .ThenInclude(ti => ti.Pessoa)
+            .Include(i => i.ConciliacaoBancariaMovimento)
+                .ThenInclude(ti => ti.ConciliacaoBancaria)
+                    .ThenInclude(ti => ti.AgendamentoParcelas)
+                        .ThenInclude(ti => ti.AgendamentoParcela)
+                            .ThenInclude(ti => ti.Agendamento)
+                                .ThenInclude(ti => ti.CentroClassificacao)
+            .Include(i => i.ConciliacaoBancariaMovimento)
+                .ThenInclude(ti => ti.ConciliacaoBancaria)
+                    .ThenInclude(ti => ti.AgendamentoParcelas)
+                        .ThenInclude(ti => ti.AgendamentoParcela)
+                            .ThenInclude(ti => ti.Agendamento)
+                                .ThenInclude(ti => ti.Categoria)
+                                    .ThenInclude(ti => ti.Icone);
 
     }
 
@@ -203,5 +221,34 @@ public class MovimentoBancarioRepositorio(IDbContext contexto, IConfiguration _c
         var retorno = await Contexto.MySaveChangesWithoutTriggersAsync();
 
         return retorno;
+    }
+
+    public async Task<int> RemoverTransferenciaBancaria(Guid transferenciaId)
+    {
+        var transfDB = await Contexto
+            .TransferenciasBancarias
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Id == transferenciaId);
+
+        var movOrigem = await Contexto
+            .MovimentosBancarios
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Id == transfDB.MovimentoOrigemId);
+
+        var movDestino = await Contexto
+            .MovimentosBancarios
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Id == transfDB.MovimentoDestinoId);
+
+        movOrigem.TransferenciaBancariaId = null;
+        movDestino.TransferenciaBancariaId = null;
+
+        Contexto.MovimentosBancarios.Update(movOrigem);
+        Contexto.MovimentosBancarios.Update(movDestino);
+        Contexto.TransferenciasBancarias.Remove(transfDB);
+
+        var linhasAfetadas = await Contexto.SaveChangesAsync();
+
+        return linhasAfetadas;
     }
 }

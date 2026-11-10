@@ -301,4 +301,14 @@ public class MovimentoBancarioController(
 
         return File(bytes, arquivo.MimeType ?? "application/octet-stream");
     }
+
+    [HttpGet]
+    public async Task<IActionResult> RemoverTransferenciaBancaria(Guid movimentoId, Guid transferenciaId)
+    {
+        var view = await this.ChamarServicoView<MovimentoBancarioViewModel, Guid, IMovimentoBancarioRefit>(
+            new object[] { movimentoId, transferenciaId },
+            action: "Alterar");
+
+        return RedirectToAction(nameof(Alterar), new { id = movimentoId });
+    }
 }

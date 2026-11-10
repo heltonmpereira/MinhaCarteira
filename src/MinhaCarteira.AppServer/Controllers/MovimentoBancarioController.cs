@@ -23,10 +23,15 @@ public class MovimentoBancarioController(IMovimentoBancarioServico servico, IHtt
             .RespostaServicoAsync<bool>([item]);
     }
 
-
     [Route("conciliar-movimento")]
     [HttpPost]
     public async Task<IActionResult> ConciliarMovimento(Guid idMovimento, string idParcelas) =>
         await Servico.RespostaServicoAsync<int>(
             parameters: [new Guid(IdUsuarioLogado), idMovimento, idParcelas]);
+
+    [Route("remover-transferencia-bancaria")]
+    [HttpPost]
+    public async Task<IActionResult> RemoverTransferenciaBancaria(Guid movimentoId, Guid transferenciaId) =>
+        ConfrontarUsuarioLogadoEProprietario<int>(await Servico.RespostaServicoAsync<int>(
+            parameters: [movimentoId, transferenciaId]));
 }
