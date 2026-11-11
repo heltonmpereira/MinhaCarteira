@@ -574,7 +574,7 @@ ORDER BY
         // Obtém as contas bancárias ativas, com todos os movimentos
         var contasQuery = CarteiraContexto.ContasBancarias
             .Include(c => c.Movimentos)
-            .Where(c => !c.Deletado && c.ProprietarioId == proprietarioId);
+            .Where(c => c.ProprietarioId == proprietarioId);
 
         if (contasBancariasIds != null && contasBancariasIds.Length > 0)
         {
