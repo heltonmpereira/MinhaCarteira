@@ -61,6 +61,47 @@
             $("#MetaDados").val(contaBancariaId);
             $("#formBusca").trigger("submit");
         });
+
+        function getIndex(ele) {
+            var index = 0;
+            var texto = "";
+            for (i = 0; i < ele.length; i++) {
+                if (ele[i].innerText.indexOf("R$") > 0) {
+                    texto = ele[i].innerText
+                }
+            };
+
+            $("#lstContas > li").each(function () {
+                var textoElemento = $(this)[0].innerText;
+                if (textoElemento === texto) {
+                    index = $(this).index();
+                    return index;
+                }
+            });
+
+            return index;
+        }
+
+        function scrollToElement(ele) {
+            var index = getIndex(ele);
+            var larguraElemento = ele.width();
+            var larguraDiv = $('#divContas').width();
+
+            // console.log(index);
+            // console.log(larguraElemento);
+            // console.log(larguraDiv);
+            // console.log(larguraElemento * index);
+
+            if (larguraElemento * index > larguraDiv / 2) {
+                $('#divContas').animate({
+                    scrollLeft: larguraElemento * index
+                }, 100, 'linear');
+            }
+        }
+
+        $(document).ready(function () {
+            scrollToElement($('li.active'));
+        });
     </script>
 }
 
@@ -107,8 +148,8 @@ else
         </button>
 
         <div class="collapse navbar-collapse col-11 mx-auto p-0" id="navContas">
-            <div class="overflow-auto">
-                <ul class="navbar-nav">
+            <div id="divContas" class="overflow-auto">
+                <ul id="lstContas" class="navbar-nav">
                     @foreach (var contaBancaria in Model.Contas)
                     {
                         var classe = contaBancaria.Id == Model.ContaSelecionada?.Id
