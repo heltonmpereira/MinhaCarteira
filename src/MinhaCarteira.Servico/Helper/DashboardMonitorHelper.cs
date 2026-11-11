@@ -64,15 +64,15 @@ public static class DashboardMonitorHelper
     {
         criterio.ItensPorPagina = 1;
         criterio.AdicionarIncludes = true;
-        criterio.GruposFiltro.Add(
-            new GrupoFiltro("Contas", [
-                new FiltroOpcao(){
-                NomePropriedade = "ExibirNaTelaInicial",
-                Operador = TipoOperadorBusca.Igual,
-                    Valor = true
-            }
-            ])
-        );
+        //criterio.GruposFiltro.Add(
+        //    new GrupoFiltro("Contas", [
+        //        new FiltroOpcao(){
+        //        NomePropriedade = "ExibirNaTelaInicial",
+        //        Operador = TipoOperadorBusca.Igual,
+        //            Valor = true
+        //    }
+        //    ])
+        //);
         var respContasBancarias = await contaBancariaServico.Navegar(criterio);
 
         criterio.GruposFiltro.RemoveAll(r => r.NomeGrupoKey.Equals("Contas"));

@@ -107,20 +107,20 @@ else
 
                         <td class="p-2 align-content-center w150px">
                             <div class="btn-group" role="group" aria-label="Botões de ação">
-                                <a title="Subir na ordem" class="btn btn@(classBotao)-secondary btn-acao p-0 pt-1 pb-1 @classBotaoSubir" asp-action="IncrementarPrioridade" asp-route-id="@item.Id">
+                                @*<a title="Subir na ordem" class="btn btn@(classBotao)-secondary btn-acao p-0 pt-1 pb-1 @classBotaoSubir" asp-action="IncrementarPrioridade" asp-route-id="@item.Id">
                                     <i class="fa-solid fa-lg fa-arrow-up"></i>
                                 </a>
                                 <a title="Descer na ordem" class="btn btn@(classBotao)-secondary btn-acao p-0 pt-1 pb-1 @classBotaoDescer" asp-action="DecrementarPrioridade" asp-route-id="@item.Id">
                                     <i class="fa-solid fa-lg fa-arrow-down"></i>
-                                </a>
+                                </a>*@
 
                                 <a title="Alterar" class="btn btn@(classBotao)-primary btn-acao p-0 pt-1 pb-1" asp-action="Alterar" asp-route-id="@item.Id">
                                     <i class="fa-solid fa-lg fa-pen-to-square"></i>
                                 </a>
 
-                                <a title="Detalhes" class="btn btn@(classBotao)-success btn-acao p-0 pt-1 pb-1" asp-action="Detalhes" asp-route-id="@item.Id">
+                                @*<a title="Detalhes" class="btn btn@(classBotao)-success btn-acao p-0 pt-1 pb-1" asp-action="Detalhes" asp-route-id="@item.Id">
                                     <i class="fa-solid fa-lg fa-info-circle"></i>
-                                </a>
+                                </a>*@
 
                                 @if (!item.Deletado)
                                 {
