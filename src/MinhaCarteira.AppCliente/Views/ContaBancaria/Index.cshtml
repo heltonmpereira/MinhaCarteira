@@ -42,6 +42,9 @@
 }
 else
 {
+    var total = (decimal)0.00;
+    var totalSaidas = (decimal)0.00;
+    var totalEntradas = (decimal)0.00;
     var tableTheme = $"table-{ViewBag.Theme}";
     var totalItensNaoDeletados = Model.Itens.Count(w => !w.Deletado);
 
@@ -72,6 +75,12 @@ else
             <tbody class="table-group-divider" data-reorder-url="@Url.Action("Reordenar", "ContaBancaria")">
                 @foreach (var item in Model.Itens)
                 {
+                    total += item.ValorSaldoAtual;
+                    if (item.ValorSaldoAtual >= 0)
+                        totalEntradas += item.ValorSaldoAtual;
+                    else
+                        totalSaidas += item.ValorSaldoAtual;
+
                     var classDesabilitado = item.Deletado ? "table-secondary fst-italic table-danger" : "";
                     var classBotaoSubir = item.Deletado || item.Ordem == 1 ? "disabled" : "";
                     var classBotaoDescer = item.Deletado || item.Ordem == totalItensNaoDeletados ? "disabled" : "";
@@ -143,6 +152,42 @@ else
                     </tr>
                 }
             </tbody>
+
+            <tfoot class="table-secondary">
+                @{
+                    var corFontRodape = total > 0
+                    ? "text-primary"
+                    : total < 0
+                    ? "text-danger"
+                    : "text-secondary";
+                }
+
+                <tr>
+                    <td class="p-1 text-center" colspan="6">
+                        <div class="d-flex p-0">
+                            <div class="col">
+                                Receitas
+                                <small class="d-block text-nowrap @(totalEntradas > 0 ? "text-primary" : "text-secondary")">
+                                    @totalEntradas.ToString("c")
+                                </small>
+                            </div>
+                            <div class="col">
+                                Despesas
+                                <small class="d-block text-nowrap @(totalSaidas > 0 ? "text-danger" : "text-secondary")">
+                                    @totalSaidas.ToString("c")
+                                </small>
+                            </div>
+                            <div class="col">
+                                Total
+                                <small class="d-block text-nowrap fw-bold @corFontRodape">
+                                    @total.ToString("c")
+                                </small>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+
         </table>
     </div>
 
