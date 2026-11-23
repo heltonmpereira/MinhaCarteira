@@ -44,3 +44,12 @@ ou
 
 Usar variáveis de ambiente com separador `__`:
 `Jwt__Segredo`, `ConnectionStrings__Default`.
+
+- Abra o IIS Manager e selecione o site da API (não o servidor).
+- Duplo clique em Configuration Editor .
+- Em Section , escolha`system.webServer/aspNetCore` .
+- Clique na linha`environmentVariables` → botão`...` → Add :
+- `name` :`Jwt__Segredo`
+- `value` : o mesmo valor que está no seu User Secrets / no Render
+- Apply (fecha o dialog).
+- Recicle o Application Pool.
