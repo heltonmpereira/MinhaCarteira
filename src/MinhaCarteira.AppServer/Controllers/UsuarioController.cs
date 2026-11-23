@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppServer.Controllers.Base;
+using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
@@ -11,6 +12,7 @@ using MinhaCarteira.Servico.Helper;
 
 namespace MinhaCarteira.AppServer.Controllers;
 
+[EscritaApenasAdmin(EscritaApenasAdminAttribute.PapeisAdministrador)]
 public class UsuarioController(IUsuarioServico servico, IHttpContextAccessor httpContextAccessor)
     : BaseApiController<Usuario, Guid, IUsuarioServico, IUsuarioRepositorio>(servico, httpContextAccessor)
 {

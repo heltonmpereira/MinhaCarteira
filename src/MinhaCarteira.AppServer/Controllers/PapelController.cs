@@ -11,6 +11,7 @@ using MinhaCarteira.Definicao.Interface.Servico;
 
 namespace MinhaCarteira.AppServer.Controllers;
 
+[EscritaApenasAdmin(EscritaApenasAdminAttribute.PapeisAdministrador)]
 public class PapelController(IPapelServico servico, IHttpContextAccessor httpContextAccessor)
     : BaseApiController<Papel, Guid, IPapelServico, IPapelRepositorio>(servico, httpContextAccessor)
 {

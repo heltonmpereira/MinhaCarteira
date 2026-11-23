@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 using MinhaCarteira.AppServer.Controllers.Base;
+using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
@@ -8,6 +9,7 @@ using MinhaCarteira.Definicao.Interface.Servico;
 
 namespace MinhaCarteira.AppServer.Controllers;
 
+[EscritaApenasAdmin(EscritaApenasAdminAttribute.PapeisAdministrador)]
 public class InstituicaoFinanceiraController(
     IInstituicaoFinanceiraServico servico,
     IHttpContextAccessor httpContextAccessor)

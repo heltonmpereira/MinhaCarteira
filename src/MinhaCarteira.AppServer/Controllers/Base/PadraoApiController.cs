@@ -21,6 +21,7 @@ public class PadraoApiController<TServico> : ControllerBase
 {
     protected TServico Servico { get; }
     protected string IdUsuarioLogado { get; }
+    protected virtual string PropriedadeValidacaoPosse => "ProprietarioId";
     protected virtual TipoFiltroRegistroEnum FiltroRegistros { get; set; } = TipoFiltroRegistroEnum.FiltrarPorUsuarioLogado;
     public IHttpContextAccessor HttpContextAccessor { get; }
 
@@ -68,8 +69,10 @@ public class PadraoApiController<TServico> : ControllerBase
             item.SetValue(nomePropriedade, IdUsuarioLogado);
     }
 
-    protected IActionResult ConfrontarUsuarioLogadoEProprietario<TEntidade>(IActionResult respostaServico, string nomePropriedade = "ProprietarioId")
+    protected IActionResult ConfrontarUsuarioLogadoEProprietario<TEntidade>(IActionResult respostaServico, string nomePropriedade = null)
     {
+        nomePropriedade ??= PropriedadeValidacaoPosse;
+
         if (respostaServico is OkObjectResult retornoOk)
         {
             var resp = retornoOk.Value as IRespostaServico<TEntidade>;

@@ -26,7 +26,7 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
             parameters: [id, false],
             nomeMetodo: "ObterPorId");
 
-        return resposta is OkObjectResult;
+        return ConfrontarUsuarioLogadoEProprietario<TEntidade>(resposta) is OkObjectResult;
     }
 
     [HttpGet]
