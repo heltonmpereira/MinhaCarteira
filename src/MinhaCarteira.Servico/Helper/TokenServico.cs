@@ -11,8 +11,6 @@ namespace MinhaCarteira.Servico.Helper;
 
 public static class TokenServico
 {
-    //public const string Segredo = "fedaf7d8863b48e197b9287d492b708e";
-
     public static string GerarToken(UsuarioToken dadosUsuario, Guid organizacaoId, string segredo)
     {
         var claims = new List<Claim> {
@@ -26,10 +24,10 @@ public static class TokenServico
             .Select(s => new Claim(ClaimTypes.Role, s.Trim().ToLower())));
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(segredo);
+        var key = Encoding.UTF8.GetBytes(segredo);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            IssuedAt = DateTime.Now.AddMonths(1),
+            IssuedAt = DateTime.UtcNow,
             Expires = dadosUsuario.DataExpericaoToken,
             Subject = new ClaimsIdentity(claims),
             SigningCredentials = new SigningCredentials(

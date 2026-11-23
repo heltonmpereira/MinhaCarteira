@@ -89,7 +89,6 @@ public static class Utils
         aes.GenerateIV();
 
         using var arquivoStream = new FileStream(caminhoCompleto, FileMode.Create);
-        await arquivoStream.WriteAsync(aes.Key);
         await arquivoStream.WriteAsync(aes.IV);
 
         using var cryptoStream = new CryptoStream(arquivoStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
