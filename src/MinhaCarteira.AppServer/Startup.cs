@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
@@ -14,6 +15,7 @@ using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Modelo.Data;
 using Newtonsoft.Json;
+using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace MinhaCarteira.AppServer;
@@ -111,7 +113,38 @@ public class Startup(IConfiguration configuration)
         });
 
         if (env.IsDevelopment())
+        {
             app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseExceptionHandler(errorApp =>
+            {
+                errorApp.Run(async ctxt =>
+                {
+                    var feature = ctxt.Features.Get<IExceptionHandlerFeature>();
+                    if (feature?.Error != null)
+                        Log.Error(
+                            feature.Error,
+                            "Erro não tratado em {Metodo} {Path}",
+                            ctxt.Request.Method, ctxt.Request.Path);
+
+                    ctxt.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    ctxt.Response.ContentType = "application/json";
+
+                    var resposta = new RespostaServico<object>(
+                        dados: null,
+                        mensagem: "Ocorreu um erro inesperado. Contate o suporte técnico.")
+                    {
+                        BemSucedido = false,
+                        MensagemErro = "Ocorreu um erro inesperado. Contate o suporte técnico.",
+                        StatusCode = System.Net.HttpStatusCode.InternalServerError
+                    };
+
+                    await ctxt.Response.WriteAsync(JsonConvert.SerializeObject(resposta));
+                });
+            });
+        }
 
         Debug.WriteLine(Configuration["SwaggerEndpoint"]);
         app.UseSwagger();

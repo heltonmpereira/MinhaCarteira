@@ -8,11 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using MinhaCarteira.Definicao.Interface.Servico.Resposta;
 using MinhaCarteira.Definicao.Modelo;
+using Serilog;
 
 namespace MinhaCarteira.AppServer.Helper;
 
 public static class ServicoHelper
 {
+    private const string MensagemErroGenerico = "Ocorreu um erro interno ao processar a solicitação.";
+
     public static OkResult Ok() => new();
     public static BadRequestResult BadRequest() => new();
     public static StatusCodeResult StatusCode([ActionResultStatusCode] int statusCode) => new(statusCode);
@@ -64,9 +67,16 @@ public static class ServicoHelper
         }
         catch (Exception e)
         {
+            Log.Error(e,
+                "Erro ao executar '{Metodo}' no serviço '{Servico}'.",
+                nomeMetodo, servico.GetType().Name);
+
             resposta = StatusCode(
                 (int)HttpStatusCode.InternalServerError,
-                new RespostaServico<Exception>(e, e.Message));
+                new RespostaServico<Exception>(null, MensagemErroGenerico) {
+                    BemSucedido = false,
+                    MensagemErro = MensagemErroGenerico
+                });
         }
 
         resposta?.DefinirCodigoStatus<TRetorno>();
@@ -115,14 +125,22 @@ public static class ServicoHelper
         }
         catch (Exception e)
         {
+            Log.Error(e,
+                "Erro ao executar '{Metodo}' no serviço '{Servico}'.",
+                nomeMetodo, servico.GetType().Name);
+
             resposta = StatusCode(
                 (int)HttpStatusCode.InternalServerError,
                 new RespostaPaginadaServico<Exception>(
-                    dados: [e],
+                    dados: null,
                     numeroPagina: 0,
                     itensPorPagina: 1,
                     totalRegistros: 0,
-                    mensagem: e.Message));
+                    mensagem: MensagemErroGenerico)
+                { 
+                    BemSucedido = false,
+                    MensagemErro = MensagemErroGenerico
+                });
         }
 
         resposta?.DefinirCodigoStatus<IList<TRetorno>>();
