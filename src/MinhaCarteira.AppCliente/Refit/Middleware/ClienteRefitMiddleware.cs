@@ -23,109 +23,109 @@ public static class ClienteRefitMiddleware
         //};
 
         services
-            .AddRefitClient<ILoginRefit>()
+            .AddRefitGeneratedClient<ILoginRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/login"));
 
         services
-            .AddRefitClient<IUsuarioRefit>()
+            .AddRefitGeneratedClient<IUsuarioRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Usuario"));
 
         services
-            .AddRefitClient<IPapelRefit>()
+            .AddRefitGeneratedClient<IPapelRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Papel"));
 
         services
-            .AddRefitClient<IInstituicaoFinanceiraRefit>()
+            .AddRefitGeneratedClient<IInstituicaoFinanceiraRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/InstituicaoFinanceira"));
 
         services
-            .AddRefitClient<ICategoriaRefit>()
+            .AddRefitGeneratedClient<ICategoriaRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Categoria"));
 
         services
-            .AddRefitClient<ICentroClassificacaoRefit>()
+            .AddRefitGeneratedClient<ICentroClassificacaoRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/CentroClassificacao"));
 
         services
-            .AddRefitClient<IPessoaRefit>()
+            .AddRefitGeneratedClient<IPessoaRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Pessoa"));
 
         services
-            .AddRefitClient<IContaBancariaRefit>()
+            .AddRefitGeneratedClient<IContaBancariaRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/ContaBancaria"));
 
         services
-            .AddRefitClient<IMovimentoBancarioRefit>()
+            .AddRefitGeneratedClient<IMovimentoBancarioRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/MovimentoBancario"));
 
         services
-            .AddRefitClient<IAgendamentoRefit>()
+            .AddRefitGeneratedClient<IAgendamentoRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Agendamento"));
 
         services
-            .AddRefitClient<IRegraImportacaoRefit>()
+            .AddRefitGeneratedClient<IRegraImportacaoRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/RegraImportacao"));
 
         services
-            .AddRefitClient<IImportarArquivoRefit>()
+            .AddRefitGeneratedClient<IImportarArquivoRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/ImportarArquivo"));
 
         services
-            .AddRefitClient<IDashboardMonitorRefit>()
+            .AddRefitGeneratedClient<IDashboardMonitorRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/DashboardMonitor"));
 
         services
-            .AddRefitClient<IHomeRefit>()
+            .AddRefitGeneratedClient<IHomeRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Home"));
 
         services
-            .AddRefitClient<IRelatorioRefit>()
+            .AddRefitGeneratedClient<IRelatorioRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Relatorio"));
 
         services
-            .AddRefitClient<IArquivoRefit>()
+            .AddRefitGeneratedClient<IArquivoRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Arquivo"));
 
         services
-            .AddRefitClient<IAuditoriaRefit>()
+            .AddRefitGeneratedClient<IAuditoriaRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Auditoria"));
 
         services
-            .AddRefitClient<ILogRefit>()
+            .AddRefitGeneratedClient<ILogRefit>()
             .AddHttpMessageHandler<AuthorizationMessageHandler>()
             .ConfigureHttpClient(c => c.BaseAddress =
                 new Uri($"{baseUrlApi}/Log"));
