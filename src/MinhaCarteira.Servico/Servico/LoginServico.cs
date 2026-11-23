@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
+using Microsoft.Extensions.Options;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Definicao.Interface.Servico;
@@ -14,10 +15,14 @@ using Newtonsoft.Json;
 
 namespace MinhaCarteira.Servico.Servico;
 
-public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaServico registroAuditoriaServico)
+public class LoginServico(
+    IUsuarioRepositorio repositorio, 
+    IRegistroAuditoriaServico registroAuditoriaServico,
+    IOptions<JwtOptions> jwtOptions)
     : BaseServico<Usuario, Guid, IUsuarioRepositorio>(repositorio), ILoginServico
 {
     private readonly IRegistroAuditoriaServico _registroAuditoriaServico = registroAuditoriaServico;
+    private readonly JwtOptions _jwt = jwtOptions.Value;
 
     private static FiltroOpcao FiltroUsuario(string username) =>
         new("username", TipoOperadorBusca.Igual, username);
@@ -68,7 +73,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
                 "Login",
                 null,
                 null,
-                JsonConvert.SerializeObject(new { Username = userInfo.Username, Password = "***REDACTED***" }),
+                JsonConvert.SerializeObject(new { userInfo.Username, Password = "***REDACTED***" }),
                 null,
                 null,
                 "Login/Login",
@@ -90,7 +95,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
                 "Login",
                 null,
                 null,
-                JsonConvert.SerializeObject(new { Username = userInfo.Username, Password = "***REDACTED***" }),
+                JsonConvert.SerializeObject(new { userInfo.Username, Password = "***REDACTED***" }),
                 null,
                 null,
                 "Login/Login",
@@ -106,11 +111,11 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
 
         var token = new UsuarioToken(usuario)
         {
-            Roles = usuario.Papeis.Select(s => s.Papel.Nome).ToList(),
+            Roles = [.. usuario.Papeis.Select(s => s.Papel.Nome)],
         };
         token.Roles.Add("UsuarioLogado");
         token.DataExpericaoToken = DateTime.Now.AddMonths(1);
-        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId);
+        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt.Segredo);
 
         // Log successful login
         await _registroAuditoriaServico.RegistrarAuditoriaAsync(
@@ -118,7 +123,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
             "Login",
             null,
             null,
-            JsonConvert.SerializeObject(new { Username = userInfo.Username, Password = "***REDACTED***", Sucesso = true }),
+            JsonConvert.SerializeObject(new { userInfo.Username, Password = "***REDACTED***", Sucesso = true }),
             null,
             null,
             "Login/Login",
@@ -146,9 +151,11 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
         var usuario = userDb.Dados;
         var token = new UsuarioToken(usuario)
         {
-            Roles = usuario.Papeis.Select(s => s.Papel.Nome).ToList(),
+            Roles = [.. usuario.Papeis.Select(s => s.Papel.Nome)],
         };
-        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId);
+        token.Roles.Add("UsuarioLogado");
+        token.DataExpericaoToken = DateTime.Now.AddMonths(1);
+        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt.Segredo);
 
         return new RespostaServico<UsuarioToken>(
             token,

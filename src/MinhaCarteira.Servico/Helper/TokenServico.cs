@@ -11,22 +11,22 @@ namespace MinhaCarteira.Servico.Helper;
 
 public static class TokenServico
 {
-    public const string Segredo = "fedaf7d8863b48e197b9287d492b708e";
+    //public const string Segredo = "fedaf7d8863b48e197b9287d492b708e";
 
-    public static string GerarToken(UsuarioToken dadosUsuario, Guid organizacaoId)
+    public static string GerarToken(UsuarioToken dadosUsuario, Guid organizacaoId, string segredo)
     {
         var claims = new List<Claim> {
-        new("UsuarioId", dadosUsuario.Id.ToString()),
-        new("OrganizacaoId", organizacaoId.ToString()),
-        new(ClaimTypes.Name, dadosUsuario.Nome),
-        new(ClaimTypes.Email, dadosUsuario.Email),
-    };
+            new("UsuarioId", dadosUsuario.Id.ToString()),
+            new("OrganizacaoId", organizacaoId.ToString()),
+            new(ClaimTypes.Name, dadosUsuario.Nome),
+            new(ClaimTypes.Email, dadosUsuario.Email)
+        };
 
         claims.AddRange(dadosUsuario.Roles
             .Select(s => new Claim(ClaimTypes.Role, s.Trim().ToLower())));
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(Segredo);
+        var key = Encoding.ASCII.GetBytes(segredo);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             IssuedAt = DateTime.Now.AddMonths(1),

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework>net11.0</TargetFramework>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	</PropertyGroup>
 
@@ -17,10 +17,11 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Dhani.Utilitarios" Version="2.0.1.1" />
-	  <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.13" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.13" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.14" />
+	  <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="11.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="11.0.0" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-	  <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.13" />
+	  <PackageReference Include="System.Security.Cryptography.Xml" Version="11.0.0" />
 	</ItemGroup>
 
 </Project>
