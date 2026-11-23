@@ -1,17 +1,18 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using MinhaCarteira.Servico.Helper;
 
 namespace MinhaCarteira.AppServer.Helper;
 
 public static class AutenticacaoMiddleware
 {
     public static IServiceCollection AdicionarAutenticacao(
-        this IServiceCollection services)
+        this IServiceCollection services, IConfiguration config)
     {
-        var key = Encoding.ASCII.GetBytes(TokenServico.Segredo);
+        var jwt = config.GetSection(Definicao.Modelo.JwtOptions.Secao).Get<Definicao.Modelo.JwtOptions>();
+        var key = Encoding.UTF8.GetBytes(jwt.Segredo);
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

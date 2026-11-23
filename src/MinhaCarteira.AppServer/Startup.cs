@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi;
 using MinhaCarteira.AppServer.Helper;
+using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Modelo.Data;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -77,7 +78,8 @@ public class Startup(IConfiguration configuration)
             }));
         }
 
-        services.AdicionarAutenticacao();
+        services.Configure<JwtOptions>(Configuration.GetSection(JwtOptions.Secao));
+        services.AdicionarAutenticacao(Configuration);
         services.AdicionarDados(
             Configuration.GetConnectionString("Default"));
 

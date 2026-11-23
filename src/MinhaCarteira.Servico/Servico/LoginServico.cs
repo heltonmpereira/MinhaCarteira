@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
+using Microsoft.Extensions.Options;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Definicao.Interface.Servico;
@@ -14,10 +15,14 @@ using Newtonsoft.Json;
 
 namespace MinhaCarteira.Servico.Servico;
 
-public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaServico registroAuditoriaServico)
+public class LoginServico(
+    IUsuarioRepositorio repositorio, 
+    IRegistroAuditoriaServico registroAuditoriaServico,
+    IOptions<JwtOptions> jwtOptions)
     : BaseServico<Usuario, Guid, IUsuarioRepositorio>(repositorio), ILoginServico
 {
     private readonly IRegistroAuditoriaServico _registroAuditoriaServico = registroAuditoriaServico;
+    private readonly JwtOptions _jwt = jwtOptions.Value;
 
     private static FiltroOpcao FiltroUsuario(string username) =>
         new("username", TipoOperadorBusca.Igual, username);
@@ -110,7 +115,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
         };
         token.Roles.Add("UsuarioLogado");
         token.DataExpericaoToken = DateTime.Now.AddMonths(1);
-        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId);
+        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt.Segredo);
 
         // Log successful login
         await _registroAuditoriaServico.RegistrarAuditoriaAsync(
@@ -150,7 +155,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
         };
         token.Roles.Add("UsuarioLogado");
         token.DataExpericaoToken = DateTime.Now.AddMonths(1);
-        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId);
+        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt.Segredo);
 
         return new RespostaServico<UsuarioToken>(
             token,

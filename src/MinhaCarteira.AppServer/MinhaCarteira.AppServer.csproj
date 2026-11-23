@@ -3,7 +3,8 @@
 	<PropertyGroup>
 		<TargetFramework>net11.0</TargetFramework>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-	</PropertyGroup>
+	  <UserSecretsId>73390538-321d-4b12-8b37-17bef01daf90</UserSecretsId>
+  </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <DebugType>none</DebugType>
