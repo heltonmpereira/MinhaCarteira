@@ -103,8 +103,8 @@ public class LoginController(ILoginRefit servico) : PadraoController, IControlle
     }
     private async Task ArmazenarLoginEmCookie(UsuarioToken user, string usuarioLogado = "", string usuarioLogadoId = "")
     {
-        var claimsIdentity = new ClaimsIdentity(new Claim[]
-        {
+        var claimsIdentity = new ClaimsIdentity(
+        [
             new("UsuarioId", user.Id.ToString()),
             new(ClaimTypes.Name, user.Nome),
             new(ClaimTypes.Surname, user.Sobrenome),
@@ -112,12 +112,10 @@ public class LoginController(ILoginRefit servico) : PadraoController, IControlle
             new("FullName", user.NomeCompleto ?? user.Username),
             new("AcessadoVia", usuarioLogado),
             new("AcessadoViaId", usuarioLogadoId)
-        }, Constante.NOME_COOKIE_ASPNET);
+        ], Constante.NOME_COOKIE_ASPNET);
 
         claimsIdentity.AddClaims(
-            user.Roles
-                .Select(s => new Claim(ClaimTypes.Role, s.Trim().ToLower()))
-                .ToArray());
+            [.. user.Roles.Select(s => new Claim(ClaimTypes.Role, s.Trim().ToLower()))]);
 
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var props = new AuthenticationProperties()

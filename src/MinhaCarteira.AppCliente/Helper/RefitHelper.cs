@@ -196,7 +196,7 @@ public static class RefitHelper
             if (string.IsNullOrWhiteSpace(nomePropriedade))
             {
                 var dados =
-                    actionSucesso.ToLower() == "index" ? default : retorno.GetValue("Dados");
+                    actionSucesso.Equals("index", StringComparison.CurrentCultureIgnoreCase) ? default : retorno.GetValue("Dados");
 
                 var view = controller.RedirectToAction(actionSucesso, controllerName, dados);
 
@@ -248,11 +248,11 @@ public static class RefitHelper
                 //nada por aqui
             }
 
-            if (!controller.TempData.ContainsKey("RetornoApi"))
+            if (!controller.TempData.TryGetValue("RetornoApi", out object value1))
                 controller.ViewBag.RetornoApi = retornoApi;
             else
             {
-                var retorno = controller.TempData["RetornoApi"].ToString() ?? string.Empty;
+                var retorno = value1.ToString() ?? string.Empty;
                 controller.TempData.Clear();
                 controller.ViewBag.RetornoApi = JsonConvert.DeserializeObject<
                     RespostaServico<object>

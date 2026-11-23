@@ -68,7 +68,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
                 "Login",
                 null,
                 null,
-                JsonConvert.SerializeObject(new { Username = userInfo.Username, Password = "***REDACTED***" }),
+                JsonConvert.SerializeObject(new { userInfo.Username, Password = "***REDACTED***" }),
                 null,
                 null,
                 "Login/Login",
@@ -90,7 +90,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
                 "Login",
                 null,
                 null,
-                JsonConvert.SerializeObject(new { Username = userInfo.Username, Password = "***REDACTED***" }),
+                JsonConvert.SerializeObject(new { userInfo.Username, Password = "***REDACTED***" }),
                 null,
                 null,
                 "Login/Login",
@@ -106,7 +106,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
 
         var token = new UsuarioToken(usuario)
         {
-            Roles = usuario.Papeis.Select(s => s.Papel.Nome).ToList(),
+            Roles = [.. usuario.Papeis.Select(s => s.Papel.Nome)],
         };
         token.Roles.Add("UsuarioLogado");
         token.DataExpericaoToken = DateTime.Now.AddMonths(1);
@@ -118,7 +118,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
             "Login",
             null,
             null,
-            JsonConvert.SerializeObject(new { Username = userInfo.Username, Password = "***REDACTED***", Sucesso = true }),
+            JsonConvert.SerializeObject(new { userInfo.Username, Password = "***REDACTED***", Sucesso = true }),
             null,
             null,
             "Login/Login",
@@ -146,7 +146,7 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
         var usuario = userDb.Dados;
         var token = new UsuarioToken(usuario)
         {
-            Roles = usuario.Papeis.Select(s => s.Papel.Nome).ToList(),
+            Roles = [.. usuario.Papeis.Select(s => s.Papel.Nome)],
         };
         token.Roles.Add("UsuarioLogado");
         token.DataExpericaoToken = DateTime.Now.AddMonths(1);
