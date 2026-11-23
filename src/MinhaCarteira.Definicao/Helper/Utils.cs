@@ -84,12 +84,15 @@ public static class Utils
         var bytes = Convert.FromBase64String(arquivo.Conteudo);
 
         using var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(_config["Repositorio:Chave"]);
-        aes.IV = Encoding.UTF8.GetBytes(_config["Repositorio:IV"]);
+        var chave = _config["Repositorio:Chave"];
+        aes.Key = Encoding.UTF8.GetBytes(chave);
+        aes.GenerateIV();
 
         using var arquivoStream = new FileStream(caminhoCompleto, FileMode.Create);
-        using var cryptoStream = new CryptoStream(arquivoStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
+        await arquivoStream.WriteAsync(aes.Key);
+        await arquivoStream.WriteAsync(aes.IV);
 
+        using var cryptoStream = new CryptoStream(arquivoStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
         await cryptoStream.WriteAsync(bytes);
         await cryptoStream.FlushAsync();
 
@@ -127,9 +130,12 @@ public static class Utils
 
         using var aes = Aes.Create();
         aes.Key = Encoding.UTF8.GetBytes(_config["Repositorio:Chave"]);
-        aes.IV = Encoding.UTF8.GetBytes(_config["Repositorio:IV"]);
 
         using var arquivoStream = new FileStream(caminhoCompleto, FileMode.Open);
+        var iv = new byte[aes.BlockSize / 8]; // 16bytes
+        await arquivoStream.ReadExactlyAsync(iv);
+        aes.IV = iv;
+
         using var cryptoStream = new CryptoStream(arquivoStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
         using var memoryStream = new MemoryStream();
 

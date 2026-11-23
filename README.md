@@ -53,3 +53,13 @@ Usar variáveis de ambiente com separador `__`:
 - `value` : o mesmo valor que está no seu User Secrets / no Render
 - Apply (fecha o dialog).
 - Recicle o Application Pool.
+
+
+### Gerar chave de 32 caracteres para criptografia de arquivos (AES-256)
+$alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$bytes = New-Object byte[] 32
+$rng.GetBytes($bytes)
+$chave = -join ($bytes | ForEach-Object { $alpha[$_ % $alpha.Length] })
+dotnet user-secrets set "Repositorio:Chave" $chave --project MinhaCarteira.AppServer
+Write-Host "Definida com $($chave.Length) caracteres"
