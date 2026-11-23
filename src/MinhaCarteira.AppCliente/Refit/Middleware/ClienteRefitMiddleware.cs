@@ -11,7 +11,7 @@ public static class ClienteRefitMiddleware
         this IServiceCollection services, string baseUrlApi)
     {
         if (baseUrlApi.EndsWith('/'))
-            baseUrlApi = baseUrlApi.Remove(baseUrlApi.Length - 1);
+            baseUrlApi = baseUrlApi[..^1];
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<AuthorizationMessageHandler>();
