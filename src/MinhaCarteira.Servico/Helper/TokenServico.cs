@@ -5,13 +5,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using MinhaCarteira.Definicao.Modelo;
 using MinhaCarteira.Definicao.Modelo.Usuario;
 
 namespace MinhaCarteira.Servico.Helper;
 
 public static class TokenServico
 {
-    public static string GerarToken(UsuarioToken dadosUsuario, Guid organizacaoId, string segredo)
+    public static string GerarToken(UsuarioToken dadosUsuario, Guid organizacaoId, JwtOptions jwt)
     {
         var claims = new List<Claim> {
             new("UsuarioId", dadosUsuario.Id.ToString()),
@@ -24,9 +25,11 @@ public static class TokenServico
             .Select(s => new Claim(ClaimTypes.Role, s.Trim().ToLower())));
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(segredo);
+        var key = Encoding.UTF8.GetBytes(jwt.Segredo);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
+            Issuer = jwt.Issuer,
+            Audience = jwt.Audience,
             IssuedAt = DateTime.UtcNow,
             Expires = dadosUsuario.DataExpericaoToken,
             Subject = new ClaimsIdentity(claims),

@@ -115,7 +115,7 @@ public class LoginServico(
         };
         token.Roles.Add("UsuarioLogado");
         token.DataExpericaoToken = DateTime.Now.AddMonths(1);
-        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt.Segredo);
+        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt);
 
         // Log successful login
         await _registroAuditoriaServico.RegistrarAuditoriaAsync(
@@ -155,7 +155,7 @@ public class LoginServico(
         };
         token.Roles.Add("UsuarioLogado");
         token.DataExpericaoToken = DateTime.Now.AddMonths(1);
-        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt.Segredo);
+        token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt);
 
         return new RespostaServico<UsuarioToken>(
             token,

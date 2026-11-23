@@ -112,6 +112,17 @@ public class ImportarArquivoServico(
             };
         }
 
+        if (contaDb.Dados.ProprietarioId != model.ProprietarioId)
+        {
+            logger.LogWarning(
+                "Importação de notificação recusada: conta bancária não pertence ao proprietário informado. ContaBancariaId={ContaBancariaId}",
+                model.ContaBancariaId);
+            return new RespostaServico<MovimentoBancario>(null, "Conta bancária não pertence ao proprietário informado.")
+            {
+                BemSucedido = false
+            };
+        }
+
         var tipoNotificacao = NotificacaoBancariaParser.Classificar(model.Texto);
         var valor = NotificacaoBancariaParser.ExtrairValor(model.Texto);
         var descricao = NotificacaoBancariaParser.ExtrairDescricao(model.Texto);
