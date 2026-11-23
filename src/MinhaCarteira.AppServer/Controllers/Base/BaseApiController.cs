@@ -20,6 +20,15 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
     where TRepositorio : IRepositorio<TEntidade, TPK>
     where TServico : IServico<TEntidade, TPK, TRepositorio>
 {
+    protected async Task<bool> RegistroPertenceAoUsuarioLogadoAsync(TPK id)
+    {
+        var resposta = await Servico.RespostaServicoAsync<TEntidade>(
+            parameters: [id, false],
+            nomeMetodo: "ObterPorId");
+
+        return resposta is OkObjectResult;
+    }
+
     [HttpGet]
     public virtual async Task<IActionResult> Navegar(string criterioJson, bool exibirRegistrosDeletados = false)
     {
@@ -62,15 +71,29 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
     [HttpPut]
     public async Task<IActionResult> Alterar(TEntidade item)
     {
+        if (!await RegistroPertenceAoUsuarioLogadoAsync(item.Id))
+            return FalhaValidacaoUsuario();
+
         DefinirUsuarioLogado(item);
         return await Servico.RespostaServicoAsync<TEntidade>(parameters: [item]);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Deletar(TPK id)
-        => await Servico.RespostaServicoAsync<int>(parameters: [id]);
+    {
+        if (!await RegistroPertenceAoUsuarioLogadoAsync(id))
+            return FalhaValidacaoUsuario();
+
+        return await Servico.RespostaServicoAsync<int>(parameters: [id]);
+    }
 
     [HttpDelete("DeletarRange")]
     public async Task<IActionResult> DeletarRange(TPK[] ids)
-        => await Servico.RespostaServicoAsync<int>(parameters: [ids]);
+    {
+        foreach (var id in ids)
+            if (!await RegistroPertenceAoUsuarioLogadoAsync(id))
+                return FalhaValidacaoUsuario();
+
+        return await Servico.RespostaServicoAsync<int>(parameters: [ids]);
+    }
 }
