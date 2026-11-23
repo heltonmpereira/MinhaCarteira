@@ -13,14 +13,12 @@ public static class ClienteRefitMiddleware
         if (baseUrlApi.EndsWith('/'))
             baseUrlApi = baseUrlApi[..^1];
 
+        // Refit 17 desabilita JSON por reflexão por padrão nos clientes source-generated.
+        // Como o projeto não fornece um JsonSerializerContext, é preciso registrar o suporte
+        // a reflexão (pacote Refit.Reflection) para que a serialização continue funcionando.
+        ReflectionSupport.EnsureRegistered();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<AuthorizationMessageHandler>();
-
-        //var primaryHttpMessageHandler = new HttpClientHandler
-        //{
-        //    ServerCertificateCustomValidationCallback =
-        //        (message, cert, chain, sslErrors) => true
-        //};
 
         services
             .AddRefitGeneratedClient<ILoginRefit>()

@@ -148,6 +148,8 @@ public class LoginServico(IUsuarioRepositorio repositorio, IRegistroAuditoriaSer
         {
             Roles = usuario.Papeis.Select(s => s.Papel.Nome).ToList(),
         };
+        token.Roles.Add("UsuarioLogado");
+        token.DataExpericaoToken = DateTime.Now.AddMonths(1);
         token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId);
 
         return new RespostaServico<UsuarioToken>(
