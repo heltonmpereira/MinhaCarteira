@@ -69,7 +69,7 @@ public class MinhaCarteiraContext(DbContextOptions<MinhaCarteiraContext> options
         {
             var campo = ObterPropriedade(entry, camposCadastro);
             if (campo == null)
-                break;
+                continue;
 
             campo.CurrentValue = DateTime.Now;
         }
@@ -80,7 +80,7 @@ public class MinhaCarteiraContext(DbContextOptions<MinhaCarteiraContext> options
         {
             var campo = ObterPropriedade(entry, camposAtualizacao);
             if (campo == null)
-                break;
+                continue;
 
             campo.CurrentValue = DateTime.Now;
         }
@@ -90,7 +90,7 @@ public class MinhaCarteiraContext(DbContextOptions<MinhaCarteiraContext> options
         {
             var campo = ObterPropriedade(entry, camposCadastro);
             if (campo == null)
-                break;
+                continue;
 
             campo.CurrentValue = campo.OriginalValue;
         }

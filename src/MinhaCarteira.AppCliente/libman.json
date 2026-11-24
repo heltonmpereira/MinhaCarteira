@@ -92,7 +92,8 @@
       "destination": "wwwroot/lib/jqueryui/",
       "files": [
         "jquery-ui.min.js",
-        "themes/hot-sneaks/jquery-ui.css"
+        "themes/hot-sneaks/jquery-ui.css",
+        "themes/hot-sneaks/images/ui-bg_diagonals-small_40_db4865_40x40.png"
       ]
     },
     {

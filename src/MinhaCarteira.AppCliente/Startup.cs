@@ -84,9 +84,6 @@ public class Startup
             options.HttpsPort = 443;
         });
 
-        services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
-
-
         services.AddWebOptimizer(pipeline =>
         {
             pipeline.AddJavaScriptBundle(
@@ -153,7 +150,13 @@ public class Startup
             option.AllowEmptyBundle = true;
         });
 
-        services.AddAntiforgery(opts => opts.Cookie.Name = Constante.NOME_COOKIE_ANTIFORGERY);
+        services.AddAntiforgery(opts =>
+        {
+            opts.HeaderName = "XSRF-TOKEN";
+            opts.Cookie.Name = Constante.NOME_COOKIE_ANTIFORGERY;
+            opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
+
         services
             .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(opt =>
@@ -167,10 +170,6 @@ public class Startup
                 opt.AccessDeniedPath = new PathString("/login/naoautorizado");
             });
 
-        services.AddAntiforgery(options =>
-        {
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        });
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -270,7 +269,8 @@ public class Startup
                     )
              );
         }
-
+        
+        /*
         app.Use(async (context, next) =>
         {
             context.Response.OnStarting(() =>
@@ -297,6 +297,7 @@ public class Startup
             });
             await next();
         });
+        */
 
         var securitytxt = $"Contact: contato@dhanidias.com.br\r\nExpires: Mon, 01 Aug 2050 00:00 +0300";
         app.UseEndpoints(endpoints =>
