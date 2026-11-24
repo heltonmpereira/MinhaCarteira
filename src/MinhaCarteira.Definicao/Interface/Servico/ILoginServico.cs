@@ -14,6 +14,6 @@ public interface ILoginServico : IServico<Usuario, Guid, IUsuarioRepositorio>
     Task<IRespostaServico<UsuarioRedefinirSenha>> RedefinirSenha(UsuarioSolicitacaoRedefinicaoSenha model);
     Task<IRespostaServico<bool>> AlterarSenhaComCodigoRedefinicao(UsuarioRedefinirSenha model);
     Task<IRespostaServico<bool>> AlterarSenha(AlterarSenha model);
-    Task<IRespostaServico<UsuarioToken>> AcessarComo(Guid id);
+    Task<IRespostaServico<UsuarioToken>> AcessarComo(Guid id, string organizacaoId, bool ehSuperAdmin);
     Task<IRespostaServico<Organizacao>> Registrar(Organizacao organizacao);
 }

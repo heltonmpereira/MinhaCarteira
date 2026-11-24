@@ -96,8 +96,14 @@ public class LoginController(ILoginServico servico, IHttpContextAccessor httpCon
             parameters: [item]);
     }
 
+    [Authorize(Roles = "superadmin,admin")]
     [HttpGet("acessar-como/{id}")]
-    public async Task<IActionResult> AcessarComo(Guid id) =>
-        await Servico.RespostaServicoAsync<UsuarioToken>(
-            parameters: [id]);
+    public async Task<IActionResult> AcessarComo(Guid id)
+    {
+        var orgSolicitante = User.FindFirst("OrganizacaoId")?.Value;
+        var ehSuperAdmin = User.IsInRole("superadmin");
+
+        return await Servico.RespostaServicoAsync<UsuarioToken>(
+            parameters: [id, orgSolicitante, ehSuperAdmin]);
+    }
 }

@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 namespace MinhaCarteira.Servico.Servico;
 
 public class LoginServico(
-    IUsuarioRepositorio repositorio, 
+    IUsuarioRepositorio repositorio,
     IRegistroAuditoriaServico registroAuditoriaServico,
     IOptions<JwtOptions> jwtOptions)
     : BaseServico<Usuario, Guid, IUsuarioRepositorio>(repositorio), ILoginServico
@@ -136,19 +136,28 @@ public class LoginServico(
             "Usuário localizado com sucesso.");
     }
 
-    public async Task<IRespostaServico<UsuarioToken>> AcessarComo(Guid id)
+    private RespostaServico<UsuarioToken> RespostaFalha(string mensagem)
     {
+        return new RespostaServico<UsuarioToken>(null, mensagem)
+        {
+            BemSucedido = false,
+            StatusCode = System.Net.HttpStatusCode.Forbidden
+        };
+    }
+
+    public async Task<IRespostaServico<UsuarioToken>> AcessarComo(Guid id, string organizacaoId, bool ehSuperAdmin)
+    {
+        if (!Guid.TryParse(organizacaoId, out Guid orgId))
+            return RespostaFalha("Falha ao validar informações da organização do usuário.");
+
         var userDb = await ObterPorId(id).ConfigureAwait(false);
         if (userDb == null || userDb.Dados == null)
-        {
-            return new RespostaServico<UsuarioToken>(null, "Usuário não localizado")
-            {
-                BemSucedido = false,
-                StatusCode = System.Net.HttpStatusCode.NotAcceptable
-            };
-        }
+            return RespostaFalha("Usuário não localizado.");
 
         var usuario = userDb.Dados;
+        if (!ehSuperAdmin && usuario.OrganizacaoId != orgId)
+            return RespostaFalha("Usuário não pertence a organização solicitada.");
+
         var token = new UsuarioToken(usuario)
         {
             Roles = [.. usuario.Papeis.Select(s => s.Papel.Nome)],

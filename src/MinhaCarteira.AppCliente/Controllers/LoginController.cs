@@ -144,6 +144,7 @@ public class LoginController(ILoginRefit servico) : PadraoController, IControlle
             : RedirectToAction("Index", "Home");
     }
 
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "superadmin,admin")]
     public async Task<IActionResult> AcessarComo(Guid id, bool sairAcessoComo = false)
     {
         var idUsuarioLogado = User.FindFirstValue("UsuarioId");

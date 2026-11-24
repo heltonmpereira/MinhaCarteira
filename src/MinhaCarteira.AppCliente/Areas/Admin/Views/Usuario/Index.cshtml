@@ -30,6 +30,12 @@ else if (Model != null && Model.Itens != null && Model.Itens.Any())
             <thead>
                 <tr>
                     <th>
+                        <asp-cabecalho campo="OrganizacaoId" titulo="Organização" />
+                    </th>
+                    <th>
+                        <asp-cabecalho campo="Itens.Papeis" titulo="Papeis" />
+                    </th>
+                    <th>
                         <asp-cabecalho campo="Nome;Sobrenome" titulo="Nome" />
                     </th>
                     <th>
@@ -54,6 +60,12 @@ else if (Model != null && Model.Itens != null && Model.Itens.Any())
                 @foreach (var item in Model.Itens)
                 {
                     <tr class="align-middle">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OrganizacaoId)
+                        </td>
+                        <td>
+                            @string.Join(", ", item.Papeis.Select(s => s.Papel.Nome).ToArray())
+                        </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.NomeCompleto)
                         </td>
