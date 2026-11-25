@@ -21,8 +21,10 @@ public class PadraoApiController<TServico> : ControllerBase
 {
     protected TServico Servico { get; }
     protected string IdUsuarioLogado { get; }
-    protected string IdOrganizacaoUsuarioLogado { get; }
     protected bool UsuarioEhSuperAdmin { get; }
+    protected string IdOrganizacaoUsuarioLogado { get; }
+    protected virtual bool IgnorarValidacaoPosse => false;
+    protected virtual string IdValidacaoPosse => IdUsuarioLogado;
     protected virtual string PropriedadeValidacaoPosse => "ProprietarioId";
     protected virtual TipoFiltroRegistroEnum FiltroRegistros { get; set; } = TipoFiltroRegistroEnum.FiltrarPorUsuarioLogado;
     public IHttpContextAccessor HttpContextAccessor { get; }
@@ -37,6 +39,10 @@ public class PadraoApiController<TServico> : ControllerBase
     protected PadraoApiController(TServico servico, IHttpContextAccessor httpContextAccessor) : this(httpContextAccessor)
     {
         Servico = servico;
+    }
+
+    public PadraoApiController()
+    {
     }
 
     protected IActionResult FalhaValidacaoUsuario() =>
@@ -77,19 +83,21 @@ public class PadraoApiController<TServico> : ControllerBase
 
     protected IActionResult ConfrontarUsuarioLogadoEProprietario<TEntidade>(IActionResult respostaServico, string nomePropriedade = null)
     {
+        if (IgnorarValidacaoPosse)
+            return respostaServico;
+
         nomePropriedade ??= PropriedadeValidacaoPosse;
+
+        if (string.IsNullOrWhiteSpace(IdValidacaoPosse))
+            return FalhaValidacaoUsuario();
 
         if (respostaServico is OkObjectResult retornoOk)
         {
             var resp = retornoOk.Value as IRespostaServico<TEntidade>;
             var propProprietarioId = resp.Dados.GetValue(nomePropriedade);
 
-            if (propProprietarioId != null)
-            {
-                var proprietarioId = (Guid)propProprietarioId;
-                if (proprietarioId != new Guid(IdUsuarioLogado))
-                    return FalhaValidacaoUsuario();
-            }
+            if (propProprietarioId != null && (Guid)propProprietarioId != new Guid(IdValidacaoPosse))
+                return FalhaValidacaoUsuario();
         }
 
         return respostaServico;
