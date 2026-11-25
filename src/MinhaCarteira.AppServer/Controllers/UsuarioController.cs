@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppServer.Controllers.Base;
@@ -12,7 +13,7 @@ using MinhaCarteira.Servico.Helper;
 
 namespace MinhaCarteira.AppServer.Controllers;
 
-[EscritaApenasAdmin(EscritaApenasAdminAttribute.PapeisAdministrador)]
+[Authorize(Roles = "superadmin,admin")]
 public class UsuarioController(IUsuarioServico servico, IHttpContextAccessor httpContextAccessor)
     : BaseApiController<Usuario, Guid, IUsuarioServico, IUsuarioRepositorio>(servico, httpContextAccessor)
 {
