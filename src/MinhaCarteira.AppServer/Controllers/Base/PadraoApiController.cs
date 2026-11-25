@@ -21,6 +21,8 @@ public class PadraoApiController<TServico> : ControllerBase
 {
     protected TServico Servico { get; }
     protected string IdUsuarioLogado { get; }
+    protected string IdOrganizacaoUsuarioLogado { get; }
+    protected bool UsuarioEhSuperAdmin { get; }
     protected virtual string PropriedadeValidacaoPosse => "ProprietarioId";
     protected virtual TipoFiltroRegistroEnum FiltroRegistros { get; set; } = TipoFiltroRegistroEnum.FiltrarPorUsuarioLogado;
     public IHttpContextAccessor HttpContextAccessor { get; }
@@ -29,6 +31,8 @@ public class PadraoApiController<TServico> : ControllerBase
     {
         HttpContextAccessor = httpContextAccessor;
         IdUsuarioLogado = httpContextAccessor.HttpContext?.User?.FindFirst("UsuarioId")?.Value;
+        IdOrganizacaoUsuarioLogado = httpContextAccessor.HttpContext?.User?.FindFirst("OrganizacaoId")?.Value;
+        UsuarioEhSuperAdmin = httpContextAccessor.HttpContext?.User?.IsInRole("superadmin") ?? false;
     }
     protected PadraoApiController(TServico servico, IHttpContextAccessor httpContextAccessor) : this(httpContextAccessor)
     {
@@ -55,6 +59,8 @@ public class PadraoApiController<TServico> : ControllerBase
             criterio.AdicionarFiltroProprietario(IdUsuarioLogado);
         else if (FiltroRegistros == TipoFiltroRegistroEnum.FiltrarPorUsuarioLogadoOuSemUsuarioEspecificado)
             criterio.AdicionarFiltroProprietarioOpcional(IdUsuarioLogado);
+        else if (FiltroRegistros == TipoFiltroRegistroEnum.FiltrarPorOrganizacaoLogada && !UsuarioEhSuperAdmin)
+            criterio.AdicionarFiltroProprietario(IdOrganizacaoUsuarioLogado, "OrganizacaoId");
 
         return criterio;
     }

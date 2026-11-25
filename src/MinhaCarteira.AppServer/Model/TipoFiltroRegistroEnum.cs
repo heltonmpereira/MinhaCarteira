@@ -4,5 +4,6 @@ public enum TipoFiltroRegistroEnum
 {
     NaoFiltrarUsuario,
     FiltrarPorUsuarioLogado,
-    FiltrarPorUsuarioLogadoOuSemUsuarioEspecificado
+    FiltrarPorUsuarioLogadoOuSemUsuarioEspecificado,
+    FiltrarPorOrganizacaoLogada
 }

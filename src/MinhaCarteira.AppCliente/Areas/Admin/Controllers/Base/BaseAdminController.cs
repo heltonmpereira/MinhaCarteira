@@ -14,50 +14,50 @@ public abstract class BaseAdminController<T, TPK, TSERVICO>(TSERVICO servico, IH
     : BaseController<T, TPK, TSERVICO>(servico, httpContextAccessor)
     where T : BaseViewModel, IEntidade<TPK>
 {
-    [Authorize(Roles = "super,admin")]
+    [Authorize(Roles = "superadmin,admin")]
     public override Task<IActionResult> Index(int page = 1)
     {
         return base.Index(page);
     }
-    [Authorize(Roles = "super,admin")]
+    [Authorize(Roles = "superadmin,admin")]
     public override ActionResult IndexFiltrado(CriterioViewModel model)
     {
         return base.IndexFiltrado(model);
     }
-    [Authorize(Roles = "super,admin")]
+    [Authorize(Roles = "superadmin,admin")]
     public override Task<IActionResult> IndexPaginado()
     {
         return base.IndexPaginado();
     }
 
-    [Authorize(Roles = "super,admin")]
+    [Authorize(Roles = "superadmin,admin")]
     public override Task<IActionResult> Alterar(TPK id)
     {
         return base.Alterar(id);
     }
-    [Authorize(Roles = "super,admin")]
+    [Authorize(Roles = "superadmin,admin")]
     public override Task<IActionResult> Alterar(T item)
     {
         return base.Alterar(item);
     }
 
-    [Authorize(Roles = "super,admin")]
+    [Authorize(Roles = "superadmin,admin")]
     public override Task<IActionResult> Incluir()
     {
         return base.Incluir();
     }
-    [Authorize(Roles = "super,admin")]
+    [Authorize(Roles = "superadmin,admin")]
     public override Task<IActionResult> Incluir(T item)
     {
         return base.Incluir(item);
     }
 
-    [Authorize(Roles = "super,admin")]
+    [Authorize(Roles = "superadmin,admin")]
     public override Task<IActionResult> Deletar(T item)
     {
         return base.Deletar(item);
     }
-    [Authorize(Roles = "super,admin")]
+    [Authorize(Roles = "superadmin,admin")]
     public override Task<IActionResult> Deletar(TPK id)
     {
         return base.Deletar(id);

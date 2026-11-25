@@ -9,7 +9,7 @@ using MinhaCarteira.Definicao.Interface.Servico;
 
 namespace MinhaCarteira.AppServer.Controllers;
 
-[EscritaApenasAdmin(EscritaApenasAdminAttribute.PapeisAdministrador)]
+[EscritaApenasAdmin("admin,superadmin")]
 public class InstituicaoFinanceiraController(
     IInstituicaoFinanceiraServico servico,
     IHttpContextAccessor httpContextAccessor)

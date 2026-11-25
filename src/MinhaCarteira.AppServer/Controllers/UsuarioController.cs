@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppServer.Controllers.Base;
-using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
@@ -17,7 +16,7 @@ namespace MinhaCarteira.AppServer.Controllers;
 public class UsuarioController(IUsuarioServico servico, IHttpContextAccessor httpContextAccessor)
     : BaseApiController<Usuario, Guid, IUsuarioServico, IUsuarioRepositorio>(servico, httpContextAccessor)
 {
-    protected override TipoFiltroRegistroEnum FiltroRegistros { get; set; } = TipoFiltroRegistroEnum.NaoFiltrarUsuario;
+    protected override TipoFiltroRegistroEnum FiltroRegistros { get; set; } = TipoFiltroRegistroEnum.FiltrarPorOrganizacaoLogada;
 
     public override Task<IActionResult> Incluir(Usuario item)
     {

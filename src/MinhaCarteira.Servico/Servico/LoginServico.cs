@@ -113,7 +113,7 @@ public class LoginServico(
         {
             Roles = [.. usuario.Papeis.Select(s => s.Papel.Nome)],
         };
-        token.Roles.Add("UsuarioLogado");
+        token.Roles.Add("usuariologado");
         token.DataExpericaoToken = DateTime.Now.AddMonths(1);
         token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt);
 
@@ -162,7 +162,7 @@ public class LoginServico(
         {
             Roles = [.. usuario.Papeis.Select(s => s.Papel.Nome)],
         };
-        token.Roles.Add("UsuarioLogado");
+        token.Roles.Add("usuariologado");
         token.DataExpericaoToken = DateTime.Now.AddMonths(1);
         token.TokenAcesso = TokenServico.GerarToken(token, usuario.OrganizacaoId, _jwt);
 
