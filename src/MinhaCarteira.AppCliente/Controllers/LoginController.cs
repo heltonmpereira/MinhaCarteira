@@ -163,10 +163,19 @@ public class LoginController(ILoginRefit servico) : PadraoController, IControlle
             if (result.Model != null && result.Model is UsuarioToken token)
             {
                 var usuarioLogado = User.FindFirstValue("FullName");
+                var tokenAdmin = Request.Cookies[Constante.NOME_COOKIE_BEARER];
+
                 await Logout();
+
                 if (sairAcessoComo)
                     await ArmazenarLoginEmCookie(token);
-                else await ArmazenarLoginEmCookie(token, usuarioLogado, idUsuarioLogado);
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(tokenAdmin))
+                        Response.CriarCookie(Constante.NOME_COOKIE_BEARER_ACESSAR_COMO, tokenAdmin);
+
+                    await ArmazenarLoginEmCookie(token, usuarioLogado, idUsuarioLogado);
+                }
 
                 return RedirecionarPaginaInicialSite();
             }
@@ -195,16 +204,37 @@ public class LoginController(ILoginRefit servico) : PadraoController, IControlle
     {
         await Logout().ConfigureAwait(false);
 
-        return RedirectToAction("Index", "Home");
+        return RedirecionarPaginaInicialSite();
     }
     public async Task<IActionResult> SairAcessoComo()
     {
         var idUsuarioLogado = User.FindFirstValue("AcessadoViaId");
-        return await AcessarComo(new Guid(idUsuarioLogado), true);
+        var tokenAdmin = Request.Cookies[Constante.NOME_COOKIE_BEARER_ACESSAR_COMO];
+
+        if (string.IsNullOrWhiteSpace(idUsuarioLogado) || string.IsNullOrWhiteSpace(tokenAdmin))
+            await Logout().ConfigureAwait(false);
+
+        try
+        {
+            var resposta = await Servico.AcessarComoComToken(new Guid(idUsuarioLogado), $"Bearer {tokenAdmin}");
+
+            if (resposta?.Dados is null)
+                return RedirecionarPaginaInicialArea("Admin", "Usuario");
+
+            await Logout().ConfigureAwait(false);
+            await ArmazenarLoginEmCookie(resposta.Dados);
+
+            return RedirecionarPaginaInicialSite();
+        }
+        catch (ApiException)
+        {
+            return RedirecionarPaginaInicialSite();
+        }
     }
     private async Task Logout()
     {
         Response.Cookies.Delete(Constante.NOME_COOKIE_BEARER);
+        Response.Cookies.Delete(Constante.NOME_COOKIE_BEARER_ACESSAR_COMO);
 
         await HttpContext
             .SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme)

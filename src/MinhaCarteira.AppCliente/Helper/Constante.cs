@@ -8,4 +8,5 @@ public class Constante
     public const string NOME_COOKIE_SIDEBAR = "__cokSideBar";
     public const string NOME_COOKIE_FILTRO = "__cokFiltro";
     public const string NOME_COOKIE_ANTIFORGERY = "__cokAFT";
+    public const string NOME_COOKIE_BEARER_ACESSAR_COMO = "__jwtApiOrig";
 }

@@ -33,4 +33,7 @@ public interface ILoginRefit
 
     [Get("/acessar-como/{id}")]
     Task<RespostaServico<UsuarioToken>> AcessarComo(Guid id);
+
+    [Get("/acessar-como/{id}")]
+    Task<RespostaServico<UsuarioToken>> AcessarComoComToken(Guid id, [Header("Authorization")] string authorization);
 }
