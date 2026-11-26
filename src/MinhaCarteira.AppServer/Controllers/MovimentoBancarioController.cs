@@ -32,6 +32,6 @@ public class MovimentoBancarioController(IMovimentoBancarioServico servico, IHtt
     [Route("remover-transferencia-bancaria")]
     [HttpPost]
     public async Task<IActionResult> RemoverTransferenciaBancaria(Guid movimentoId, Guid transferenciaId) =>
-        ConfrontarUsuarioLogadoEProprietario<int>(await Servico.RespostaServicoAsync<int>(
+        ConfrontarUsuarioLogadoEProprietario<MovimentoBancario>(await Servico.RespostaServicoAsync<int>(
             parameters: [movimentoId, transferenciaId]));
 }

@@ -1,6 +1,4 @@
-
 using System.Threading.Tasks;
-using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +13,7 @@ namespace MinhaCarteira.AppServer.Controllers.Base;
 [ApiController]
 [Route("api/[controller]")]
 public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(TServico servico, IHttpContextAccessor httpContextAccessor)
-    : PadraoApiController<TServico>(servico, httpContextAccessor)
+    : BaseLeituraApiController<TEntidade, TPK, TServico>(servico, httpContextAccessor)
     where TEntidade : class, IEntidade<TPK>
     where TRepositorio : IRepositorio<TEntidade, TPK>
     where TServico : IServico<TEntidade, TPK, TRepositorio>
@@ -27,38 +25,6 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
             nomeMetodo: "ObterPorId");
 
         return ConfrontarUsuarioLogadoEProprietario<TEntidade>(resposta) is OkObjectResult;
-    }
-
-    [HttpGet]
-    public virtual async Task<IActionResult> Navegar(string criterioJson, bool exibirRegistrosDeletados = false)
-    {
-        var filtroInicial = ObterFiltroInicial(criterioJson);
-
-        if (!exibirRegistrosDeletados)
-        {
-            var grupoRegistrosDeletados = new GrupoFiltro("Deletados", [
-                new FiltroOpcao() {
-                    NomePropriedade = "Deletado",
-                    Valor = false,
-                    Operador = TipoOperadorBusca.Igual,
-                    RelacaoOutrosFiltros = TipoOperadorLogico.And
-                }
-            ])
-            {
-                RelacaoOutrosGrupos = TipoOperadorLogico.And
-            };
-
-            filtroInicial.AdicionarGrupo(grupoRegistrosDeletados);
-        }
-
-        return await Servico.RespostaPaginadaServicoAsync<TEntidade>(criterio: filtroInicial);
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> ObterPorId(TPK id)
-    {
-        var resposta = await Servico.RespostaServicoAsync<TEntidade>(parameters: [id, true]);
-        return ConfrontarUsuarioLogadoEProprietario<TEntidade>(resposta);
     }
 
     [HttpPost]

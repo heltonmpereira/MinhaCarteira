@@ -1,13 +1,18 @@
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
 using Dhani.Utilitarios.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Helper;
+using MinhaCarteira.Definicao.Interface.Entidade;
+using MinhaCarteira.Definicao.Interface.Repositorio.Base;
+using MinhaCarteira.Definicao.Interface.Servico.Base;
 using MinhaCarteira.Definicao.Interface.Servico.Resposta;
 using MinhaCarteira.Definicao.Modelo;
 using Newtonsoft.Json;
@@ -93,7 +98,9 @@ public class PadraoApiController<TServico> : ControllerBase
 
         if (respostaServico is OkObjectResult retornoOk)
         {
-            var resp = retornoOk.Value as IRespostaServico<TEntidade>;
+            if (retornoOk.Value is not IRespostaServico<TEntidade> resp || resp.Dados is null)
+                return FalhaValidacaoUsuario();
+
             var propProprietarioId = resp.Dados.GetValue(nomePropriedade);
 
             if (propProprietarioId != null && (Guid)propProprietarioId != new Guid(IdValidacaoPosse))
