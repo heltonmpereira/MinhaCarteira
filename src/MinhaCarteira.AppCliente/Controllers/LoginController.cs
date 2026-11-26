@@ -212,24 +212,20 @@ public class LoginController(ILoginRefit servico) : PadraoController, IControlle
         var tokenAdmin = Request.Cookies[Constante.NOME_COOKIE_BEARER_ACESSAR_COMO];
 
         if (string.IsNullOrWhiteSpace(idUsuarioLogado) || string.IsNullOrWhiteSpace(tokenAdmin))
-            await Logout().ConfigureAwait(false);
-
-        try
         {
-            var resposta = await Servico.AcessarComoComToken(new Guid(idUsuarioLogado), $"Bearer {tokenAdmin}");
-
-            if (resposta?.Dados is null)
-                return RedirecionarPaginaInicialArea("Admin", "Usuario");
-
             await Logout().ConfigureAwait(false);
-            await ArmazenarLoginEmCookie(resposta.Dados);
-
             return RedirecionarPaginaInicialSite();
         }
-        catch (ApiException)
-        {
-            return RedirecionarPaginaInicialSite();
-        }
+
+        var resposta = await Servico.AcessarComoComToken(new Guid(idUsuarioLogado), $"Bearer {tokenAdmin}");
+
+        if (resposta?.Dados is null)
+            return RedirecionarPaginaInicialArea("Admin", "Usuario");
+
+        await Logout().ConfigureAwait(false);
+        await ArmazenarLoginEmCookie(resposta.Dados);
+
+        return RedirecionarPaginaInicialSite();
     }
     private async Task Logout()
     {

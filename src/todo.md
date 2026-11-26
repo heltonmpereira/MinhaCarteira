@@ -109,3 +109,109 @@ Contexto: isto **substitui** o passo 1 do item D5 (que apenas escondia o Swagger
   `app.UseMiddleware<...>()` (mais testável, porém cria um arquivo novo).
 - Endurecimento opcional: guardar um **hash** da senha (ex.: PBKDF2) em `Swagger:SenhaHash` e comparar o hash,
   em vez do texto plano.
+
+---
+
+## Bloco D — Segurança crítica (itens já aplicados)
+
+- [x] **D1.** Backup do token do admin (`__jwtApiOrig`) + `AcessarComoComToken` para o "Sair do Acesso como".
+- [x] **D2.** Impersonação restrita a `superadmin,admin` (e correção do `"super,admin"`).
+- [x] **D3.** Filtro por organização logada (`FiltrarPorOrganizacaoLogada`) no `PadraoApiController`.
+- [x] **D4.** Validação de posse generalizada (`IdValidacaoPosse` / `IgnorarValidacaoPosse`).
+- [ ] **D5.** Swagger/CORS por ambiente → ver seção "Swagger ativo em produção..." acima (substitui o passo 1).
+
+---
+
+## Bloco E — Bugfix
+
+Formato de trabalho: **um item por vez + guia manual** (o assistente não implementa; apenas detalha o passo a passo).
+
+### P0 — Crítico
+
+- [x] **E1. "Sair do Acesso como" quebra quando faltam cookies**
+  - `MinhaCarteira.AppCliente/Controllers/LoginController.cs` (L214-219)
+  - Guard `if (IsNullOrWhiteSpace(id) || IsNullOrWhiteSpace(token))` executa `Logout()` **sem `return`** →
+    segue para `new Guid(idUsuarioLogado)` com valor nulo e estoura.
+  - Correção: adicionar `return RedirecionarPaginaInicialSite();` dentro do `if`.
+  - **Aplicado**: bloco `if` com `return`; o `try/catch (ApiException)` foi removido — passou a ser tratado
+    pelo handler global (`app.UseExceptionHandler("/Error")` + `ErrorController`/`ErrorViewModel`).
+
+- [x] **E2. `ImportarNotificacao` marcado como `[AllowAnonymous]`** — *risco assumido*
+  - `MinhaCarteira.AppServer/Controllers/ImportarArquivoController.cs` (L34-38)
+  - Endpoint de importação de notificação bancária exposto sem autenticação.
+  - **Decisão do usuário: manter como está (assumir o risco).** Justificativa: é consumido por integração
+    externa sem JWT; a `ImportarArquivoServico` valida que a conta pertence ao `ProprietarioId` informado.
+  - Risco remanescente: qualquer um com um par válido `ProprietarioId`+`ContaBancariaId` pode injetar
+    movimentos falsos. Se um dia quiser fechar: exigir segredo em header (ex.: `X-Api-Key`) mantendo o
+    `[AllowAnonymous]`, ou trocar por JWT (`[Authorize]`).
+
+- [ ] **E3. Auditoria e Log vazam dados de todas as organizações**
+  - `MinhaCarteira.AppServer/Controllers/AuditoriaController.cs` (L47-62)
+  - `MinhaCarteira.AppServer/Controllers/LogController.cs` (L48-63)
+  - `[Authorize]` sem `Roles` e filtro de `OrganizacaoId` **comentado** → qualquer usuário autenticado lê tudo.
+  - Correção: reativar o filtro por organização + restringir a `Roles="superadmin,admin"`.
+
+### P1 — Alto
+
+- [ ] **E4. `ConfrontarUsuarioLogadoAttribute` roda após a action**
+  - `MinhaCarteira.AppCliente/Filter/ConfrontarUsuarioLogadoAttribute.cs` (L9-27)
+  - Valida em `OnResultExecuting` (pós-execução) em vez de `OnActionExecuting`; `routeValues` pode ser nulo.
+  - Correção: mover a validação para `OnActionExecuting` + null-check.
+
+- [ ] **E5. `BaseRepositorio.DeletarRange` faz hard delete**
+  - `MinhaCarteira.Servico/Repositorio/Base/BaseRepositorio.cs` (L31-42)
+  - Usa `Tabela.RemoveRange(objs)` (exclusão física) enquanto o restante do sistema usa soft delete (`Deletado`).
+  - A validar: confirmar se é intencional em algum fluxo.
+
+- [ ] **E6. `ConfrontarUsuarioLogadoEProprietario` pode lançar NRE**
+  - `MinhaCarteira.AppServer/Controllers/Base/PadraoApiController.cs` (L84-104)
+  - Usa `resp.Dados.GetValue(...)` sem checar `resp?.Dados == null`.
+  - A validar.
+
+- [ ] **E7. `DefinirUsuarioLogado` ignora `ProprietarioId` nullable**
+  - `MinhaCarteira.AppServer/Controllers/Base/PadraoApiController.cs` (L74-82)
+  - Só define quando a propriedade não é nullable → `Categoria` e `Arquivo` (`ProprietarioId` é `Guid?`)
+    ficam sem dono.
+  - A validar.
+
+- [ ] **E8. Endpoints sem validação de posse (IDOR)**
+  - `MinhaCarteira.AppServer/Controllers/AgendamentoController.cs` (parcelas: obter/alterar/deletar/pagar/restaurar)
+  - `MinhaCarteira.AppServer/Controllers/ContaBancariaController.cs` (`IncrementarPrioridade`,
+    `DecrementarPrioridade`, `Reativar`)
+  - Operam por id sem `ConfrontarUsuarioLogadoEProprietario`.
+  - A validar.
+
+### P2 — Médio
+
+- [ ] **E9. `TotalPaginas` gera página extra**
+  - `MinhaCarteira.Servico/Servico/Base/BaseServico.cs` (L91-92)
+  - `(total / itens) + 1` soma 1 quando a divisão é exata.
+  - Correção: `(int)Math.Ceiling(total / (double)itens)`.
+
+- [ ] **E10. `_MenuLateral.cshtml` acessa `.Value` sem `?.`**
+  - `MinhaCarteira.AppCliente/Views/Shared/_MenuLateral.cshtml` (L26, 33, 40, 65)
+  - `FirstOrDefault(...).Value` → NRE quando a claim não existe. Correção: `FirstOrDefault(...)?.Value`.
+
+- [ ] **E11. `Guid.Parse` sem validação**
+  - `MinhaCarteira.AppServer/Controllers/ImportarArquivoController.cs` (L21-27)
+  - `Guid.Parse(IdUsuarioLogado)` estoura com entrada inválida → usar `Guid.TryParse`.
+
+- [ ] **E12. `NotImplementedException` após processar**
+  - `MinhaCarteira.Servico/Servico/AgendamentoServico.cs` (L241-280)
+  - `ConciliarParcelasAPartirDashboardMonitor` executa a lógica e sempre termina lançando exceção.
+
+- [ ] **E13. Ordenação `"id"` em minúsculo**
+  - `MinhaCarteira.Servico/Repositorio/Base/BaseRepositorio.cs` (L87-103)
+  - `criterio.Ordenacao = "id"` vs propriedade `Id`; depende do comparador ser case-insensitive.
+  - A validar.
+
+- [ ] **E14. `DateTime.Now` na expiração do token**
+  - `MinhaCarteira.Servico/Servico/LoginServico.cs` (L117, L166)
+  - `DataExpericaoToken = DateTime.Now...` divergindo do `UtcNow` usado em `TokenServico`.
+  - A validar.
+
+### Descartados na varredura (não são bugs)
+
+- Role `usuariologado` — é adicionada também no login normal (`LoginServico`).
+- `Utils.Excluir` vs `Utils.SalvarAsync` — `Extensao` já vem com o ponto incluído.
+- `"super,admin"` — já corrigido.
