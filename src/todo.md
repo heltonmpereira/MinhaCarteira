@@ -178,19 +178,21 @@ Formato de trabalho: **um item por vez + guia manual** (o assistente não implem
     return FalhaValidacaoUsuario();`. Verificado que o `ServicoHelper` devolve `BadRequest` quando `BemSucedido == false`,
     então o NRE não era reproduzível; ainda assim ficou fechado por segurança.
 
-- [ ] **E6.1. `LoginController` (API) — `ObterPorId` valida posse com a propriedade errada**
+- [x] **E6.1. `LoginController` (API) — `ObterPorId` valida posse com a propriedade errada**
   - `MinhaCarteira.AppServer/Controllers/LoginController.cs` (`ObterPorId`, `[HttpGet("{id:guid}")]`)
-  - Chama `ConfrontarUsuarioLogadoEProprietario<Usuario>(resposta)` usando o default
-    `PropriedadeValidacaoPosse = "ProprietarioId"`, mas `Usuario` só tem `OrganizacaoId`.
-  - Resultado: `GetValue("ProprietarioId")` retorna `null` → a checagem é pulada → **qualquer usuário autenticado lê
-    qualquer `Usuario` pelo `id`**, incluindo `PasswordHash` (IDOR).
-  - Correção (mesmo padrão do `UsuarioController`): adicionar os overrides
-    ```csharp
-    protected override bool IgnorarValidacaoPosse => UsuarioEhSuperAdmin;
-    protected override string PropriedadeValidacaoPosse => "OrganizacaoId";
-    protected override string IdValidacaoPosse => IdOrganizacaoUsuarioLogado;
-    ```
-  - A validar/aplicar.
+  - Chamava `ConfrontarUsuarioLogadoEProprietario<Usuario>(resposta)` usando o default
+    `PropriedadeValidacaoPosse = "ProprietarioId"`, mas `Usuario` só tem `OrganizacaoId` → a checagem era pulada
+    → **qualquer usuário autenticado lia qualquer `Usuario` pelo `id`**, incluindo `PasswordHash` (IDOR).
+  - **Aplicado**: overrides no `LoginController`
+    `PropriedadeValidacaoPosse => "OrganizacaoId"` e `IdValidacaoPosse => IdOrganizacaoUsuarioLogado`.
+  - **Decisão de design (centralização)**: `IgnorarValidacaoPosse` deixou de ser override por controller e passou a
+    ter o **default no `PadraoApiController`** = `UsuarioEhSuperAdmin` (atribuído no construtor).
+    Foram removidos os overrides redundantes de `AuditoriaController`, `LogController`, `UsuarioController` e
+    `LoginController`. Comportamento idêntico ao anterior (superadmin global), com menos duplicação.
+    Coerente com `ObterFiltroInicial`, que já ignora o filtro de organização para superadmin.
+  - **Verificado**: compilação `0 avisos / 0 erros`.
+  - Observação: alternativamente `protected virtual bool IgnorarValidacaoPosse => UsuarioEhSuperAdmin;`
+    (expressão, igual aos demais virtuais) evitaria o "assign de virtual no construtor" — opcional.
 
 - [ ] **E7. `DefinirUsuarioLogado` ignora `ProprietarioId` nullable**
   - `MinhaCarteira.AppServer/Controllers/Base/PadraoApiController.cs` (L74-82)

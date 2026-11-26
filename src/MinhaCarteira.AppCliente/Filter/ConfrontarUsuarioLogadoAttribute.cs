@@ -7,32 +7,40 @@ namespace MinhaCarteira.AppCliente.Filter;
 
 public class ConfrontarUsuarioLogadoAttribute : ActionFilterAttribute
 {
-    public override void OnResultExecuting(ResultExecutingContext context)
+    public override void OnActionExecuting(ActionExecutingContext context)
     {
         if (!ConfrontarUsuario(context))
             context.Result = new RedirectToRouteResult(
             new RouteValueDictionary
             {
-            { "controller", "Login" },
-            { "action", "Index" },
-            { "returnUrl", context.HttpContext.Request.GetEncodedUrl() }
+                { "controller", "Login" },
+                { "action", "Index" },
+                { "returnUrl", context.HttpContext.Request.GetEncodedUrl() }
             });
 
-        base.OnResultExecuting(context);
+        base.OnActionExecuting(context);
     }
 
-    private static bool ConfrontarUsuario(ResultExecutingContext context)
+    private static bool ConfrontarUsuario(ActionExecutingContext context)
     {
         var idUsuarioLogado = context.HttpContext.User
             .FindFirst("UsuarioId")?
             .Value;
 
-        var routeValues = context?.HttpContext?.Request?.RouteValues;
+        var routeValues = context.HttpContext.Request.RouteValues;
         var id = string.Empty;
         if (routeValues.ContainsKey("id"))
             id = routeValues["id"].ToString();
         else if (routeValues.ContainsKey("usuarioId"))
             id = routeValues["usuarioId"].ToString();
+
+        if (routeValues != null)
+        {
+            if (routeValues.ContainsKey("id"))
+                id = routeValues["id"]?.ToString();
+            else if (routeValues.ContainsKey("usuarioId"))
+                id = routeValues["usuarioId"]?.ToString();
+        }
 
         return id == idUsuarioLogado;
     }
