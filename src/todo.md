@@ -161,10 +161,12 @@ Formato de trabalho: **um item por vez + guia manual** (o assistente não implem
 
 ### P1 — Alto
 
-- [ ] **E4. `ConfrontarUsuarioLogadoAttribute` roda após a action**
+- [x] **E4. `ConfrontarUsuarioLogadoAttribute` roda após a action**
   - `MinhaCarteira.AppCliente/Filter/ConfrontarUsuarioLogadoAttribute.cs` (L9-27)
-  - Valida em `OnResultExecuting` (pós-execução) em vez de `OnActionExecuting`; `routeValues` pode ser nulo.
-  - Correção: mover a validação para `OnActionExecuting` + null-check.
+  - Validava em `OnResultExecuting` (pós-execução) em vez de `OnActionExecuting`; `routeValues` pode ser nulo.
+  - **Aplicado**: validação movida para `OnActionExecuting` (bloqueia a action antes de executar) + null-check em
+    `routeValues`. Usado em `MeuPerfil` (GET/POST) no `LoginController` (AppCliente).
+  - **Verificado**: compilação `0 avisos / 0 erros`.
 
 - [ ] **E5. `BaseRepositorio.DeletarRange` faz hard delete**
   - `MinhaCarteira.Servico/Repositorio/Base/BaseRepositorio.cs` (L31-42)

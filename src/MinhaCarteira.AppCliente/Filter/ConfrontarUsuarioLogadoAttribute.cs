@@ -29,10 +29,6 @@ public class ConfrontarUsuarioLogadoAttribute : ActionFilterAttribute
 
         var routeValues = context.HttpContext.Request.RouteValues;
         var id = string.Empty;
-        if (routeValues.ContainsKey("id"))
-            id = routeValues["id"].ToString();
-        else if (routeValues.ContainsKey("usuarioId"))
-            id = routeValues["usuarioId"].ToString();
 
         if (routeValues != null)
         {
