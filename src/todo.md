@@ -145,11 +145,19 @@ Formato de trabalho: **um item por vez + guia manual** (o assistente não implem
     movimentos falsos. Se um dia quiser fechar: exigir segredo em header (ex.: `X-Api-Key`) mantendo o
     `[AllowAnonymous]`, ou trocar por JWT (`[Authorize]`).
 
-- [ ] **E3. Auditoria e Log vazam dados de todas as organizações**
-  - `MinhaCarteira.AppServer/Controllers/AuditoriaController.cs` (L47-62)
-  - `MinhaCarteira.AppServer/Controllers/LogController.cs` (L48-63)
+- [x] **E3. Auditoria e Log vazam dados de todas as organizações**
+  - `MinhaCarteira.AppServer/Controllers/AuditoriaController.cs`
+  - `MinhaCarteira.AppServer/Controllers/LogController.cs`
   - `[Authorize]` sem `Roles` e filtro de `OrganizacaoId` **comentado** → qualquer usuário autenticado lê tudo.
-  - Correção: reativar o filtro por organização + restringir a `Roles="superadmin,admin"`.
+  - **Aplicado** em dois passos:
+    1. `[Authorize(Roles = "superadmin,admin")]` + overrides de posse/org (`IgnorarValidacaoPosse`,
+       `PropriedadeValidacaoPosse = "OrganizacaoId"`, `IdValidacaoPosse = IdOrganizacaoUsuarioLogado`,
+       `FiltroRegistros = FiltrarPorOrganizacaoLogada`), como no `UsuarioController`.
+    2. Refatoração para reuso: `PadraoApiController<TServico>` ficou só com a infraestrutura e foi criado
+       `BaseLeituraApiController<TEntidade, TPK, TServico>` com `Navegar` + `ObterPorId` (leitura).
+       `BaseApiController` e os controllers de Auditoria/Log herdam dele.
+  - Efeitos colaterais corrigidos no caminho: `ObterPorId` do base estava com `<Log>` fixo (500 em todos os
+    `GET api/{controller}/{id}`) e a validação de posse do `ObterPorId` tinha sido perdida.
 
 ### P1 — Alto
 
@@ -163,10 +171,26 @@ Formato de trabalho: **um item por vez + guia manual** (o assistente não implem
   - Usa `Tabela.RemoveRange(objs)` (exclusão física) enquanto o restante do sistema usa soft delete (`Deletado`).
   - A validar: confirmar se é intencional em algum fluxo.
 
-- [ ] **E6. `ConfrontarUsuarioLogadoEProprietario` pode lançar NRE**
+- [x] **E6. `ConfrontarUsuarioLogadoEProprietario` pode lançar NRE**
   - `MinhaCarteira.AppServer/Controllers/Base/PadraoApiController.cs` (L84-104)
   - Usa `resp.Dados.GetValue(...)` sem checar `resp?.Dados == null`.
-  - A validar.
+  - **Aplicado (fail-closed)**: o cast passou a ser `if (retornoOk.Value is not IRespostaServico<TEntidade> resp || resp.Dados is null)
+    return FalhaValidacaoUsuario();`. Verificado que o `ServicoHelper` devolve `BadRequest` quando `BemSucedido == false`,
+    então o NRE não era reproduzível; ainda assim ficou fechado por segurança.
+
+- [ ] **E6.1. `LoginController` (API) — `ObterPorId` valida posse com a propriedade errada**
+  - `MinhaCarteira.AppServer/Controllers/LoginController.cs` (`ObterPorId`, `[HttpGet("{id:guid}")]`)
+  - Chama `ConfrontarUsuarioLogadoEProprietario<Usuario>(resposta)` usando o default
+    `PropriedadeValidacaoPosse = "ProprietarioId"`, mas `Usuario` só tem `OrganizacaoId`.
+  - Resultado: `GetValue("ProprietarioId")` retorna `null` → a checagem é pulada → **qualquer usuário autenticado lê
+    qualquer `Usuario` pelo `id`**, incluindo `PasswordHash` (IDOR).
+  - Correção (mesmo padrão do `UsuarioController`): adicionar os overrides
+    ```csharp
+    protected override bool IgnorarValidacaoPosse => UsuarioEhSuperAdmin;
+    protected override string PropriedadeValidacaoPosse => "OrganizacaoId";
+    protected override string IdValidacaoPosse => IdOrganizacaoUsuarioLogado;
+    ```
+  - A validar/aplicar.
 
 - [ ] **E7. `DefinirUsuarioLogado` ignora `ProprietarioId` nullable**
   - `MinhaCarteira.AppServer/Controllers/Base/PadraoApiController.cs` (L74-82)

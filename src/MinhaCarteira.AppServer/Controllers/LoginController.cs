@@ -19,6 +19,9 @@ namespace MinhaCarteira.AppServer.Controllers;
 public class LoginController(ILoginServico servico, IHttpContextAccessor httpContextAccessor)
     : PadraoApiController<ILoginServico>(servico, httpContextAccessor)
 {
+    protected override string PropriedadeValidacaoPosse => "OrganizacaoId";
+    protected override string IdValidacaoPosse => IdOrganizacaoUsuarioLogado;
+
     [AllowAnonymous]
     [HttpPost()]
     public async Task<IActionResult> Login(UsuarioLogin loginInfo)

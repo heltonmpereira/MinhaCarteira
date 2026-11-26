@@ -1,18 +1,13 @@
 using System;
 using System.Net;
-using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
 using Dhani.Utilitarios.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MinhaCarteira.AppServer.Helper;
 using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Helper;
-using MinhaCarteira.Definicao.Interface.Entidade;
-using MinhaCarteira.Definicao.Interface.Repositorio.Base;
-using MinhaCarteira.Definicao.Interface.Servico.Base;
 using MinhaCarteira.Definicao.Interface.Servico.Resposta;
 using MinhaCarteira.Definicao.Modelo;
 using Newtonsoft.Json;
@@ -28,7 +23,7 @@ public class PadraoApiController<TServico> : ControllerBase
     protected string IdUsuarioLogado { get; }
     protected bool UsuarioEhSuperAdmin { get; }
     protected string IdOrganizacaoUsuarioLogado { get; }
-    protected virtual bool IgnorarValidacaoPosse => false;
+    protected virtual bool IgnorarValidacaoPosse { get; }
     protected virtual string IdValidacaoPosse => IdUsuarioLogado;
     protected virtual string PropriedadeValidacaoPosse => "ProprietarioId";
     protected virtual TipoFiltroRegistroEnum FiltroRegistros { get; set; } = TipoFiltroRegistroEnum.FiltrarPorUsuarioLogado;
@@ -40,6 +35,7 @@ public class PadraoApiController<TServico> : ControllerBase
         IdUsuarioLogado = httpContextAccessor.HttpContext?.User?.FindFirst("UsuarioId")?.Value;
         IdOrganizacaoUsuarioLogado = httpContextAccessor.HttpContext?.User?.FindFirst("OrganizacaoId")?.Value;
         UsuarioEhSuperAdmin = httpContextAccessor.HttpContext?.User?.IsInRole("superadmin") ?? false;
+        IgnorarValidacaoPosse = UsuarioEhSuperAdmin;
     }
     protected PadraoApiController(TServico servico, IHttpContextAccessor httpContextAccessor) : this(httpContextAccessor)
     {

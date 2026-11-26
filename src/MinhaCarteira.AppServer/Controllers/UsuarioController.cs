@@ -16,7 +16,6 @@ namespace MinhaCarteira.AppServer.Controllers;
 public class UsuarioController(IUsuarioServico servico, IHttpContextAccessor httpContextAccessor)
     : BaseApiController<Usuario, Guid, IUsuarioServico, IUsuarioRepositorio>(servico, httpContextAccessor)
 {
-    protected override bool IgnorarValidacaoPosse => UsuarioEhSuperAdmin;
     protected override string PropriedadeValidacaoPosse => "OrganizacaoId";
     protected override string IdValidacaoPosse => IdOrganizacaoUsuarioLogado;
     protected override TipoFiltroRegistroEnum FiltroRegistros { get; set; } = TipoFiltroRegistroEnum.FiltrarPorOrganizacaoLogada;

@@ -15,7 +15,6 @@ namespace MinhaCarteira.AppServer.Controllers;
 public class LogController(ILogServico servico, IHttpContextAccessor httpContextAccessor) 
     : BaseLeituraApiController<Log, Guid, ILogServico>(servico, httpContextAccessor)
 {
-    protected override bool IgnorarValidacaoPosse => UsuarioEhSuperAdmin;
     protected override string PropriedadeValidacaoPosse => "OrganizacaoId";
     protected override string IdValidacaoPosse => IdOrganizacaoUsuarioLogado;
     protected override TipoFiltroRegistroEnum FiltroRegistros { get; set; } = TipoFiltroRegistroEnum.FiltrarPorOrganizacaoLogada;
