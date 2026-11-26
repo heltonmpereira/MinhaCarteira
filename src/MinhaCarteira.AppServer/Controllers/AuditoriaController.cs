@@ -4,19 +4,25 @@ using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MinhaCarteira.AppServer.Controllers.Base;
 using MinhaCarteira.AppServer.Helper;
+using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Servico;
 
 namespace MinhaCarteira.AppServer.Controllers;
 
-[Authorize]
+[Authorize(Roles = "superadmin,admin")]
 [ApiController]
 [Route("api/[controller]")]
-public class AuditoriaController(IAuditoriaServico servico, IHttpContextAccessor httpContextAccessor) : ControllerBase
+public class AuditoriaController(IAuditoriaServico servico, IHttpContextAccessor httpContextAccessor) 
+    : PadraoApiController<IAuditoriaServico>(servico, httpContextAccessor)
+
 {
-    protected IAuditoriaServico Servico { get; } = servico;
-    protected IHttpContextAccessor HttpContextAccessor { get; } = httpContextAccessor;
+    protected override bool IgnorarValidacaoPosse => UsuarioEhSuperAdmin;
+    protected override string PropriedadeValidacaoPosse => "OrganizacaoId";
+    protected override string IdValidacaoPosse => IdOrganizacaoUsuarioLogado;
+    protected override TipoFiltroRegistroEnum FiltroRegistros { get; set; } = TipoFiltroRegistroEnum.FiltrarPorOrganizacaoLogada;
 
     [HttpGet]
     public virtual async Task<IActionResult> Navegar(string criterioJson, bool exibirRegistrosDeletados = false)
@@ -43,23 +49,6 @@ public class AuditoriaController(IAuditoriaServico servico, IHttpContextAccessor
 
             criterio.AdicionarGrupo(grupoRegistrosDeletados);
         }
-
-        // Filter by OrganizacaoId (commented out so admins see all)
-        //var organizacaoIdClaim = HttpContextAccessor.HttpContext?.User.FindFirst("OrganizacaoId")?.Value;
-        //if (!string.IsNullOrEmpty(organizacaoIdClaim))
-        //{
-        //    var grupoOrganizacao = new GrupoFiltro("Organizacao", new[]
-        //    {
-        //        new FiltroOpcao
-        //        {
-        //            NomePropriedade = "OrganizacaoId",
-        //            Valor = organizacaoIdClaim,
-        //            Operador = TipoOperadorBusca.Igual,
-        //            RelacaoOutrosFiltros = TipoOperadorLogico.And
-        //        }
-        //    });
-        //    criterio.AdicionarGrupo(grupoOrganizacao);
-        //}
 
         return await Servico.RespostaPaginadaServicoAsync<Auditoria>(
             criterio: criterio);
