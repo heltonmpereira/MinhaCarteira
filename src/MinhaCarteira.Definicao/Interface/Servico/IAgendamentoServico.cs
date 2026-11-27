@@ -11,7 +11,7 @@ namespace MinhaCarteira.Definicao.Interface.Servico;
 public interface IAgendamentoServico : IServico<Agendamento, Guid, IAgendamentoRepositorio>
 {
     Task<IRespostaPaginadaServico<AgendamentoParcela>> ContasAVencer(ICriterio filtro);
-    Task<IRespostaServico<AgendamentoParcela>> ObterParcelaPorId(Guid id);
+    Task<IRespostaServico<AgendamentoParcela>> ObterParcelaPorId(Guid id, bool adicionarIncludes = true);
     Task<IRespostaServico<AgendamentoParcela>> AlterarParcela(AgendamentoParcela parcela);
     Task<IRespostaServico<int>> DeletarParcela(Guid idParcela);
     Task<IRespostaServico<AgendamentoParcela>> PagarParcela(AgendamentoParcela parcela);

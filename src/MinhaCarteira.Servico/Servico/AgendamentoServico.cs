@@ -131,7 +131,7 @@ public class AgendamentoServico(
         var itens = await _agendParcelaRepositorio.Navegar(filtro).ConfigureAwait(false);
         return MontarRespostaPaginada(itens, filtro);
     }
-    public async Task<IRespostaServico<AgendamentoParcela>> ObterParcelaPorId(Guid id)
+    public async Task<IRespostaServico<AgendamentoParcela>> ObterParcelaPorId(Guid id, bool adicionarIncludes = true)
     {
         var item = await _agendParcelaRepositorio.ObterPorId(id).ConfigureAwait(false);
 

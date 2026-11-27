@@ -74,7 +74,12 @@ public abstract class PadraoApiController<TServico> : ControllerBase
             item.SetValue(nomePropriedade, IdUsuarioLogado);
     }
 
-    protected IActionResult ConfrontarUsuarioLogadoEProprietario<TEntidade>(IActionResult respostaServico, string nomePropriedade = null)
+    protected IActionResult ConfrontarUsuarioLogadoEProprietario<TEntidade>(
+        IActionResult respostaServico, string nomePropriedade = null) =>
+        ConfrontarUsuarioLogadoEProprietario(respostaServico, nomePropriedade, typeof(TEntidade));
+
+    protected IActionResult ConfrontarUsuarioLogadoEProprietario(
+        IActionResult respostaServico, string nomePropriedade = null, Type tipo = null)
     {
         if (IgnorarValidacaoPosse)
             return respostaServico;
@@ -86,10 +91,17 @@ public abstract class PadraoApiController<TServico> : ControllerBase
 
         if (respostaServico is OkObjectResult retornoOk)
         {
-            if (retornoOk.Value is not IRespostaServico<TEntidade> resp || resp.Dados is null)
+            var resposta = retornoOk.Value;
+
+            if (resposta is null
+                || (tipo != null && !typeof(IRespostaServico<>).MakeGenericType(tipo).IsInstanceOfType(resposta)))
                 return new FalhaValidacaoUsuarioResult();
 
-            var propProprietarioId = resp.Dados.GetValue(nomePropriedade);
+            var dados = resposta.GetValue("Dados");
+            if (dados is null)
+                return new FalhaValidacaoUsuarioResult();
+
+            var propProprietarioId = dados.GetValue(nomePropriedade);
 
             if (propProprietarioId != null && (Guid)propProprietarioId != new Guid(IdValidacaoPosse))
                 return new FalhaValidacaoUsuarioResult();

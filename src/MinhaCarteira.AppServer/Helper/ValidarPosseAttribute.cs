@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,23 +12,24 @@ namespace MinhaCarteira.AppServer.Helper;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
 public sealed class ValidarPosseAttribute(
     string caminhoPropriedade = "ProprietarioId",
-    string nomeMetodo = "ObterPorId")
+    string nomeMetodo = "ObterPorId",
+    bool adicionarIncludes = false,
+    Type tipo = default)
     : Attribute, IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext ctx, ActionExecutionDelegate next)
     {
-        // fail-closed: se não der para provar a posse, nega
         if (ctx.Controller is not IValidacaoPosseController validacao
             || !ObterIds(ctx, out var ids))
         {
-            ctx.Result = new ForbidResult();
+            ctx.Result = new FalhaValidacaoUsuarioResult();
             return;
         }
 
         foreach (var id in ids)
         {
-            var resultado = await validacao.RegistroPertenceAoUsuarioLogadoAsync(id, caminhoPropriedade, nomeMetodo);
-            if (resultado is ForbidResult)
+            var resultado = await validacao.RegistroPertenceAoUsuarioLogadoAsync(id, caminhoPropriedade, adicionarIncludes, nomeMetodo, tipo);
+            if (resultado is not OkObjectResult)
             {
                 ctx.Result = resultado;
                 return;

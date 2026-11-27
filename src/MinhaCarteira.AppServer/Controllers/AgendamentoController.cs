@@ -37,7 +37,7 @@ public class AgendamentoController(IAgendamentoServico servico, IHttpContextAcce
 
     [Route("obter-parcela/{id:guid}")]
     [HttpGet]
-    [ValidarPosse("Agendamento.ProprietarioId", "ObterParcelaPorId")]
+    [ValidarPosse("Agendamento.ProprietarioId", "ObterParcelaPorId", true, typeof(AgendamentoParcela))]
     public async Task<IActionResult> ObterParcelaPorId(Guid id) =>
         await Servico.RespostaServicoAsync<AgendamentoParcela>(
             parameters: [id]);

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
@@ -42,6 +44,21 @@ public static class ServicoHelper
         return await servico.RespostaServicoDiretoAsync<TRetorno>(
             nomeMetodo: nomeMetodo,
             parameters: parameters);
+    }
+
+    public static Task<IActionResult> RespostaServicoAsync(
+        this object servico,
+        Type tipoRetorno,
+        object[] parameters,
+        string nomeMetodo = null)
+    {
+        var metodoGenerico = typeof(ServicoHelper)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .First(m => m.Name == nameof(RespostaServicoAsync) && m.IsGenericMethodDefinition);
+
+        return (Task<IActionResult>)metodoGenerico
+            .MakeGenericMethod(tipoRetorno)
+            .Invoke(null, [servico, parameters, nomeMetodo]);
     }
 
     private static async Task<IActionResult> RespostaServicoDiretoAsync<TRetorno>(

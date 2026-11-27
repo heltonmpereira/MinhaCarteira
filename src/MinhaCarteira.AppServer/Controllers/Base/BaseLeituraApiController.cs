@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.CodeDom;
+using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,11 +46,20 @@ public abstract class BaseLeituraApiController<TEntidade, TPK, TServico>(TServic
         return ConfrontarUsuarioLogadoEProprietario<TEntidade>(resposta);
     }
 
-    public async Task<IActionResult> RegistroPertenceAoUsuarioLogadoAsync(TPK id, string caminhoPropriedade = null, string nomeMetodo = "ObterPorId")
+    [NonAction]
+    public async Task<IActionResult> RegistroPertenceAoUsuarioLogadoAsync(
+        TPK id, 
+        string caminhoPropriedade = null, 
+        bool adicionarIncludes = false, 
+        string nomeMetodo = "ObterPorId", 
+        Type tipo = default)
     {
-        var resposta = await Servico.RespostaServicoAsync<TEntidade>(parameters: [id, false], nomeMetodo);
+        var resposta = await Servico.RespostaServicoAsync(
+            tipo,
+            parameters: [id, adicionarIncludes], 
+            nomeMetodo);
 
-        return ConfrontarUsuarioLogadoEProprietario<TEntidade>(resposta, caminhoPropriedade);
+        return ConfrontarUsuarioLogadoEProprietario(resposta, caminhoPropriedade, tipo);
     }
 
 }
