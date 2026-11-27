@@ -30,7 +30,7 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
     [HttpPost]
     public virtual async Task<IActionResult> Incluir(TEntidade item)
     {
-        DefinirUsuarioLogado(item);
+        AtribuirItemAoUsuarioLogado(item);
         return await Servico.RespostaServicoAsync<TEntidade>(parameters: [item]);
     }
 
@@ -40,7 +40,7 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
         if (!await RegistroPertenceAoUsuarioLogadoAsync(item.Id))
             return FalhaValidacaoUsuario();
 
-        DefinirUsuarioLogado(item);
+        AtribuirItemAoUsuarioLogado(item);
         return await Servico.RespostaServicoAsync<TEntidade>(parameters: [item]);
     }
 

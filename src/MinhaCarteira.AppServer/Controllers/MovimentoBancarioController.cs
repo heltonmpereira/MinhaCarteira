@@ -18,7 +18,7 @@ public class MovimentoBancarioController(IMovimentoBancarioServico servico, IHtt
     [HttpPost("transferir")]
     public async Task<IActionResult> Transferir(MovimentoBancarioTransferencia item)
     {
-        DefinirUsuarioLogado(item);
+        AtribuirItemAoUsuarioLogado(item);
         return await Servico
             .RespostaServicoAsync<bool>([item]);
     }

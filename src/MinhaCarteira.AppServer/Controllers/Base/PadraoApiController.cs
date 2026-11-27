@@ -17,7 +17,7 @@ namespace MinhaCarteira.AppServer.Controllers.Base;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class PadraoApiController<TServico> : ControllerBase
+public abstract class PadraoApiController<TServico> : ControllerBase
 {
     protected TServico Servico { get; }
     protected string IdUsuarioLogado { get; }
@@ -72,7 +72,7 @@ public class PadraoApiController<TServico> : ControllerBase
         return criterio;
     }
 
-    protected void DefinirUsuarioLogado<TEntidade>(TEntidade item)
+    protected void AtribuirItemAoUsuarioLogado<TEntidade>(TEntidade item)
     {
         const string nomePropriedade = "ProprietarioId";
         var prop = item.GetType().GetProperty(nomePropriedade);
