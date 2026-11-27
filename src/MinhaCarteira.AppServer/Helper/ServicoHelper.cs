@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Servico.Resposta;
 using MinhaCarteira.Definicao.Modelo;
 using Serilog;
@@ -67,7 +68,7 @@ public static class ServicoHelper
         }
         catch (Exception e)
         {
-            Log.Error(e,
+            Serilog.Log.Error(e,
                 "Erro ao executar '{Metodo}' no serviço '{Servico}'.",
                 nomeMetodo, servico.GetType().Name);
 
@@ -125,7 +126,7 @@ public static class ServicoHelper
         }
         catch (Exception e)
         {
-            Log.Error(e,
+            Serilog.Log.Error(e,
                 "Erro ao executar '{Metodo}' no serviço '{Servico}'.",
                 nomeMetodo, servico.GetType().Name);
 

@@ -76,14 +76,14 @@ public class LoginController(ILoginServico servico, IHttpContextAccessor httpCon
         await Servico.RespostaServicoAsync<bool>(
              parameters: [model]);
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> ObterPorId(Guid id)
-    {
-        var resposta = await Servico.RespostaServicoAsync<Usuario>(
-            parameters: [id, true]);
-
-        return ConfrontarUsuarioLogadoEProprietario<Usuario>(resposta);
-    }
+    //[HttpGet("{id:guid}")]
+    //public async Task<IActionResult> ObterPorId(Guid id)
+    //{
+    //    var resposta = await Servico.RespostaServicoAsync<Usuario>(
+    //        parameters: [id, true]);
+    //
+    //    return ConfrontarUsuarioLogadoEProprietario<Usuario>(resposta);
+    //}
 
     [HttpPut]
     public async Task<IActionResult> Alterar(Usuario item)

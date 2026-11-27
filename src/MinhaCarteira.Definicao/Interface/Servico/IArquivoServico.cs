@@ -3,9 +3,8 @@ using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio;
 using MinhaCarteira.Definicao.Interface.Servico.Base;
 
-namespace MinhaCarteira.Definicao.Interface.Servico
+namespace MinhaCarteira.Definicao.Interface.Servico;
+
+public interface IArquivoServico : IServico<Arquivo, Guid, IArquivoRepositorio>
 {
-    public interface IArquivoServico : IServico<Arquivo, Guid, IArquivoRepositorio>
-    {
-    }
 }

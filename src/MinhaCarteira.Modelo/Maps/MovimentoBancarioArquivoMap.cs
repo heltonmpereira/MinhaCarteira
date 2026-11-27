@@ -4,21 +4,20 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Modelo.Maps.Base;
 
-namespace MinhaCarteira.Modelo.Maps
+namespace MinhaCarteira.Modelo.Maps;
+
+public class MovimentoBancarioArquivoMap : BaseMap<MovimentoBancarioArquivo, Guid>
 {
-    public class MovimentoBancarioArquivoMap : BaseMap<MovimentoBancarioArquivo, Guid>
+    public override void Configure(EntityTypeBuilder<MovimentoBancarioArquivo> builder)
     {
-        public override void Configure(EntityTypeBuilder<MovimentoBancarioArquivo> builder)
-        {
-            base.Configure(builder);
+        base.Configure(builder);
 
-            builder.Property(p => p.DataCadastro).HasDefaultValueSql("now()").HasColumnType("timestamp without time zone");
+        builder.Property(p => p.DataCadastro).HasDefaultValueSql("now()").HasColumnType("timestamp without time zone");
 
-            builder
-                .HasOne(o => o.MovimentoBancario)
-                .WithMany(m => m.MovimentoBancarioArquivos);
-            //.OnDelete(DeleteBehavior.ClientNoAction);
+        builder
+            .HasOne(o => o.MovimentoBancario)
+            .WithMany(m => m.MovimentoBancarioArquivos);
+        //.OnDelete(DeleteBehavior.ClientNoAction);
 
-        }
     }
 }

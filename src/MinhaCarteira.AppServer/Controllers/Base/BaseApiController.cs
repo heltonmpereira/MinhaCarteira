@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppServer.Helper;
+using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Interface.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio.Base;
 using MinhaCarteira.Definicao.Interface.Servico.Base;
@@ -13,19 +14,11 @@ namespace MinhaCarteira.AppServer.Controllers.Base;
 [ApiController]
 [Route("api/[controller]")]
 public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(TServico servico, IHttpContextAccessor httpContextAccessor)
-    : BaseLeituraApiController<TEntidade, TPK, TServico>(servico, httpContextAccessor)
+    : BaseLeituraApiController<TEntidade, TPK, TServico>(servico, httpContextAccessor), IValidacaoPosseController<TPK>
     where TEntidade : class, IEntidade<TPK>
     where TRepositorio : IRepositorio<TEntidade, TPK>
     where TServico : IServico<TEntidade, TPK, TRepositorio>
 {
-    protected async Task<bool> RegistroPertenceAoUsuarioLogadoAsync(TPK id)
-    {
-        var resposta = await Servico.RespostaServicoAsync<TEntidade>(
-            parameters: [id, false],
-            nomeMetodo: "ObterPorId");
-
-        return ConfrontarUsuarioLogadoEProprietario<TEntidade>(resposta) is OkObjectResult;
-    }
 
     [HttpPost]
     public virtual async Task<IActionResult> Incluir(TEntidade item)
@@ -35,31 +28,20 @@ public abstract class BaseApiController<TEntidade, TPK, TServico, TRepositorio>(
     }
 
     [HttpPut]
+    [ValidarPosse]
     public async Task<IActionResult> Alterar(TEntidade item)
     {
-        if (!await RegistroPertenceAoUsuarioLogadoAsync(item.Id))
-            return FalhaValidacaoUsuario();
-
         AtribuirItemAoUsuarioLogado(item);
         return await Servico.RespostaServicoAsync<TEntidade>(parameters: [item]);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Deletar(TPK id)
-    {
-        if (!await RegistroPertenceAoUsuarioLogadoAsync(id))
-            return FalhaValidacaoUsuario();
-
-        return await Servico.RespostaServicoAsync<int>(parameters: [id]);
-    }
+    [ValidarPosse]
+    public async Task<IActionResult> Deletar(TPK id) => 
+        await Servico.RespostaServicoAsync<int>(parameters: [id]);
 
     [HttpDelete("DeletarRange")]
-    public async Task<IActionResult> DeletarRange(TPK[] ids)
-    {
-        foreach (var id in ids)
-            if (!await RegistroPertenceAoUsuarioLogadoAsync(id))
-                return FalhaValidacaoUsuario();
-
-        return await Servico.RespostaServicoAsync<int>(parameters: [ids]);
-    }
+    [ValidarPosse]
+    public async Task<IActionResult> DeletarRange(TPK[] ids) =>
+        await Servico.RespostaServicoAsync<int>(parameters: [ids]);
 }

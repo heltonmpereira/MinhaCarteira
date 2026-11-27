@@ -217,22 +217,6 @@ public static class RefitHelper
         {
             var returnUrl = controller.HttpContext.Request.Path.Value;
 
-            switch (ex.StatusCode)
-            {
-                case System.Net.HttpStatusCode.Forbidden:
-                    return controller.RedirectToAction(
-                        "Index",
-                        "Login",
-                        new { area = "", returnUrl }
-                    );
-                case System.Net.HttpStatusCode.Unauthorized:
-                    return controller.RedirectToAction(
-                        "NaoAutorizado",
-                        "Login",
-                        new { area = "", returnUrl }
-                    );
-            }
-
             var retornoApi = new RespostaServico<Exception>(ex, ex.Message)
             {
                 StatusCode = ex.StatusCode,
@@ -246,6 +230,29 @@ public static class RefitHelper
             catch
             {
                 //nada por aqui
+            }
+
+            switch (ex.StatusCode)
+            {
+                case System.Net.HttpStatusCode.Forbidden:
+                    {
+                        var json = JObject.Parse(retornoApi.ToJson());
+                        json.Property("Dados")?.Remove();
+                        controller.TempData.Clear();
+                        controller.TempData["FalhaResult"] = json.ToString();
+
+                        return controller.RedirectToAction(
+                            "Index",
+                            "Login",
+                            new { area = "", returnUrl }
+                        );
+                    }
+                case System.Net.HttpStatusCode.Unauthorized:
+                    return controller.RedirectToAction(
+                        "NaoAutorizado",
+                        "Login",
+                        new { area = "", returnUrl }
+                    );
             }
 
             if (!controller.TempData.TryGetValue("RetornoApi", out object value1))

@@ -2,9 +2,8 @@
 using MinhaCarteira.Definicao.Entidade;
 using MinhaCarteira.Definicao.Interface.Repositorio.Base;
 
-namespace MinhaCarteira.Definicao.Interface.Repositorio
+namespace MinhaCarteira.Definicao.Interface.Repositorio;
+
+public interface IArquivoRepositorio : IRepositorio<Arquivo, Guid>
 {
-    public interface IArquivoRepositorio : IRepositorio<Arquivo, Guid>
-    {
-    }
 }

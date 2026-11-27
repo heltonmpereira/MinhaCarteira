@@ -3,12 +3,13 @@ using Dhani.Utilitarios.Filtro;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinhaCarteira.AppServer.Helper;
+using MinhaCarteira.AppServer.Model;
 using MinhaCarteira.Definicao.Interface.Entidade;
 
 namespace MinhaCarteira.AppServer.Controllers.Base;
 
 public abstract class BaseLeituraApiController<TEntidade, TPK, TServico>(TServico servico, IHttpContextAccessor httpContextAccessor)
-    : PadraoApiController<TServico>(servico, httpContextAccessor)
+    : PadraoApiController<TServico>(servico, httpContextAccessor), IValidacaoPosseController<TPK>
     where TEntidade : class, IEntidade<TPK>
 {
     [HttpGet]
@@ -42,4 +43,12 @@ public abstract class BaseLeituraApiController<TEntidade, TPK, TServico>(TServic
         var resposta = await Servico.RespostaServicoAsync<TEntidade>(parameters: [id, true]);
         return ConfrontarUsuarioLogadoEProprietario<TEntidade>(resposta);
     }
+
+    public async Task<IActionResult> RegistroPertenceAoUsuarioLogadoAsync(TPK id, string caminhoPropriedade = null, string nomeMetodo = "ObterPorId")
+    {
+        var resposta = await Servico.RespostaServicoAsync<TEntidade>(parameters: [id, false], nomeMetodo);
+
+        return ConfrontarUsuarioLogadoEProprietario<TEntidade>(resposta, caminhoPropriedade);
+    }
+
 }

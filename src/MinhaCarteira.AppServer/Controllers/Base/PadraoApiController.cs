@@ -46,14 +46,6 @@ public abstract class PadraoApiController<TServico> : ControllerBase
     {
     }
 
-    protected IActionResult FalhaValidacaoUsuario() =>
-        BadRequest(new RespostaServico<Usuario>(null, "Falha ao validar informacoes do usuario")
-        {
-            BemSucedido = false,
-            StatusCode = HttpStatusCode.BadRequest,
-            MensagemErro = "Falha ao validar informacoes do usuario"
-        });
-
     protected virtual ICriterio ObterFiltroInicial(string criterioJson)
     {
         var criterio = string.IsNullOrWhiteSpace(criterioJson)
@@ -90,17 +82,17 @@ public abstract class PadraoApiController<TServico> : ControllerBase
         nomePropriedade ??= PropriedadeValidacaoPosse;
 
         if (string.IsNullOrWhiteSpace(IdValidacaoPosse))
-            return FalhaValidacaoUsuario();
+            return new FalhaValidacaoUsuarioResult();
 
         if (respostaServico is OkObjectResult retornoOk)
         {
             if (retornoOk.Value is not IRespostaServico<TEntidade> resp || resp.Dados is null)
-                return FalhaValidacaoUsuario();
+                return new FalhaValidacaoUsuarioResult();
 
             var propProprietarioId = resp.Dados.GetValue(nomePropriedade);
 
             if (propProprietarioId != null && (Guid)propProprietarioId != new Guid(IdValidacaoPosse))
-                return FalhaValidacaoUsuario();
+                return new FalhaValidacaoUsuarioResult();
         }
 
         return respostaServico;
